@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS 知识库</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11/build/highlight.min.js"></script>
+<style>
+  :root {
+    --bg: #faf9f7; --panel: #ffffff; --text: #1c1917; --muted: #78716c;
+    --border: #e7e5e4; --accent: #0a7aff; --accent-soft: #eaf3ff;
+    --code-bg: #f5f5f4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #131315; --panel: #1c1c1f; --text: #e7e5e4; --muted: #a8a29e;
+      --border: #2c2c30; --accent: #409cff; --accent-soft: #16283f;
+      --code-bg: #232326;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font: 15px/1.75 -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+    display: flex; flex-direction: column; min-height: 100dvh;
+  }
+  header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--panel); position: sticky; top: 0; z-index: 10;
+  }
+  header h1 { font-size: 16px; margin: 0; font-weight: 600; }
+  #status { font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 6px; }
+  #status .dot { width: 8px; height: 8px; border-radius: 50%; background: #f0a020; }
+  #status.ready .dot { background: #34c759; }
+  header .spacer { flex: 1; }
+  select, button {
+    font: inherit; color: inherit; background: var(--panel);
+    border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px;
+  }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--accent); color: var(--accent); }
+
+  main { flex: 1; }
+  #thread { max-width: 760px; margin: 0 auto; padding: 28px 20px 40px; }
+
+  .q {
+    margin: 34px 0 14px; padding-left: 14px;
+    border-left: 3px solid var(--accent);
+    font-weight: 600; font-size: 16px;
+  }
+  .q:first-child { margin-top: 0; }
+  .answer { min-height: 1em; }
+  .answer > :first-child { margin-top: 0; }
+  .answer h1, .answer h2 { font-size: 17px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+  .answer h3, .answer h4 { font-size: 15.5px; }
+  .answer pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: 13px; line-height: 1.6;
+  }
+  .answer code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; }
+  .answer :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 5px; }
+  .answer table { border-collapse: collapse; display: block; overflow-x: auto; }
+  .answer th, .answer td { border: 1px solid var(--border); padding: 5px 10px; }
+  .answer blockquote { margin: 0; padding-left: 12px; border-left: 3px solid var(--border); color: var(--muted); }
+  .cursor { display: inline-block; width: 8px; height: 16px; background: var(--accent); vertical-align: -2px; animation: blink 1s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* 代码高亮配色：照 Xcode 默认主题手写，浅/深两套，与页面底色一致 */
+  .hljs { background: transparent; color: var(--text); }
+  .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta .hljs-keyword { color: #9b2393; font-weight: 600; }
+  .hljs-string, .hljs-regexp { color: #c41a16; }
+  .hljs-comment, .hljs-quote { color: #5d6c79; font-style: italic; }
+  .hljs-number, .hljs-symbol { color: #1c00cf; }
+  .hljs-title, .hljs-title.function_, .hljs-name { color: #326d74; }
+  .hljs-type, .hljs-class .hljs-title, .hljs-title.class_, .hljs-built_in { color: #0b4f79; }
+  .hljs-attr, .hljs-attribute, .hljs-variable, .hljs-params { color: #947100; }
+  .hljs-meta, .hljs-preprocessor { color: #643820; }
+  @media (prefers-color-scheme: dark) {
+    .hljs-keyword, .hljs-selector-tag, .hljs-literal, .hljs-meta .hljs-keyword { color: #fc5fa3; }
+    .hljs-string, .hljs-regexp { color: #fc6a5d; }
+    .hljs-comment, .hljs-quote { color: #6c7986; }
+    .hljs-number, .hljs-symbol { color: #d0bf69; }
+    .hljs-title, .hljs-title.function_, .hljs-name { color: #41a1c0; }
+    .hljs-type, .hljs-class .hljs-title, .hljs-title.class_, .hljs-built_in { color: #5dd8ff; }
+    .hljs-attr, .hljs-attribute, .hljs-variable, .hljs-params { color: #a167e6; }
+    .hljs-meta, .hljs-preprocessor { color: #fd8f3f; }
+  }
+
+  details.sources { margin: 14px 0 0; font-size: 13px; }
+  details.sources summary {
+    cursor: pointer; color: var(--muted); user-select: none; list-style: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  details.sources summary::before { content: "▸"; transition: transform .15s; }
+  details.sources[open] summary::before { transform: rotate(90deg); }
+  .src {
+    display: flex; gap: 8px; align-items: baseline;
+    padding: 7px 10px; margin-top: 6px; border: 1px solid var(--border);
+    border-radius: 10px; background: var(--panel); cursor: pointer; line-height: 1.5;
+  }
+  .src:hover { border-color: var(--accent); }
+  .src .badge {
+    flex-shrink: 0; font-size: 11px; padding: 1px 7px; border-radius: 99px;
+    background: var(--accent-soft); color: var(--accent); white-space: nowrap;
+  }
+  .src .loc { color: var(--muted); word-break: break-all; }
+  .src .loc b { color: var(--text); font-weight: 500; }
+  .err { color: #d4433b; background: rgba(212,67,59,.08); border-radius: 10px; padding: 10px 14px; margin-top: 10px; }
+
+  footer {
+    border-top: 1px solid var(--border); background: var(--panel);
+    padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+    position: sticky; bottom: 0; z-index: 10;
+  }
+  .inputrow { max-width: 760px; margin: 0 auto; display: flex; gap: 10px; align-items: flex-end; }
+  textarea {
+    flex: 1; resize: none; font: inherit; color: inherit;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px;
+    padding: 10px 14px; max-height: 160px; outline: none; overflow-y: hidden;
+  }
+  textarea:focus { border-color: var(--accent); }
+  #send {
+    background: var(--accent); color: #fff; border: none; border-radius: 12px;
+    padding: 10px 18px; font-weight: 600;
+  }
+  #send:disabled { opacity: .45; cursor: default; }
+  .hint { max-width: 760px; margin: 6px auto 0; font-size: 12px; color: var(--muted); }
+  #empty { text-align: center; color: var(--muted); margin-top: 12vh; }
+  #empty .logo { font-size: 40px; }
+  #empty .examples { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
+  #empty .examples button { border-radius: 99px; font-size: 13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>iOS 知识库</h1>
+  <span id="status"><span class="dot"></span><span id="statustext">连接中…</span></span>
+  <span class="spacer"></span>
+  <select id="provider" title="回答模型"></select>
+  <button id="newchat">新对话</button>
+</header>
+
+<main><div id="thread">
+  <div id="empty">
+    <div class="logo">📚</div>
+    <p>基于你的笔记、objc4 源码、WWDC 逐字稿与官方文档回答，<br>每个结论都标注出处。</p>
+    <div class="examples">
+      <button>给我讲讲 RunLoop</button>
+      <button>weak 是怎么置 nil 的</button>
+      <button>objc_msgSend 的查找流程</button>
+      <button>Block 为什么要 copy</button>
+    </div>
+  </div>
+</div></main>
+
+<footer>
+  <div class="inputrow">
+    <textarea id="input" rows="1" placeholder="问一个 iOS 问题…（Enter 发送，Shift+Enter 换行）"></textarea>
+    <button id="send">发送</button>
+  </div>
+  <div class="hint">来源点击可跳转：Obsidian 笔记直接打开对应文档，其他文件在访达中显示。</div>
+</footer>
+
+<script>
+const TYPE_NAME = {note:"个人笔记", doc:"官方文档", wwdc:"WWDC", blog:"博客", source_code:"源码", card:"知识卡片"};
+const $ = s => document.querySelector(s);
+const thread = $("#thread"), input = $("#input"), send = $("#send");
+let history = [], busy = false;
+
+marked.setOptions({breaks: true});
+const md = t => DOMPurify.sanitize(marked.parse(t));
+
+async function refreshStatus() {
+  try {
+    const s = await (await fetch("/api/status")).json();
+    $("#statustext").textContent = s.model_ready
+      ? `${s.files} 文件 · ${s.chunks} 块（${s.vectorized} 已向量化）`
+      : "模型加载中…（首次约半分钟）";
+    $("#status").classList.toggle("ready", s.model_ready);
+    if (!$("#provider").options.length) {
+      for (const p of s.providers) {
+        if (p === "provider") continue;
+        const o = document.createElement("option");
+        o.value = p; o.textContent = p;
+        if (p === s.default_provider) o.selected = true;
+        $("#provider").append(o);
+      }
+    }
+    if (!s.model_ready) setTimeout(refreshStatus, 3000);
+  } catch { setTimeout(refreshStatus, 3000); }
+}
+refreshStatus();
+
+function srcRow(s) {
+  const div = document.createElement("div");
+  div.className = "src";
+  const shortPath = s.path.replace(/^\/Users\/tommywu\//, "");
+  div.innerHTML = `<span class="badge"></span><span class="loc"><b>[${s.n}]</b> ${escapeHtml(shortPath)}${s.title_path ? " › <b>" + escapeHtml(s.title_path) + "</b>" : ""}（第${s.lines}行）</span>`;
+  div.querySelector(".badge").textContent = TYPE_NAME[s.type] || s.type;
+  div.title = "点击打开";
+  div.onclick = () => fetch("/api/open", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({path: s.path})});
+  return div;
+}
+const escapeHtml = t => t.replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+async function ask(question) {
+  if (busy || !question.trim()) return;
+  busy = true; send.disabled = true;
+  $("#empty")?.remove();
+
+  const q = document.createElement("div"); q.className = "q"; q.textContent = question;
+  const sources = document.createElement("details"); sources.className = "sources";
+  const answer = document.createElement("div"); answer.className = "answer";
+  answer.innerHTML = '<span class="cursor"></span>';
+  thread.append(q, answer, sources);
+  q.scrollIntoView({behavior: "smooth"});
+
+  let text = "", srcs = [];
+  try {
+    const resp = await fetch("/api/ask", {
+      method: "POST", headers: {"content-type": "application/json"},
+      body: JSON.stringify({question, history, provider: $("#provider").value || null}),
+    });
+    if (!resp.ok) throw new Error((await resp.json()).error || resp.status);
+    const reader = resp.body.getReader(), dec = new TextDecoder();
+    let buf = "";
+    while (true) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, {stream: true});
+      const lines = buf.split("\n"); buf = lines.pop();
+      for (const line of lines) {
+        if (!line.trim()) continue;
+        const ev = JSON.parse(line);
+        if (ev.type === "sources") {
+          srcs = ev.sources;
+          sources.innerHTML = `<summary>来源（${srcs.length}）</summary>`;
+          srcs.forEach(s => sources.append(srcRow(s)));
+        } else if (ev.type === "delta") {
+          text += ev.text;
+          answer.innerHTML = md(text) + '<span class="cursor"></span>';
+        } else if (ev.type === "error") {
+          throw new Error(ev.message);
+        }
+      }
+    }
+    answer.innerHTML = md(text);
+    answer.querySelectorAll("pre code").forEach(el => { try { hljs.highlightElement(el); } catch {} });
+    history.push({role: "user", content: question}, {role: "assistant", content: text});
+  } catch (e) {
+    answer.innerHTML = md(text);
+    const err = document.createElement("div"); err.className = "err";
+    err.textContent = "出错了：" + e.message;
+    answer.append(err);
+  } finally {
+    busy = false; send.disabled = false; input.focus();
+  }
+}
+
+send.onclick = () => { const v = input.value; input.value = ""; autosize(); ask(v); };
+input.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send.click(); }
+});
+function autosize() {
+  input.style.height = "auto";
+  const h = Math.min(input.scrollHeight, 160);
+  input.style.height = h + "px";
+  input.style.overflowY = input.scrollHeight > 160 ? "auto" : "hidden";
+}
+input.addEventListener("input", autosize);
+$("#newchat").onclick = () => { history = []; thread.innerHTML = ""; input.focus(); };
+document.querySelectorAll("#empty .examples button").forEach(b => b.onclick = () => ask(b.textContent));
+input.focus();
+</script>
+</body>
+</html>

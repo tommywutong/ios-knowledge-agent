@@ -1,0 +1,139 @@
+# iOS 知识库配置。路径可以是绝对路径，相对路径相对于项目根目录。
+db_path: db/ios_kb.sqlite
+
+embedding:
+  model: BAAI/bge-m3
+  dim: 1024
+  batch_size: 8
+
+retrieval:
+  vector_top: 30      # 向量召回条数
+  fts_top: 30         # 关键词召回条数
+  final_top: 8        # 最终喂给 LLM 的条数
+  max_per_file: 2     # 同一文件最多入选几块，避免单文件霸屏
+  # 类型权重：乘在融合得分上。source_code 降权（只在强相关时浮上来），card 升权
+  type_weights:
+    card: 1.3
+    note: 1.15
+    doc: 1.0
+    wwdc: 1.0
+    blog: 0.95
+    source_code: 0.6
+
+llm:
+  provider: deepseek            # ask 默认用的后端
+  deepseek:
+    base_url: https://api.deepseek.com
+    model: deepseek-chat
+    api_key_env: DEEPSEEK_API_KEY
+  deepseek-reasoner:
+    base_url: https://api.deepseek.com
+    model: deepseek-reasoner
+    api_key_env: DEEPSEEK_API_KEY
+  anthropic:                    # Anthropic 的 OpenAI 兼容端点，生成知识卡片时可选
+    base_url: https://api.anthropic.com/v1/
+    model: claude-sonnet-5
+    api_key_env: ANTHROPIC_API_KEY
+
+# 语料来源。vectorize=false 的只进关键词索引（FTS），不做向量。
+sources:
+  - name: obsidian-ios
+    path: /Users/tommywu/Obsidian/iOS
+    type: note
+    include: ["**/*.md"]
+    vectorize: true
+
+  - name: summer2026
+    path: /Users/tommywu/Desktop/26暑期内容
+    type: note
+    include: ["**/*.md", "**/*.docx"]
+    exclude:
+      - "awesome-ios-interview-main/articles/ai/**"  # 纯 AI 专题不进入 iOS 知识库
+      - "iOS底层源码探索/_弃用-objc4-818-debug/**"
+      - "iOS底层源码探索/objc4-756.2-参照旧版/**"
+    vectorize: true
+
+  - name: summer-labs
+    path: /Users/tommywu/Desktop/26暑期内容
+    type: source_code
+    include:
+      - "**/*.h"
+      - "**/*.m"
+      - "**/*.mm"
+      - "**/*.c"
+      - "**/*.cpp"
+      - "**/*.swift"
+      - "**/*.s"
+      - "**/*.S"
+    exclude: ["iOS底层源码探索/**"]  # 底层目录由 objc4-source 单独处理，避免重复
+    vectorize: true
+
+  - name: objc4-source
+    path: /Users/tommywu/Desktop/26暑期内容/iOS底层源码探索
+    type: source_code
+    include:
+      - "**/*.h"
+      - "**/*.m"
+      - "**/*.mm"
+      - "**/*.c"
+      - "**/*.cpp"
+      - "**/*.swift"
+      - "**/*.s"
+      - "**/*.S"
+    exclude: ["_弃用-objc4-818-debug/**", "objc4-756.2-参照旧版/**"]  # 旧版重复源码不入库
+    vectorize: true
+
+  - name: apple-docs-core     # 精华部分（WWDC 逐字稿 + 博客）：向量+FTS
+    path: data/repos/apple-docs-vault
+    type: doc
+    include: ["wwdc/**/*.md", "blogs/**/*.md"]
+    type_overrides:
+      "wwdc/": wwdc
+      "blogs/": blog
+    vectorize: true
+
+  - name: apple-docs-bulk     # 大体量镜像（apple-docs 405MB / oss 435MB / meta）：只进 FTS
+    path: data/repos/apple-docs-vault
+    type: doc
+    include: ["apple-docs/**/*.md", "oss/**/*.md", "meta/**/*.md"]
+    vectorize: false
+
+  - name: apple-archive        # 600MB 英文官方文档归档：只进关键词索引
+    path: data/repos/apple-developer-archive-vault
+    type: doc
+    include: ["**/*.md"]
+    vectorize: false
+
+  - name: knowledge-cards      # 生成的专题知识卡片，回灌入库
+    path: knowledge_cards
+    type: card
+    include: ["**/*.md"]
+    vectorize: true
+
+chunking:
+  max_chars: 1600              # markdown 单块上限（约 500-800 token）
+  code_max_lines: 120          # 源码单块行数上限
+  code_min_lines: 25           # 源码块达到此行数后遇到函数边界就切
+
+cards:
+  output_dir: knowledge_cards
+  chunks_per_topic: 24
+  topics:
+    - name: RunLoop
+      queries: ["RunLoop 原理 mode source timer observer", "CFRunLoop 实现 休眠唤醒"]
+    - name: GCD 与并发
+      queries: ["GCD 队列 线程 死锁 同步异步", "dispatch queue 栅栏 信号量 NSOperation"]
+    - name: Runtime 与消息发送
+      queries: ["objc_msgSend 消息发送 方法查找 转发", "Method Swizzling isa 类对象 元类"]
+    - name: 内存管理
+      queries: ["ARC MRC 引用计数 retain release autorelease", "weak SideTable 散列表 Tagged Pointer"]
+    - name: Block
+      queries: ["Block 结构 变量捕获 __block 循环引用", "Block 三种类型 栈堆全局"]
+    - name: KVC 与 KVO
+      queries: ["KVC 搜索顺序 KVO isa-swizzling 手动触发"]
+    - name: 编译链接与启动
+      queries: ["dyld 启动流程 动态链接", "Mach-O 结构 符号 重定位"]
+    - name: 对象模型
+      queries: ["对象模型 isa 内存对齐 Tagged Pointer 类结构"]
+    - name: AutoreleasePool
+      queries: ["AutoreleasePool 自动释放池 结构 哨兵 释放时机"]
