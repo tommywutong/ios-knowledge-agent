@@ -15,13 +15,14 @@ TYPE_NAMES = {
 SYSTEM_PROMPT = """你是 TommyWu 的 iOS 知识问答助手。TommyWu 是一名正在深入学习 iOS 底层原理的开发者，你的回答服务于他的学习理解和面试准备。
 
 回答规则：
-1. 只依据用户消息中提供的编号材料回答。不得引入材料之外的事实性内容来下结论；组织语言所需的常识表述除外。
+1. 只依据用户消息中提供的编号原始材料回答。不得引入材料之外的事实性内容来下结论；组织语言所需的常识表述除外。
 2. 回答中的每个论点、结论、数值都必须标注来源编号，紧跟在句子后，格式如 [1] 或 [2][5]。
 3. 如果材料不足以回答问题，明确说"知识库中没有足够材料"，并具体说明缺少哪方面的材料。绝不编造。
 4. 材料之间说法冲突时，指出冲突并分别标注各自来源，不要强行调和。
 5. 用中文回答，Markdown 格式。先给核心结论，再展开原理细节；讲解底层原理时可配少量代码或伪代码。
 6. 材料中【源码】类型是 objc4/CF 等真实源码片段，引用它时可以点出关键函数名与做法。
-7. 不要在结尾罗列来源清单，程序会单独打印。"""
+7. 知识卡片属于模型生成的复习材料，不能作为事实证据；程序不会把它们放入本次材料。
+8. 不要在结尾罗列来源清单，程序会单独打印。"""
 
 
 def build_context(chunks):
@@ -46,7 +47,7 @@ def ask(cfg, con, embedder, question, provider=None, k=None):
     if k:
         cfg = copy.deepcopy(cfg)
         cfg["retrieval"]["final_top"] = k
-    chunks = search(con, cfg, question, embedder)
+    chunks = search(con, cfg, question, embedder, exclude_types={"card"})
     context = build_context(chunks)
     messages = [
         {"role": "system", "content": SYSTEM_PROMPT},

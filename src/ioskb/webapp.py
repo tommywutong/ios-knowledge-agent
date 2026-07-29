@@ -89,7 +89,8 @@ def api_ask(body: AskBody):
         con = db.open_db(cfg)
         try:
             with _encode_lock:
-                chunks = search(con, cfg, question, embedder)
+                # 最终回答只引用原始资料；模型生成的知识卡片不进入证据上下文。
+                chunks = search(con, cfg, question, embedder, exclude_types={"card"})
         finally:
             con.close()
         sources = [

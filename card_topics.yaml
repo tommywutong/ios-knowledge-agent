@@ -1,0 +1,299 @@
+# 细粒度专题目录。每张卡片只负责一个可独立回答、复习和追问的主题。
+# 卡片是复习层，不是最终证据；生成时和问答时都会排除既有 card，
+# 每张卡片的来源索引由程序根据原始检索结果自动附加。
+topics:
+  - group: Objective-C Runtime
+    name: 对象实例与Class结构
+    queries: ["Objective-C 对象实例 Class objc_class 结构 内存布局", "class_ro_t class_rw_t bits"]
+  - group: Objective-C Runtime
+    name: 类对象与元类
+    queries: ["类对象 元类 meta-class 关系", "root metaclass superclass isa"]
+  - group: Objective-C Runtime
+    name: isa与nonpointer isa
+    queries: ["isa 指针 nonpointer isa 位域", "ISA_MASK shiftcls extra_rc"]
+  - group: Objective-C Runtime
+    name: objc_msgSend快速路径
+    queries: ["objc_msgSend arm64 快速路径 汇编", "objc_msgSend receiver selector isa cache"]
+  - group: Objective-C Runtime
+    name: 方法缓存cache_t
+    queries: ["cache_t 方法缓存 buckets mask occupied", "objc method cache lookup insert"]
+  - group: Objective-C Runtime
+    name: 方法慢速查找
+    queries: ["lookUpImpOrForward 慢速查找 父类遍历", "getMethodNoSuper_nolock method list"]
+  - group: Objective-C Runtime
+    name: 动态方法解析
+    queries: ["resolveInstanceMethod resolveClassMethod 动态方法解析", "_class_resolveMethod"]
+  - group: Objective-C Runtime
+    name: 消息转发流程
+    queries: ["forwardingTargetForSelector methodSignature forwardInvocation", "Objective-C 消息转发 三阶段"]
+  - group: Objective-C Runtime
+    name: Method Swizzling
+    queries: ["Method Swizzling method_exchangeImplementations 安全", "load initialize swizzle 继承"]
+  - group: Objective-C Runtime
+    name: Category加载与方法覆盖
+    queries: ["Category attachCategories 方法列表 加载顺序", "category method list override class method"]
+  - group: Objective-C Runtime
+    name: Associated Objects
+    queries: ["objc_setAssociatedObject 关联对象 AssociationsManager", "association policy retain copy assign"]
+  - group: Objective-C Runtime
+    name: load与initialize
+    queries: ["Objective-C +load +initialize 调用时机 顺序", "call_load_methods initialize class"]
+
+  - group: 内存管理
+    name: ARC所有权修饰符
+    queries: ["ARC strong weak unsafe_unretained autoreleasing", "Objective-C ownership qualifier"]
+  - group: 内存管理
+    name: 引用计数与SideTable
+    queries: ["retain release 引用计数 SideTable RefcountMap", "rootRetain rootRelease extra_rc"]
+  - group: 内存管理
+    name: weak引用实现
+    queries: ["weak SideTable weak_table_t 自动置 nil", "storeWeak clearDeallocating weak_unregister"]
+  - group: 内存管理
+    name: AutoreleasePoolPage结构
+    queries: ["AutoreleasePoolPage 结构 hotPage next 哨兵", "autorelease pool page push pop"]
+  - group: 内存管理
+    name: autorelease返回值优化
+    queries: ["objc_autoreleaseReturnValue retainAutoreleasedReturnValue 优化", "autorelease return value optimization"]
+  - group: 内存管理
+    name: Tagged Pointer
+    queries: ["Tagged Pointer 编码 判断 内存管理", "objc tagged pointer payload slot"]
+  - group: 内存管理
+    name: 循环引用识别与解除
+    queries: ["循环引用 retain cycle weak strong dance", "block delegate timer cycle"]
+  - group: 内存管理
+    name: Block内存布局
+    queries: ["Block ABI 结构 invoke descriptor capture", "_NSConcreteStackBlock GlobalBlock MallocBlock"]
+  - group: 内存管理
+    name: Block变量捕获
+    queries: ["Block 变量捕获 auto static global self", "block capture const copy"]
+  - group: 内存管理
+    name: __block转发指针
+    queries: ["__block byref forwarding 指针 堆拷贝", "Block_byref copy dispose"]
+  - group: 内存管理
+    name: 对象内存布局与对齐
+    queries: ["class_getInstanceSize malloc_size 内存对齐", "对象内存布局 字节对齐 size"]
+  - group: 内存管理
+    name: 虚拟内存与VM Region
+    queries: ["iOS 虚拟内存 vm_region_64 address space", "TASK_VM_INFO virtual_size resident_size"]
+  - group: 内存管理
+    name: Memory Footprint与OOM
+    queries: ["phys_footprint memory footprint jetsam OOM", "iOS 内存诊断 footprint dirty compressed"]
+
+  - group: RunLoop
+    name: RunLoop与线程
+    queries: ["RunLoop 与线程关系 main run loop CFRunLoop", "_CFRunLoopGet0 pthread"]
+  - group: RunLoop
+    name: RunLoop Mode
+    queries: ["RunLoop Mode common modes UITrackingRunLoopMode", "CFRunLoopMode source observer timer"]
+  - group: RunLoop
+    name: Source0与Source1
+    queries: ["RunLoop Source0 Source1 区别", "CFRunLoopSource signal mach port"]
+  - group: RunLoop
+    name: Timer与Observer
+    queries: ["RunLoop Timer Observer activities 顺序", "kCFRunLoopBeforeTimers BeforeSources"]
+  - group: RunLoop
+    name: RunLoop休眠与唤醒
+    queries: ["RunLoop 休眠 唤醒 mach_msg", "__CFRunLoopRun mach port wait"]
+  - group: RunLoop
+    name: RunLoop事件处理顺序
+    queries: ["RunLoop 一次循环 处理顺序 observer source timer", "__CFRunLoopRun 流程"]
+  - group: RunLoop
+    name: RunLoop常见应用
+    queries: ["RunLoop 常驻线程 滑动定时器 卡顿监控", "performSelector delay runloop"]
+
+  - group: GCD与并发
+    name: 同步异步与队列
+    queries: ["dispatch_sync dispatch_async 串行 并行 队列", "GCD queue thread execution"]
+  - group: GCD与并发
+    name: GCD死锁
+    queries: ["GCD dispatch_sync 死锁 主队列 串行队列", "dispatch deadlock target queue"]
+  - group: GCD与并发
+    name: Dispatch Barrier
+    queries: ["dispatch_barrier_async 并发队列 栅栏", "GCD barrier custom concurrent queue"]
+  - group: GCD与并发
+    name: Dispatch Group
+    queries: ["dispatch_group enter leave notify wait", "GCD 多任务汇总 group"]
+  - group: GCD与并发
+    name: Dispatch Semaphore
+    queries: ["dispatch_semaphore wait signal 并发控制", "semaphore 超时 死锁 GCD"]
+  - group: GCD与并发
+    name: Dispatch Source
+    queries: ["DispatchSource timer data file system events", "dispatch_source cancel handler resume"]
+  - group: GCD与并发
+    name: QoS与优先级反转
+    queries: ["GCD QoS priority inversion 优先级反转", "quality of service dispatch queue"]
+  - group: GCD与并发
+    name: NSOperation依赖与取消
+    queries: ["NSOperationQueue dependency cancellation KVO", "Operation isReady isExecuting isFinished"]
+  - group: GCD与并发
+    name: 线程安全与锁
+    queries: ["iOS 线程安全 os_unfair_lock mutex recursive lock", "atomic spinlock synchronized"]
+  - group: GCD与并发
+    name: Swift async await
+    queries: ["Swift async await continuation structured concurrency", "Task async let task group"]
+  - group: GCD与并发
+    name: Actor隔离
+    queries: ["Swift Actor isolation Sendable data race", "actor reentrancy nonisolated"]
+  - group: GCD与并发
+    name: MainActor与UI更新
+    queries: ["MainActor UI update Swift concurrency", "Task MainActor.run main thread"]
+
+  - group: KVC与KVO
+    name: KVC取值查找顺序
+    queries: ["valueForKey KVC getter 查找顺序 accessInstanceVariablesDirectly", "KVC key lookup getKey isKey ivar"]
+  - group: KVC与KVO
+    name: KVC设值与异常
+    queries: ["setValue forKey KVC setter ivar undefined nil scalar", "setValueForUndefinedKey setNilValueForKey"]
+  - group: KVC与KVO
+    name: KVC集合运算符
+    queries: ["KVC collection operators avg sum distinctUnionOfObjects", "key path collection operator"]
+  - group: KVC与KVO
+    name: KVO动态子类
+    queries: ["KVO isa-swizzling NSKVONotifying 动态子类", "KVO setter class override"]
+  - group: KVC与KVO
+    name: KVO通知流程
+    queries: ["willChangeValueForKey didChangeValueForKey KVO 通知", "automatic key-value observing manual"]
+  - group: KVC与KVO
+    name: 通知代理与Block对比
+    queries: ["delegate notification block 回调 对比 解耦", "NotificationCenter observer thread"]
+
+  - group: 编译链接与启动
+    name: 源码到可执行文件
+    queries: ["预处理 编译 汇编 链接 iOS", "clang compile assemble link pipeline"]
+  - group: 编译链接与启动
+    name: Mach-O Header与Load Commands
+    queries: ["Mach-O header load commands LC_SEGMENT_64", "mach_header_64 load_command"]
+  - group: 编译链接与启动
+    name: Mach-O Segment与Section
+    queries: ["Mach-O __TEXT __DATA segment section", "__objc_classlist __cstring"]
+  - group: 编译链接与启动
+    name: 符号绑定与重定位
+    queries: ["symbol binding relocation lazy non-lazy symbol pointer", "dyld bind rebase fixups"]
+  - group: 编译链接与启动
+    name: dyld镜像加载
+    queries: ["dyld 加载 Mach-O image 流程", "dyld4 closure image loader"]
+  - group: 编译链接与启动
+    name: Objective-C Runtime初始化
+    queries: ["dyld notify objc runtime map_images load_images", "_objc_init runtime initialization"]
+  - group: 编译链接与启动
+    name: App冷启动阶段
+    queries: ["iOS App 冷启动 pre-main main 首帧", "launch time dyld runtime UIApplication"]
+  - group: 编译链接与启动
+    name: 静态库动态库与Framework
+    queries: ["static library dynamic library framework iOS 区别", "linking .a .dylib framework"]
+  - group: 编译链接与启动
+    name: 代码签名与App Sandbox
+    queries: ["iOS code signing entitlements App Sandbox", "provisioning profile signature sandbox"]
+
+  - group: Swift
+    name: 值类型与引用类型
+    queries: ["Swift struct class value semantics reference semantics", "copy value type identity"]
+  - group: Swift
+    name: Copy-on-Write
+    queries: ["Swift Copy-on-Write Array isKnownUniquelyReferenced", "COW value semantics buffer"]
+  - group: Swift
+    name: Protocol Witness Table
+    queries: ["Swift protocol witness table dispatch", "existential container witness table"]
+  - group: Swift
+    name: 泛型与特化
+    queries: ["Swift generics specialization reabstraction thunk", "generic metadata witness"]
+  - group: Swift
+    name: Existential与opaque type
+    queries: ["Swift any some existential opaque type", "existential container protocol type erasure"]
+  - group: Swift
+    name: 方法派发方式
+    queries: ["Swift static dispatch virtual dispatch witness objc dispatch", "vtable dynamic dispatch final"]
+  - group: Swift
+    name: Optional实现
+    queries: ["Swift Optional enum memory representation", "Optional some none"]
+  - group: Swift
+    name: 闭包捕获与逃逸
+    queries: ["Swift closure capture escaping weak unowned", "@escaping capture list retain cycle"]
+
+  - group: UIKit与渲染
+    name: App与Scene生命周期
+    queries: ["UIApplicationDelegate SceneDelegate lifecycle states", "scene session foreground background"]
+  - group: UIKit与渲染
+    name: UIView与CALayer
+    queries: ["UIView CALayer relationship rendering", "backing layer drawRect contents"]
+  - group: UIKit与渲染
+    name: 事件传递与响应链
+    queries: ["iOS hitTest pointInside responder chain touch", "UIEvent UIResponder event delivery"]
+  - group: UIKit与渲染
+    name: 布局更新流程
+    queries: ["setNeedsLayout layoutIfNeeded layoutSubviews", "iOS layout pass update constraints"]
+  - group: UIKit与渲染
+    name: Auto Layout求解
+    queries: ["Auto Layout constraints priority intrinsicContentSize", "constraint solver hugging compression resistance"]
+  - group: UIKit与渲染
+    name: Core Animation渲染流水线
+    queries: ["Core Animation render server transaction commit", "iOS rendering pipeline CPU GPU"]
+  - group: UIKit与渲染
+    name: 离屏渲染
+    queries: ["iOS offscreen rendering masksToBounds shadow rasterization", "Core Animation offscreen pass"]
+  - group: UIKit与渲染
+    name: 图片解码与内存
+    queries: ["iOS image decoding downsampling memory", "UIImage CGImage decoded bitmap"]
+  - group: UIKit与渲染
+    name: 列表复用与性能
+    queries: ["UITableView UICollectionView reuse prefetch performance", "cell reuse layout scrolling"]
+
+  - group: 网络与安全
+    name: URLSession任务与Delegate
+    queries: ["URLSession dataTask downloadTask delegate configuration", "NSURLSession architecture task delegate queue"]
+  - group: 网络与安全
+    name: HTTP缓存策略
+    queries: ["URLCache Cache-Control ETag Last-Modified iOS", "NSURLRequest cache policy HTTP caching"]
+  - group: 网络与安全
+    name: HTTPS证书校验
+    queries: ["URLSession challenge server trust certificate validation", "SecTrust HTTPS authentication challenge"]
+  - group: 网络与安全
+    name: ATS与网络安全
+    queries: ["App Transport Security ATS exceptions TLS", "NSAppTransportSecurity requirements"]
+  - group: 网络与安全
+    name: TCP连接与HTTP版本
+    queries: ["TCP handshake keepalive HTTP2 HTTP3 iOS", "URLSession connection pooling multiplexing QUIC"]
+  - group: 网络与安全
+    name: WebSocket与SSE
+    queries: ["URLSessionWebSocketTask WebSocket SSE streaming", "server sent events iOS reconnect"]
+  - group: 网络与安全
+    name: 后台网络传输
+    queries: ["background URLSession upload download relaunch", "NSURLSession background configuration"]
+
+  - group: 数据与工程实践
+    name: UserDefaults与Keychain
+    queries: ["UserDefaults Keychain storage security difference", "SecItem kSecAttrAccessible"]
+  - group: 数据与工程实践
+    name: Core Data并发
+    queries: ["Core Data concurrency NSManagedObjectContext queue", "persistent container background context merge"]
+  - group: 数据与工程实践
+    name: SQLite事务与索引
+    queries: ["SQLite transaction index WAL iOS", "database ACID query plan"]
+  - group: 数据与工程实践
+    name: 单元测试与依赖注入
+    queries: ["iOS unit testing dependency injection mock XCTest", "testable architecture protocol dependency"]
+  - group: 数据与工程实践
+    name: 模块化与依赖管理
+    queries: ["iOS modularization dependency management Swift Package", "framework module architecture"]
+  - group: 数据与工程实践
+    name: MVC MVVM与职责划分
+    queries: ["iOS MVC MVVM architecture responsibility", "view model data binding coordinator"]
+
+  - group: 性能与诊断
+    name: Time Profiler定位CPU问题
+    queries: ["Instruments Time Profiler CPU call tree", "heavy stack hide system libraries"]
+  - group: 性能与诊断
+    name: Allocations与内存泄漏
+    queries: ["Instruments Allocations Leaks retain cycle", "memory graph debug leak"]
+  - group: 性能与诊断
+    name: 卡顿监控
+    queries: ["iOS 卡顿监控 RunLoop main thread stack", "hang detection watchdog"]
+  - group: 性能与诊断
+    name: 崩溃日志符号化
+    queries: ["iOS crash log symbolication dSYM UUID", "atos symbolicate crash address"]
+  - group: 性能与诊断
+    name: OOM与Jetsam诊断
+    queries: ["iOS OOM jetsam event memory termination", "JetsamEvent footprint diagnosis"]
+  - group: 性能与诊断
+    name: 启动性能优化
+    queries: ["iOS launch performance pre-main first frame optimization", "App launch Instruments dyld initializer"]

@@ -4,21 +4,29 @@ from . import db
 RRF_K = 60
 
 
-def search(con, cfg, query, embedder=None):
+def search(con, cfg, query, embedder=None, *, exclude_types=None):
+    """检索相关块。
+
+    ``exclude_types`` 用于证据边界：问答和卡片生成必须排除二次生成的
+    ``card``，从而保证最终证据始终回到原始资料。
+    """
     r = cfg["retrieval"]
+    excluded = set(exclude_types or ())
+    # 过滤发生在取回元数据之后；多召回一些候选，避免被排除类型占满候选池。
+    candidate_multiplier = 4 if excluded else 1
     scores = {}
-    for cid, rank in db.fts_search(con, query, r["fts_top"]):
+    for cid, rank in db.fts_search(con, query, r["fts_top"] * candidate_multiplier):
         scores[cid] = scores.get(cid, 0.0) + 1.0 / (RRF_K + rank)
     if embedder is not None:
         qvec = embedder.encode([query])[0]
-        for cid, rank in db.vec_search(con, qvec, r["vector_top"]):
+        for cid, rank in db.vec_search(con, qvec, r["vector_top"] * candidate_multiplier):
             scores[cid] = scores.get(cid, 0.0) + 1.0 / (RRF_K + rank)
     rows = db.get_chunks(con, list(scores))
     weights = r.get("type_weights", {})
     scored = []
     for cid, s in scores.items():
         row = rows.get(cid)
-        if not row:
+        if not row or row["type"] in excluded:
             continue
         row = dict(row)
         row["score"] = s * weights.get(row["type"], 1.0)

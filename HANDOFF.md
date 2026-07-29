@@ -25,7 +25,7 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
 | apple-docs-core | data/repos/apple-docs-vault 的 wwdc/+blogs/ | WWDC 逐字稿+博客（含中文翻译） | 向量+FTS，子目录映射类型 |
 | apple-docs-bulk | 同仓库 apple-docs/+oss/+meta/ | 大体量文档与源码镜像 | **只进 FTS**（全量向量耗时和体积不划算） |
 | apple-archive | data/repos/apple-developer-archive-vault | 英文 Apple 历史官方文档归档 | **只进 FTS 关键词索引**（量太大，向量不划算） |
-| knowledge-cards | knowledge_cards/ | 生成的专题卡片（回灌） | 向量+FTS，type=card 升权 |
+| knowledge-cards | knowledge_cards/ | 95 张细粒度专题卡片（回灌） | 向量+FTS；只用于复习/浏览，问答证据强制排除 |
 
 两个 repo 是浅 clone（--depth 1），更新用 `git -C data/repos/<name> pull`。
 
@@ -36,7 +36,7 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
                                         ├─ chunks 表（正文+出处元数据）
                                         ├─ chunks_fts（FTS5 关键词，jieba 分词）
                                         └─ vec_chunks（sqlite-vec 向量，bge-m3 1024维）
-问答:  问题 → bge-m3 向量召回 + FTS 召回 → RRF 融合(k=60) × 类型权重 → top8
+问答:  问题 → bge-m3 向量召回 + FTS 召回 → 排除 type=card → RRF 融合(k=60) × 类型权重 → top8
         → 拼 prompt（材料带 [n] 编号+出处）→ DeepSeek → 流式回答 + 引用列表
 ```
 
@@ -50,7 +50,8 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
 模块接口的唯一权威定义在 `SPEC.md`。目录结构：
 
 ```
-config.yaml          # 语料来源/检索参数/LLM后端/卡片主题（所有可调项都在这）
+config.yaml          # 语料来源/检索参数/LLM后端/卡片参数
+card_topics.yaml     # 95 个细粒度卡片主题及检索查询
 .env                 # DEEPSEEK_API_KEY（用户自填，gitignored）
 src/ioskb/           # config/chunker/ingest/db/embedder/retrieve/llm/qa/cards/export_vectorize/cli
 db/ios_kb.sqlite     # 索引库（gitignored，可随时重建）
@@ -78,19 +79,23 @@ knowledge_cards/     # 生成的专题卡片
 | apple-docs-core | 3,411 | 43,816 | 43,816 |
 | apple-docs-bulk | 98,164 | 505,374 | 0（按设计仅 FTS） |
 | apple-archive | 40,262 | 517,561 | 0（按设计仅 FTS） |
-| **合计** | **142,563** | **1,078,759** | **55,824** |
+| knowledge-cards | 95 | 1,191 | 1,191 |
+| **合计** | **142,658** | **1,079,950** | **57,015** |
 
-当前 `db/ios_kb.sqlite` 约 1.9GB。知识卡片按用户决定，等资料定稿后再生成。
+当前 `db/ios_kb.sqlite` 约 1.9GB。95 张卡片已生成并通过
+`ioskb audit-cards` 全量审计；生成报告记录实际 650,630 tokens。
 2026-07-29 同步到的仓库提交：apple-docs-vault `fcbf992d`，
 apple-developer-archive-vault `c0fc987f`。
 
-**第二阶段（资料以后再次更新或决定生成卡片时，零 Claude 依赖）**：
+**第二阶段（资料以后再次更新或维护卡片时，零 Claude 依赖）**：
 ```bash
 git -C data/repos/apple-developer-archive-vault pull
 git -C data/repos/apple-docs-vault pull
 uv run ioskb index          # 资料变化后增量更新
-uv run ioskb cards          # 可选：确认定稿后再用 DeepSeek 生成卡片
-uv run ioskb index          # 仅生成卡片后需要：卡片回灌
+uv run ioskb cards                              # 只生成缺少的卡片
+uv run ioskb cards --topic <主题> --force        # 覆盖重生成单卡
+uv run ioskb audit-cards                        # 审计原始来源与行号
+uv run ioskb index --source knowledge-cards     # 卡片回灌
 ```
 
 **第三阶段（网站问答接口，尚未开始）**：用户网站是 /Users/tommywu/tommywu-lab
@@ -111,6 +116,8 @@ uv run ioskb index          # 仅生成卡片后需要：卡片回灌
 - FTS5 contentless_delete=1 需要 SQLite ≥3.43（Python 3.13 自带的满足）。
 - docx 的引用行号对应 `data/converted/` 下转换后的 md，不是原 docx。
 - apple-archive 没有向量：纯语义问题可能搜不到它，属预期取舍（它主要靠关键词兜底）。
+- 原始资料是唯一事实证据：`ask`、网页、默认 `search` 和 Vectorize 导出都排除 type=card。
+- 卡片的来源索引由程序从检索块写入，不接受模型自行生成；卡片不能递归引用其他卡片。
 - `ioskb index` 首次全量跑 embedding 需要较久（objc4 + apple-docs-vault 块多），属一次性成本。
 - 16GB Mac 上 bge-m3 的 `batch_size` 保持 8；提高到 16 会在大批量更新时造成明显交换空间压力。
 - Markdown 切块必须保证 `max_chars` 硬上限；不要删除超长单行、多空行、窗口边界三个回归测试。

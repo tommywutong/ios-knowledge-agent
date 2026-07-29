@@ -30,5 +30,18 @@ def chat_stream(client, model, messages):
 
 
 def chat(client, model, messages):
+    content, _ = chat_with_usage(client, model, messages)
+    return content
+
+
+def chat_with_usage(client, model, messages):
     resp = client.chat.completions.create(model=model, messages=messages)
-    return resp.choices[0].message.content
+    usage = resp.usage
+    usage_data = {
+        "prompt_tokens": getattr(usage, "prompt_tokens", 0) or 0,
+        "completion_tokens": getattr(usage, "completion_tokens", 0) or 0,
+        "total_tokens": getattr(usage, "total_tokens", 0) or 0,
+        "prompt_cache_hit_tokens": getattr(usage, "prompt_cache_hit_tokens", 0) or 0,
+        "prompt_cache_miss_tokens": getattr(usage, "prompt_cache_miss_tokens", 0) or 0,
+    }
+    return resp.choices[0].message.content, usage_data

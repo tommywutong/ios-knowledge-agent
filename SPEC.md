@@ -60,15 +60,16 @@
   encode 时 `show_progress_bar=len(texts)>32`。模型名取配置。
 
 ## retrieve.py
-- `search(con, cfg, query: str, embedder=None) -> list[dict]`
+- `search(con, cfg, query: str, embedder=None, *, exclude_types=None) -> list[dict]`
   FTS 召回 fts_top 条；embedder 非 None 时向量召回 vector_top 条。RRF 融合：`score=Σ 1/(60+rank)`，
   再乘 `type_weights.get(type,1.0)`。按 score 排序，同一 file_path 最多 `max_per_file` 条，
-  取前 `final_top` 条。返回 chunk dict 附加 `score` 字段。
+  取前 `final_top` 条。exclude_types 非空时候选池放大 4 倍并过滤相应类型。返回 chunk dict 附加 `score` 字段。
 
 ## llm.py
 - `get_client(cfg, provider: str|None) -> tuple[OpenAI, str]` — provider 默认取 `cfg['llm']['provider']`，
   从 `cfg['llm'][provider]` 读 base_url/model/api_key_env；key 缺失时 `raise SystemExit`（中文提示怎么配 .env）。
 - `chat_stream(client, model, messages) -> Iterator[str]` — stream=True，yield 文本增量。
+- `chat_with_usage(client, model, messages) -> tuple[str, dict]` — 非流式返回正文及 prompt/completion/total/cache token。
 
 ## qa.py
 - `SYSTEM_PROMPT: str` — 中文。角色：iOS 知识问答助手。规则：只依据提供的材料回答；每个论点标注 [n]；
@@ -79,19 +80,24 @@
   类型中文名映射：note=个人笔记, doc=官方文档, wwdc=WWDC, blog=博客, source_code=源码, card=知识卡片。
 - `format_citation(i: int, c: dict) -> str` — 打印用单行引用。
 - `ask(cfg, con, embedder, question, provider=None, k=None) -> tuple[list[dict], Iterator[str]]`
-  检索（k 覆盖 final_top）→ 组 messages → 返回 (chunks, 流式文本迭代器)。
+  检索时强制 exclude_types={"card"}（k 覆盖 final_top）→ 组 messages → 返回 (chunks, 流式文本迭代器)。
 
 ## cards.py
-- `generate_cards(cfg, con, embedder, topics: list[str]|None, provider: str|None) -> None`
-  遍历 `cfg['cards']['topics']`（topics 给定时过滤按 name）。每主题：对每个 query 检索
+- `load_card_topics(cfg) -> list[dict]` — 优先读取 `cards.topics_file`，兼容内联 topics。
+- `generate_cards(cfg, con, embedder, topics=None, provider=None, overwrite=False) -> None`
+  遍历 `card_topics.yaml`（topics 给定时过滤按 name）。每主题：对每个 query 排除 card 后检索
   （final_top 临时放大到 chunks_per_topic//len(queries)+4），合并去重（按 chunk id），
   截断到 chunks_per_topic。prompt 要求生成结构：`# <主题>`、`## 一句话总结`、`## 核心原理`、
-  `## 关键细节与易错点`、`## 高频追问`、`## 来源索引`（列出用到的 [n] 对应出处）。
-  非流式调用，写 `knowledge_cards/<name>.md`，文件头加 YAML frontmatter
-  （topic/generated_at/provider）。print 进度。
+  `## 关键细节与易错点`、`## 高频追问`。程序校验章节、引用编号和推断标记，并自动追加
+  `## 原始资料索引`（文件/标题/行号）；失败自动重试一次。写
+  `knowledge_cards/<group>/<name>.md`，并更新 `_generation_report.json` 的实际 token。
+
+## card_audit.py
+- `audit_cards(cfg) -> tuple[int, list[str]]` — 检查所有卡片的固定章节、正文编号、来源索引、
+  原始路径存在性、禁止 card 自引用和行号边界。
 
 ## export_vectorize.py
-- `export(cfg, con, out_path: Path) -> int` — 导出 vectorized=1 的 chunk 为 NDJSON，每行
+- `export(cfg, con, out_path: Path) -> int` — 导出 vectorized=1 且 type != card 的原始 chunk 为 NDJSON，每行
   `{"id": str(id), "values": [...], "metadata": {source,type,path,title_path,lines,text}}`
   （text 截 2000 字符；values 从 vec_chunks 读回并转 list）。返回条数。
 
@@ -101,10 +107,11 @@
     实现方式为先 DELETE 该 source 数据）；对每文件 sha256 内容 hash → upsert_file；结束后
     delete_missing_files；非 --no-embed 时对 vectorize=true 的 source 跑 pending → Embedder → store_vectors，
     分批（每批 256 条）提交并打印进度；最后打印各 source 统计。
-  - `search QUERY [-k N] [--no-vector]`：打印每条：序号、score、引用行、text 前 200 字符。
+  - `search QUERY [-k N] [--no-vector] [--include-cards]`：默认排除 card；打印每条序号、score、引用行和预览。
   - `ask QUESTION [-k N] [--provider P] [--show-chunks]`：先打印"—— 来源 ——"引用列表，再流式打印回答。
     （--show-chunks 额外打印每块全文。）
-  - `cards [--topic NAME]... [--provider P]`
+  - `cards [--topic NAME]... [--provider P] [--force]`
+  - `audit-cards`
   - `export-vectorize [-o PATH]`（默认 data/export/vectorize.ndjson）
   - `stats`：db 大小、files/chunks 计数按 source、vectorized 计数。
   - embedder 仅在需要时构造；`index --no-embed`、`search --no-vector`、FTS-only 场景不得加载模型。

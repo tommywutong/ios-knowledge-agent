@@ -11,9 +11,9 @@ retrieval:
   fts_top: 30         # 关键词召回条数
   final_top: 8        # 最终喂给 LLM 的条数
   max_per_file: 2     # 同一文件最多入选几块，避免单文件霸屏
-  # 类型权重：乘在融合得分上。source_code 降权（只在强相关时浮上来），card 升权
+  # 类型权重：乘在融合得分上。source_code 降权；card 只在显式浏览卡片时参与。
   type_weights:
-    card: 1.3
+    card: 0.85          # 卡片仅辅助浏览；ask/web 会强制排除 card，最终证据只来自原始资料
     note: 1.15
     doc: 1.0
     wwdc: 1.0
@@ -24,11 +24,11 @@ llm:
   provider: deepseek            # ask 默认用的后端
   deepseek:
     base_url: https://api.deepseek.com
-    model: deepseek-chat
+    model: deepseek-v4-flash
     api_key_env: DEEPSEEK_API_KEY
   deepseek-reasoner:
     base_url: https://api.deepseek.com
-    model: deepseek-reasoner
+    model: deepseek-v4-pro
     api_key_env: DEEPSEEK_API_KEY
   anthropic:                    # Anthropic 的 OpenAI 兼容端点，生成知识卡片时可选
     base_url: https://api.anthropic.com/v1/
@@ -117,23 +117,5 @@ chunking:
 
 cards:
   output_dir: knowledge_cards
-  chunks_per_topic: 24
-  topics:
-    - name: RunLoop
-      queries: ["RunLoop 原理 mode source timer observer", "CFRunLoop 实现 休眠唤醒"]
-    - name: GCD 与并发
-      queries: ["GCD 队列 线程 死锁 同步异步", "dispatch queue 栅栏 信号量 NSOperation"]
-    - name: Runtime 与消息发送
-      queries: ["objc_msgSend 消息发送 方法查找 转发", "Method Swizzling isa 类对象 元类"]
-    - name: 内存管理
-      queries: ["ARC MRC 引用计数 retain release autorelease", "weak SideTable 散列表 Tagged Pointer"]
-    - name: Block
-      queries: ["Block 结构 变量捕获 __block 循环引用", "Block 三种类型 栈堆全局"]
-    - name: KVC 与 KVO
-      queries: ["KVC 搜索顺序 KVO isa-swizzling 手动触发"]
-    - name: 编译链接与启动
-      queries: ["dyld 启动流程 动态链接", "Mach-O 结构 符号 重定位"]
-    - name: 对象模型
-      queries: ["对象模型 isa 内存对齐 Tagged Pointer 类结构"]
-    - name: AutoreleasePool
-      queries: ["AutoreleasePool 自动释放池 结构 哨兵 释放时机"]
+  topics_file: card_topics.yaml
+  chunks_per_topic: 12

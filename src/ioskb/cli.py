@@ -124,7 +124,8 @@ def cmd_search(args):
         from .embedder import Embedder
 
         embedder = Embedder(cfg)
-    results = search(con, cfg, args.query, embedder)
+    excluded = set() if args.include_cards else {"card"}
+    results = search(con, cfg, args.query, embedder, exclude_types=excluded)
     if not results:
         print("没有检索到结果。")
         return
@@ -168,7 +169,28 @@ def cmd_cards(args):
     cfg = load_config()
     con = open_db(cfg)
     embedder = Embedder(cfg)
-    generate_cards(cfg, con, embedder, topics=args.topic, provider=args.provider)
+    generate_cards(
+        cfg,
+        con,
+        embedder,
+        topics=args.topic,
+        provider=args.provider,
+        overwrite=args.force,
+    )
+
+
+def cmd_audit_cards(args):
+    from .card_audit import audit_cards
+
+    cfg = load_config()
+    checked, errors = audit_cards(cfg)
+    print(f"已审计 {checked} 张知识卡片。")
+    if errors:
+        print(f"发现 {len(errors)} 个问题：")
+        for error in errors:
+            print(f"  - {error}")
+        raise SystemExit(1)
+    print("结构、引用编号、原始路径和行号边界全部通过。")
 
 
 def cmd_export_vectorize(args):
@@ -214,6 +236,11 @@ def main():
     ps.add_argument("query")
     ps.add_argument("-k", type=int, help="返回条数")
     ps.add_argument("--no-vector", action="store_true", help="只用关键词检索（不加载模型）")
+    ps.add_argument(
+        "--include-cards",
+        action="store_true",
+        help="同时检索模型生成的卡片（默认只显示可作为证据的原始资料）",
+    )
     ps.set_defaults(func=cmd_search)
 
     pa = sub.add_parser("ask", help="向知识库提问")
@@ -226,7 +253,11 @@ def main():
     pc = sub.add_parser("cards", help="生成专题知识卡片")
     pc.add_argument("--topic", action="append", help="只生成指定主题（可多次）")
     pc.add_argument("--provider", help="LLM 后端")
+    pc.add_argument("--force", action="store_true", help="覆盖并重新生成已存在的卡片")
     pc.set_defaults(func=cmd_cards)
+
+    pac = sub.add_parser("audit-cards", help="审计知识卡片的结构与原始资料引用")
+    pac.set_defaults(func=cmd_audit_cards)
 
     pe = sub.add_parser("export-vectorize", help="导出 NDJSON 供 Cloudflare Vectorize 上传")
     pe.add_argument("-o", "--output", help="输出路径（默认 data/export/vectorize.ndjson）")
