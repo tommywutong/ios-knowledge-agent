@@ -9,7 +9,7 @@ embedding:
 retrieval:
   vector_top: 30      # 向量召回条数
   fts_top: 30         # 关键词召回条数
-  final_top: 8        # 最终喂给 LLM 的条数
+  final_top: 12       # 最终喂给 LLM 的条数；兼顾覆盖面和上下文聚焦
   max_per_file: 2     # 同一文件最多入选几块，避免单文件霸屏
   # 类型权重：乘在融合得分上。source_code 降权；card 只在显式浏览卡片时参与。
   type_weights:
@@ -41,6 +41,8 @@ sources:
     path: /Users/tommywu/Obsidian/iOS
     type: note
     include: ["**/*.md"]
+    exclude:
+      - "10 学习计划/2026 暑假 iOS 底层学习计划.md"  # 学习安排，不作为技术问答证据
     vectorize: true
 
   - name: summer2026
@@ -48,6 +50,7 @@ sources:
     type: note
     include: ["**/*.md", "**/*.docx"]
     exclude:
+      - "2026 暑假 iOS 底层学习计划.md"  # 学习安排，不作为技术问答证据
       - "awesome-ios-interview-main/articles/ai/**"  # 纯 AI 专题不进入 iOS 知识库
       - "iOS底层源码探索/_弃用-objc4-818-debug/**"
       - "iOS底层源码探索/objc4-756.2-参照旧版/**"

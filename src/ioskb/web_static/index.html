@@ -132,6 +132,10 @@
   #empty .logo { font-size: 40px; }
   #empty .examples { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 18px; }
   #empty .examples button { border-radius: 99px; font-size: 13px; }
+  @media (prefers-reduced-motion: reduce) {
+    .cursor { animation: none; }
+    details.sources summary::before { transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -168,10 +172,30 @@
 const TYPE_NAME = {note:"个人笔记", doc:"官方文档", wwdc:"WWDC", blog:"博客", source_code:"源码", card:"知识卡片"};
 const $ = s => document.querySelector(s);
 const thread = $("#thread"), input = $("#input"), send = $("#send");
-let history = [], busy = false;
+let history = [], busy = false, followOutput = true, scrollFrame = 0;
 
 marked.setOptions({breaks: true});
 const md = t => DOMPurify.sanitize(marked.parse(t));
+
+function nearPageBottom() {
+  return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 160;
+}
+
+function scrollToLatest({force = false} = {}) {
+  if ((!force && !followOutput) || scrollFrame) return;
+  scrollFrame = requestAnimationFrame(() => {
+    scrollFrame = 0;
+    if (!force && !followOutput) return;
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: "auto",
+    });
+  });
+}
+
+window.addEventListener("scroll", () => {
+  followOutput = nearPageBottom();
+}, {passive: true});
 
 async function refreshStatus() {
   try {
@@ -216,7 +240,8 @@ async function ask(question) {
   const answer = document.createElement("div"); answer.className = "answer";
   answer.innerHTML = '<span class="cursor"></span>';
   thread.append(q, answer, sources);
-  q.scrollIntoView({behavior: "smooth"});
+  followOutput = true;
+  scrollToLatest({force: true});
 
   let text = "", srcs = [];
   try {
@@ -239,9 +264,11 @@ async function ask(question) {
           srcs = ev.sources;
           sources.innerHTML = `<summary>来源（${srcs.length}）</summary>`;
           srcs.forEach(s => sources.append(srcRow(s)));
+          scrollToLatest();
         } else if (ev.type === "delta") {
           text += ev.text;
           answer.innerHTML = md(text) + '<span class="cursor"></span>';
+          scrollToLatest();
         } else if (ev.type === "error") {
           throw new Error(ev.message);
         }
@@ -250,11 +277,13 @@ async function ask(question) {
     answer.innerHTML = md(text);
     answer.querySelectorAll("pre code").forEach(el => { try { hljs.highlightElement(el); } catch {} });
     history.push({role: "user", content: question}, {role: "assistant", content: text});
+    scrollToLatest();
   } catch (e) {
     answer.innerHTML = md(text);
     const err = document.createElement("div"); err.className = "err";
     err.textContent = "出错了：" + e.message;
     answer.append(err);
+    scrollToLatest();
   } finally {
     busy = false; send.disabled = false; input.focus();
   }
@@ -271,7 +300,7 @@ function autosize() {
   input.style.overflowY = input.scrollHeight > 160 ? "auto" : "hidden";
 }
 input.addEventListener("input", autosize);
-$("#newchat").onclick = () => { history = []; thread.innerHTML = ""; input.focus(); };
+$("#newchat").onclick = () => { history = []; followOutput = true; thread.innerHTML = ""; input.focus(); };
 document.querySelectorAll("#empty .examples button").forEach(b => b.onclick = () => ask(b.textContent));
 input.focus();
 </script>
