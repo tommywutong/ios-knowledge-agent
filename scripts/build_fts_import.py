@@ -33,13 +33,14 @@ def tokens(value):
 def statement(record):
     metadata = record["metadata"]
     values = [
-        record["id"], metadata.get("source"), metadata.get("type"),
+        record["id"], record["id"], metadata.get("source"), metadata.get("type"),
         metadata.get("path"), metadata.get("title_path"), metadata.get("lines"),
         metadata.get("text"), metadata.get("ios_version"), metadata.get("swift_version"),
         metadata.get("platform"), metadata.get("topic"), metadata.get("section"),
         metadata.get("language"), tokens("\n".join(str(metadata.get(key, "")) for key in ("path", "title_path", "text"))),
     ]
-    return "INSERT INTO ios_ask_fts VALUES (" + ", ".join(sql(value) for value in values) + ");\n"
+    columns = "rowid, vector_id, source, source_type, path, title_path, lines, text, ios_version, swift_version, platform, topic, section, language, tokens"
+    return f"INSERT OR REPLACE INTO ios_ask_fts({columns}) VALUES (" + ", ".join(sql(value) for value in values) + ");\n"
 
 
 def main():
@@ -56,13 +57,13 @@ def main():
         if len(batch) >= args.batch_size:
             suffix = f"{part:03d}.sql"
             prefix = SCHEMA if part == 0 else ""
-            (args.output / suffix).write_text(prefix + "BEGIN;\n" + "".join(batch) + "COMMIT;\n", encoding="utf-8")
+            (args.output / suffix).write_text(prefix + "".join(batch), encoding="utf-8")
             part += 1
             batch = []
     if batch:
         suffix = f"{part:03d}.sql"
         prefix = SCHEMA if part == 0 else ""
-        (args.output / suffix).write_text(prefix + "BEGIN;\n" + "".join(batch) + "COMMIT;\n", encoding="utf-8")
+        (args.output / suffix).write_text(prefix + "".join(batch), encoding="utf-8")
         part += 1
     print(f"Wrote {part} SQL batches for {count} Vectorize records to {args.output}")
 
