@@ -1,6 +1,8 @@
 import json
 import struct
 
+from .metadata import export_metadata
+
 
 def export(cfg, con, out_path):
     dim = cfg["embedding"]["dim"]
@@ -24,6 +26,7 @@ def export(cfg, con, out_path):
                     "title_path": title_path,
                     "lines": f"{start}-{end}",
                     "text": text[:2000],
+                    **export_metadata(path, title_path, text),
                 },
             }
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
