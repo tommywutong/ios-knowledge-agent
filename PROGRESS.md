@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-05（问候语、引用兼容、新会话清空、详细回答、跨仓库同步和生产部署已核对）
+> 本文件随工作实时更新。最后更新：2026-08-05（Retrieval v2 代码完成，生产 D1 已导入并切换，代码发布待本轮推送）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -27,6 +27,9 @@
 | 19 | 固定问候语与引用兼容 | ✅ 完成 | `hi`/你好由后端直接返回指定助手介绍，不调模型不占每日额度；组合及中文引用规范为 `[n]`；安全校验保留；网站 `0e8f05d` 已上线 |
 | 20 | 新会话清空聊天记录 | ✅ 完成 | 前端移除 `sessionStorage` 聊天记录保存/恢复；聊天窗口每次重新打开为空，同一次打开仍支持多轮追问；网站 `27cff9f` 已上线 |
 | 21 | 恢复复杂问题详细回答 | ✅ 完成 | 放宽知识/通用回答提示词，复杂问题展开机制、条件、示例和常见误区；`max_tokens` 从 1600 调为 2400；网站 `36eb071` 已上线 |
+| 22 | Retrieval v2 分层 FTS 导出 | ✅ 完成 | 保留 44,962 条 Tier 0 原始证据；从两个 FTS-only 来源按主题/平台/符号/路径评分，最终 SQL 为 86,307 行，含邻接索引和 230 MiB 硬上限 |
+| 23 | Retrieval v2 网站链路 | ✅ 完成 | 最多 4 路查询规划、Vectorize/D1 双路召回、RRF、Workers AI reranker、邻块扩展、段落引用校验、`no_evidence`/503 退款保护和 v1 回滚开关 |
+| 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；旧表 44,962 行保留至少 7 天；数据库 513 MB |
 
 ## 已定决策（讨论阶段结论）
 
@@ -45,6 +48,8 @@
 - [x] 当前“26暑期内容”按约定范围完成增量灌库
 - [x] 95 张细粒度卡片已生成、审计并回灌；本轮实际 443,950 输入 + 206,680 输出 = 650,630 tokens
 - [x] 网站版问答已接入博客；资料更新按 `HANDOFF.md` 的稳定 ID 同步流程执行
+- [x] Retrieval v2 本地导出、SQL 分批导入、生产 D1 原子切换与全文/邻接 smoke test 完成
+- [ ] Retrieval v2 网站代码推送 `main`、Pages 自动部署及公开 API 线上验证
 
 ## 遇到的问题记录
 
@@ -69,8 +74,9 @@
 - RunLoop Source0/Source1 真实问答通过，8 条来源全部为原始资料；
 - 本地网页 `/api/status`：141,734 文件、1,069,089 块、46,154 已向量化，模型离线预热完成；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
-- 本仓库最后核对的功能代码基线为 `2f6e9b0`（交接文档提交位于其后），网站仓库 `main`/`origin/main` = `36eb071`；
-- 生产 Vectorize 与 D1 均为 44,962 条，`GET /api/ios-ask` 返回 `configured: true`；
-- 网站提交 `36eb071` 的 Code quality、Build and Check 和 Cloudflare Pages 部署全部成功；
-- 最新 Pages 部署为 `https://bd136cf3.tommywu-lab.pages.dev`，生产 API 返回 `configured: true`；
-- 登录态 9 题运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。
+- 本仓库 Retrieval v2 代码和导出脚本位于 `feat/retrieval-v2`；网站同名功能分支待推送；
+- 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧表 44,962 条；
+- 生产 D1 `wrangler d1 info` 显示数据库大小 513 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
+- 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
+- 代码发布完成后补写最终网站 commit、GitHub Actions、Pages deployment URL 和公开 API 验证结果；
+- 登录态运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。

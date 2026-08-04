@@ -10,14 +10,15 @@
 |---|---|---|
 | bge-m3 | Workers AI `@cf/baai/bge-m3` | 查询向量 |
 | sqlite-vec | Vectorize `ios-kb` | 语义候选召回 |
-| SQLite FTS5 | D1 `ios_ask_fts` | 关键词候选召回 |
+| SQLite FTS5 | D1 `ios_ask_fts_v2` | 分层关键词候选召回 |
 | DeepSeek | `DEEPSEEK_API_KEY` | 知识库或通用流式答案 |
 | SQLite 用户/反馈表 | 同一 D1 绑定 `DB` | 登录、额度、限流、反馈、审计 |
 
-函数将两路候选合并后按来源权威等级、关键词覆盖率与语义阈值排序。有可靠证据时走
-`knowledge` 模式并校验引用；`hi`、你好等问候跳过检索，没有可靠 iOS 证据的问题走
-`general` 模式，由 DeepSeek 直接回答且不返回知识库来源。检索服务异常时也降级到通用模式。
-非管理员账户每日有 2 次提问额度。
+函数最多规划 4 条查询；每条从 Vectorize top48 和 D1 FTS v2 top60 召回，经 RRF、正文去重、
+Workers AI `@cf/baai/bge-reranker-base`（1.5 秒超时，失败自动回退）后保留 anchor，并通过
+`ios_ask_fts_v2_neighbors` 扩展相邻块。有可靠证据时走 `knowledge` 模式并校验段落级引用；
+iOS 问题无可靠证据时返回 `422 no_evidence` 并退款，不调用 DeepSeek；检索故障返回 `503` 并退款。
+`hi`、你好等问候跳过检索并返回固定文本；其他问题走 `general` 模式。非管理员账户每日有 2 次提问额度。
 
 ## 首次配置
 
@@ -39,25 +40,27 @@
 ```bash
 uv run ioskb index
 uv run ioskb export-vectorize
-.venv/bin/python scripts/build_fts_import.py \
-  data/export/vectorize.ndjson data/export/ios_fts --batch-size 1000
+uv run ioskb export-fts
 ```
 
 `vectorize.ndjson` 的 ID 必须是稳定的 `v1-*`。上传时按最多 1,000 条分批使用
 `wrangler vectorize upsert ios-kb --file <batch>`。完整 upsert 后，先备份远端 ID，只删除
 本次导出中不再存在的 stale ID；绝不能删除整个 `ios-kb` 索引。
 
-随后在 `tommywu-lab` 仓库按文件名顺序导入 D1：
+随后在 `tommywu-lab` 仓库按文件名顺序导入 D1 的 `ios_fts_v2` 批次。先执行 `000.sql`，
+再执行 `001.sql`–`115.sql`；中途网络失败时先查询 `MAX(rowid)`，确认批次是否已经落库后再重试：
 
 ```bash
-for sql_file in /Users/tommywu/Desktop/iOS知识agentt/data/export/ios_fts/*.sql; do
+for sql_file in /Users/tommywu/Desktop/iOS知识agentt/data/export/ios_fts_v2/{000..115}.sql; do
   pnpm exec wrangler d1 execute tommywu-lab-db --remote --file "$sql_file" || exit 1
 done
 pnpm exec wrangler d1 execute tommywu-lab-db --remote --command \
-  "SELECT COUNT(*) AS count FROM ios_ask_fts;"
+  "SELECT COUNT(*) AS rows FROM ios_ask_fts_v2_next; SELECT COUNT(*) AS neighbors FROM ios_ask_fts_v2_neighbors_next;"
 ```
 
-最后的 `999-finalize.sql` 原子切换 FTS 数据。查询行数应与 NDJSON 行数一致。
+两张 `*_next` 表都应为 `86,307` 行后，再执行 `999-finalize.sql` 原子切换。切换后核对：
+`ios_ask_fts_v2=86,307`、`ios_ask_fts_v2_neighbors=86,307`、旧 `ios_ask_fts=44,962`，
+并测试 `MATCH 'uikit'` 和按 `file_key + chunk_ordinal` 的邻接查询。旧表至少保留 7 天。
 
 ## 发布与验证
 
@@ -83,5 +86,6 @@ IOS_EVAL_COOKIE='tw_auth_session=...' pnpm exec node scripts/run-ios-agent-evalu
 
 ## 回滚
 
-网站代码问题通过回滚 `tommywu-lab` 的提交并重新部署处理。数据问题使用上一次导出的稳定 ID
-重新 upsert，再导入对应的 D1 FTS 批次；不要以删除当前生产索引作为回滚手段。
+网站代码问题通过回滚 `tommywu-lab` 的提交并重新部署处理。数据问题优先将 Pages 变量
+`IOS_RETRIEVAL_VERSION` 设为 `v1`，使用保留的 `ios_ask_fts`（44,962 行）和现有 Vectorize；
+不要删除当前生产索引或旧表。确认 v2 稳定运行至少 7 天后，才可另行安排旧表清理。

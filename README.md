@@ -6,8 +6,10 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-截至 2026-08-04，本地库包含 141,734 个文件、1,069,089 个文本块；46,154 个块有
-bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。
+截至 2026-08-05，本地库包含 141,734 个文件、1,069,089 个文本块；46,154 个块有
+bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。生产 D1
+已切换到 FTS v2：`ios_ask_fts_v2` 和邻接索引各 86,307 行，旧的 `ios_ask_fts`
+保留 44,962 行至少 7 天，便于回滚。
 
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
 Swift/Objective-C/C/C++/汇编源码；`articles/ai/` 下 17 篇纯 AI 文章、旧版重复 objc4 目录和构建/媒体产物按约定排除。
@@ -67,14 +69,18 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 ## 网站接口
 
-网站上的 iOS 问题优先使用 Vectorize + D1 混合检索并返回引用；`hi`、你好等问候和没有可靠
-iOS 证据的问题走 `general` 模式。生产默认模型为 `deepseek-v4-flash`。
+网站上的 iOS 问题使用 Retrieval v2：最多 4 条查询规划、Vectorize + D1 FTS 双路召回、
+RRF 去重、Workers AI reranker 和邻块扩展，并返回段落级引用；没有可靠 iOS 证据时返回
+`no_evidence`，不会让模型用常识补齐。`hi`、你好等问候仍由后端直接返回固定助手介绍；
+其他问题走 `general` 模式。生产默认模型为 `deepseek-v4-flash`，API 回答上限为 2400 tokens。
 
 ```bash
 uv run ioskb export-vectorize            # 导出 NDJSON，供上传 Cloudflare Vectorize
+uv run ioskb export-fts                 # 生成生产 D1 FTS v2 分批 SQL
 ```
 导出使用稳定的 `v1-*` ID。网站同步时用 Vectorize `upsert`，并删除远端已不存在的旧 ID；
-D1 的 `data/export/ios_fts/*.sql` 批次按顺序执行，最后执行 `999-finalize.sql`。
+D1 的 `data/export/ios_fts_v2/*.sql` 批次按顺序执行，确认 `*_next` 两张表各 86,307 行后，
+最后执行 `999-finalize.sql` 原子切换。旧 `ios_ask_fts` 至少保留 7 天，再按回滚窗口清理。
 部署和线上验证记录见 `HANDOFF.md`。
 
 ## 配置

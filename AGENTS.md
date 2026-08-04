@@ -23,9 +23,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 
 最后核对时间：2026-08-05（Asia/Shanghai）。
 
-- 本知识库仓库最后核对的功能代码基线为 `2f6e9b0`；本交接文档提交位于其后，
-  实际 `main`/`origin/main` 以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，`main` = `origin/main` = `36eb071`。
+- 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，Retrieval v2 功能分支待推送并由 `main` 触发部署。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
@@ -45,10 +44,16 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
   没有可靠 iOS 证据的非 iOS 问题走 DeepSeek 通用回答，不附知识库来源；检索异常也降级到通用模式。
 - 引用校验已兼容 `[1, 2]`、`【1、2】`、`【资料 1】`、`[来源：2]` 等 DeepSeek 输出，
   并统一为前端可点击的 `[1][2]`；完全无引用或编号越界仍会被拒绝。
-- Cloudflare Vectorize `ios-kb` 与 D1 `ios_ask_fts` 均为 `44,962` 条。
+- Cloudflare Vectorize `ios-kb` 保持 `44,962` 条稳定 `v1-*` 向量；生产 D1 已切换到
+  `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小为 `513 MB`。
+  旧 `ios_ask_fts` 保留 `44,962` 行至少 7 天；紧急回滚时设置 `IOS_RETRIEVAL_VERSION=v1`。
+- Retrieval v2 的链路为查询规划（最多 4 路）→ Vectorize/D1 FTS 召回 → RRF 去重 →
+  Workers AI `@cf/baai/bge-reranker-base`（失败自动回退）→ 邻块扩展 → 段落级引用校验。
+  iOS 问题无可靠证据时返回 `422 no_evidence`，不调用 DeepSeek；检索故障返回 `503` 并退款。
 - 本地索引：`141,734` 文件、`1,069,089` 块、`46,154` 已向量化。
-- 本地测试：16 项全部通过。网站的 Prettier、Astro Check、iOS 评测、完整构建、
-  链接检查、体积检查与提交 `36eb071` 的三条 GitHub Actions/Cloudflare 部署均通过。
+- 本地测试：Retrieval v2 导出与知识库测试全部通过；网站的 Retrieval 逻辑测试、TypeScript、
+  Astro Check、runtime 评测集覆盖检查、完整构建、链接检查和体积检查已通过。生产 D1
+  已完成真实导入和全文/邻接 smoke test；登录态问答仍未在没有管理员 Cookie 的情况下冒充完成。
 
 尚未自动执行登录后的线上 `hi` 端到端对话，因为终端没有管理员
 `tw_auth_session`/`IOS_EVAL_COOKIE`。不要把公开健康检查误写成已完成登录态运行时评估。

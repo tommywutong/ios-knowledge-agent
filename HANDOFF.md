@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-05（本地索引、问候语、引用兼容、新会话清空、详细回答、跨仓库同步和生产部署已核对）
+> 最后更新：2026-08-05（Retrieval v2 已导出、导入生产 D1 并完成全文/邻接 smoke test；代码部署待本轮推送）
 
 ## 1. 这个项目是什么
 
@@ -36,15 +36,16 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
                                         ├─ chunks 表（正文+出处元数据）
                                         ├─ chunks_fts（FTS5 关键词，jieba 分词）
                                         └─ vec_chunks（sqlite-vec 向量，bge-m3 1024维）
-问答:  问题 → bge-m3 向量召回 + FTS 召回 → 排除 type=card → RRF 融合(k=60) × 类型权重 → top8
-        → 拼 prompt（材料带 [n] 编号+出处）→ DeepSeek → 流式回答 + 引用列表
+问答:  问题 → 规划（最多 4 条查询）→ Vectorize top48 + D1 FTS v2 双路 top60
+        → RRF 去重 → reranker 前30 → top8 anchor → 邻块扩展 → DeepSeek → 流式回答 + 引用列表
 ```
 
 - **SQLite 单文件**（db/ios_kb.sqlite）：不引入任何数据库服务，好备份好迁移。
 - **bge-m3**：中英混合检索质量好，本地跑（MPS），与 Cloudflare Workers AI 同款（第三阶段云端查询向量兼容）。
   首次安装单独下载模型；日常 `Embedder` 强制从本地缓存加载，不访问 Hugging Face。
 - **jieba**：FTS5 默认分词不支持中文，入库和查询都先 jieba 分词再进 FTS。英文文本走 fast path 不过 jieba。
-- **双路召回**：语义问题靠向量，`objc_msgSend` 这类精确符号靠 FTS，RRF 融合。
+- **双路召回**：语义问题靠向量，`objc_msgSend` 这类精确符号靠 FTS，RRF 融合；v2
+  额外保留 `file_key + chunk_ordinal` 邻接索引，避免扩展上下文时扫描整张 FTS。
 - **增量索引**：files 表存内容 sha256，没变就跳过；删除的文件会被清理。
 
 模块接口的唯一权威定义在 `SPEC.md`。目录结构：
@@ -98,28 +99,35 @@ uv run ioskb audit-cards                        # 审计原始来源与行号
 uv run ioskb index --source knowledge-cards     # 卡片回灌
 ```
 
-**第三阶段（网站问答接口，已完成）**：用户网站是 `/Users/tommywu/tommywu-lab`
+**第三阶段（网站问答接口，Retrieval v2 已完成代码与数据，待本轮代码发布）**：用户网站是 `/Users/tommywu/tommywu-lab`
 （Astro 7 静态博客，Cloudflare Pages 部署）。当前生产版已完成：
 1. `uv run ioskb export-vectorize` 导出 44,962 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
 2. Cloudflare Vectorize `ios-kb` 已用 `upsert` 同步，远端旧数字 ID 已清理；
-3. D1 的 `ios_ask_fts` 已按 SQL 批次原子切换，最终行数与导出一致；
-4. Pages Function 使用 Workers AI `@cf/baai/bge-m3` → Vectorize + D1 FTS → DeepSeek，
-   按 authority、关键词覆盖率和语义阈值排序，并返回带行号、来源类型和置信度的引用；
+3. D1 Retrieval v2 已按 `data/export/ios_fts_v2/000.sql`–`115.sql` 导入并用
+   `999-finalize.sql` 原子切换：`ios_ask_fts_v2` 和 `ios_ask_fts_v2_neighbors` 各 `86,307` 行，
+   数据库大小 `513 MB`；旧 `ios_ask_fts` 保留 `44,962` 行至少 7 天；
+4. Pages Function 使用 Workers AI `@cf/baai/bge-m3` → Vectorize + D1 FTS v2，最多 4 路
+   查询规划、RRF 合并、`@cf/baai/bge-reranker-base` 重排和邻块扩展，返回段落级引用；
 5. API 有用户/管理员限流、知识回答引用校验、反馈审计和断流状态；前端不保存未完成回答到后续上下文；
-6. iOS 问题有可靠证据时走 `knowledge` 模式；`hi`、你好等纯问候跳过检索，由后端直接返回用户指定的固定助手介绍，不调用模型且不占每日额度；没有可靠证据的非 iOS 问题及检索故障走 `general` 模式，由 DeepSeek 直接回答且不伪造来源；
+6. iOS 问题有可靠证据时走 `knowledge` 模式；没有可靠证据时返回 `422 no_evidence` 并退款，
+   不调用 DeepSeek；检索故障返回 `503` 并退款。`hi`、你好等纯问候跳过检索，由后端直接
+   返回用户指定的固定助手介绍，不调用模型且不占每日额度；非 iOS 问题走 `general` 模式；
    前端不再用 `sessionStorage` 保存或恢复聊天记录，聊天窗口每次从关闭状态重新打开时为空；同一次打开期间仍保留多轮追问上下文，“新建对话”仍可手动清空当前会话；
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；知识模式和通用模式均按问题复杂度组织回答，复杂问题展开机制、条件、示例和常见误区，API `max_tokens` 为 `2400`；
-8. 生产 Vectorize `ios-kb` 与 D1 `ios_ask_fts` 已核对为 44,962 条；
+8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧表 44,962 行；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；无引用或越界编号仍会校验失败；
-10. 网站功能提交 `e06c445`、文档提交 `c080b0b`、问候语与引用修复 `2188b85`、确定性问候回复 `0e8f05d`、新会话清空 `27cff9f`、详细回答 `36eb071` 已包含在网站 `main` 中；本地与 GitHub `main` 一致；
-11. 提交 `36eb071` 的 Code quality、Build and Check 和 Cloudflare Pages 部署均成功；生产 API 返回 `configured: true`。
+10. 网站功能代码与文档当前位于 `feat/retrieval-v2`，待 clean-commit 后推送 `main` 触发 Pages 部署；
+11. 本轮发布完成后应把最终网站 commit、GitHub Actions 结果和 Pages deployment URL 回填到本节，
+    不能把本地构建成功写成线上已验证。
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：最后核对的功能代码基线为 `2f6e9b0`，本交接文档提交位于其后，实际 `main`/`origin/main` 以 `git status` 和 `git rev-list` 为准；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：`main`/`origin/main` = `36eb071`；
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2 功能与导出脚本在 `feat/retrieval-v2`，
+  实际 `main`/`origin/main` 以 `git status` 和 `git rev-list` 为准；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 代码在 `feat/retrieval-v2`，推送 `main` 后由 Actions 部署；
 - 生产站点：`https://www.tommywutong.cn`；最后核对的 Pages 部署为 `https://bd136cf3.tommywu-lab.pages.dev`；
-- 公开健康检查显示 `configured: true`。登录后的完整 9 题运行时评估尚未重跑，因为终端没有管理员 `IOS_EVAL_COOKIE`。
+- 公开健康检查显示 `configured: true`。登录后的完整运行时评估尚未重跑，因为终端没有管理员 `IOS_EVAL_COOKIE`；
+  本轮只完成了公开配置检查、生产 D1 查询和本地/runtime 评测集检查。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
@@ -129,7 +137,9 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 终端无登录 Cookie，且当前无可连接浏览器会话，因此本次没有冒充“登录态 `hi` 已端到端实测”。
 
 资料更新时：重新导出并 `wrangler vectorize upsert ios-kb --file=...`，先列出远端 ID 做备份，
-再删除本次导出不存在的 stale ID；D1 依次执行 `data/export/ios_fts/*.sql`，最后执行 `999-finalize.sql`。
+再删除本次导出不存在的 stale ID；运行 `uv run ioskb export-fts` 生成 `data/export/ios_fts_v2/`，
+依次导入 `000.sql`–`115.sql`，核对 `*_next` 各 86,307 行后执行 `999-finalize.sql`。旧表至少保留 7 天；
+紧急回滚只需把 Pages 环境变量 `IOS_RETRIEVAL_VERSION` 设为 `v1` 并重新部署。
 
 ## 5. 已知注意点 / 坑
 
