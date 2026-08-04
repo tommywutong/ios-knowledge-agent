@@ -203,6 +203,26 @@ def cmd_export_vectorize(args):
     print(f"已导出 {n} 条向量到 {out}")
 
 
+def cmd_export_fts(args):
+    from .export_fts import export
+
+    cfg = load_config()
+    con = open_db(cfg)
+    out = resolve_path(args.output) if args.output else resolve_path("data/export/fts-v2.ndjson")
+    manifest = export(
+        cfg,
+        con,
+        out,
+        tier1_limit=args.tier1_limit,
+        per_file_limit=args.per_file_limit,
+    )
+    counts = manifest["counts"]
+    print(
+        f"已导出 {counts['exported']} 条 FTS v2 记录到 {out} "
+        f"（Tier 0: {counts['tier0']}，Tier 1: {counts['tier1']}）"
+    )
+
+
 def cmd_stats(args):
     cfg = load_config()
     con = open_db(cfg)
@@ -262,6 +282,12 @@ def main():
     pe = sub.add_parser("export-vectorize", help="导出 NDJSON 供 Cloudflare Vectorize 上传")
     pe.add_argument("-o", "--output", help="输出路径（默认 data/export/vectorize.ndjson）")
     pe.set_defaults(func=cmd_export_vectorize)
+
+    pf = sub.add_parser("export-fts", help="导出网站 FTS v2 精选文本索引")
+    pf.add_argument("-o", "--output", help="输出路径（默认 data/export/fts-v2.ndjson）")
+    pf.add_argument("--tier1-limit", type=int, default=80_000, help="FTS-only 精选上限")
+    pf.add_argument("--per-file-limit", type=int, default=24, help="单文件 Tier 1 上限")
+    pf.set_defaults(func=cmd_export_fts)
 
     pst = sub.add_parser("stats", help="查看索引统计")
     pst.set_defaults(func=cmd_stats)
