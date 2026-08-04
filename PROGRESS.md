@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-04（问候语、引用兼容、跨仓库同步和生产部署已核对）
+> 本文件随工作实时更新。最后更新：2026-08-04（问候语、引用兼容、新会话清空、跨仓库同步和生产部署已核对）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -25,6 +25,7 @@
 | 17 | 网站版 Agent 审查与生产同步 | ✅ 完成 | API 检索阈值、权威等级、引用校验、断流状态和额度保护已修复；Vectorize 44,962 条、D1 FTS 44,962 条按稳定 ID 同步 |
 | 18 | 通用对话与 V4 Flash | ✅ 完成 | 问候及无可靠 iOS 证据的问题走 `general` 模式；检索故障自动降级；默认模型 `deepseek-v4-flash`；已部署生产 |
 | 19 | 固定问候语与引用兼容 | ✅ 完成 | `hi`/你好由后端直接返回指定助手介绍，不调模型不占每日额度；组合及中文引用规范为 `[n]`；安全校验保留；网站 `0e8f05d` 已上线 |
+| 20 | 新会话清空聊天记录 | ✅ 完成 | 前端移除 `sessionStorage` 聊天记录保存/恢复；聊天窗口每次重新打开为空，同一次打开仍支持多轮追问；网站 `27cff9f` 已上线 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -67,8 +68,8 @@
 - RunLoop Source0/Source1 真实问答通过，8 条来源全部为原始资料；
 - 本地网页 `/api/status`：141,734 文件、1,069,089 块、46,154 已向量化，模型离线预热完成；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
-- 本仓库最后核对的功能代码基线为 `2f6e9b0`（交接文档提交位于其后），网站仓库 `main`/`origin/main` = `0e8f05d`；
+- 本仓库最后核对的功能代码基线为 `2f6e9b0`（交接文档提交位于其后），网站仓库 `main`/`origin/main` = `27cff9f`；
 - 生产 Vectorize 与 D1 均为 44,962 条，`GET /api/ios-ask` 返回 `configured: true`；
-- 网站提交 `0e8f05d` 的 Code quality、Build and Check 和 Cloudflare Pages 部署全部成功；
-- 最新 Pages 部署为 `https://5263a04a.tommywu-lab.pages.dev`，生产 API 返回 `configured: true`；
+- 网站提交 `27cff9f` 的 Code quality、Build and Check 和 Cloudflare Pages 部署全部成功；
+- 最新 Pages 部署为 `https://45ff439b.tommywu-lab.pages.dev`，生产 API 返回 `configured: true`；
 - 登录态 9 题运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。

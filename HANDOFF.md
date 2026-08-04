@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-04（本地索引、问候语、引用兼容、跨仓库同步和生产部署已核对）
+> 最后更新：2026-08-04（本地索引、问候语、引用兼容、新会话清空、跨仓库同步和生产部署已核对）
 
 ## 1. 这个项目是什么
 
@@ -107,22 +107,24 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
    按 authority、关键词覆盖率和语义阈值排序，并返回带行号、来源类型和置信度的引用；
 5. API 有用户/管理员限流、知识回答引用校验、反馈审计和断流状态；前端不保存未完成回答到后续上下文；
 6. iOS 问题有可靠证据时走 `knowledge` 模式；`hi`、你好等纯问候跳过检索，由后端直接返回用户指定的固定助手介绍，不调用模型且不占每日额度；没有可靠证据的非 iOS 问题及检索故障走 `general` 模式，由 DeepSeek 直接回答且不伪造来源；
+   前端不再用 `sessionStorage` 保存或恢复聊天记录，聊天窗口每次从关闭状态重新打开时为空；同一次打开期间仍保留多轮追问上下文，“新建对话”仍可手动清空当前会话；
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；
 8. 生产 Vectorize `ios-kb` 与 D1 `ios_ask_fts` 已核对为 44,962 条；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；无引用或越界编号仍会校验失败；
-10. 网站功能提交 `e06c445`、文档提交 `c080b0b`、问候语与引用修复 `2188b85`、确定性问候回复 `0e8f05d` 已包含在网站 `main` 中；本地与 GitHub `main` 一致；
-11. 提交 `0e8f05d` 的 Code quality、Build and Check 和 Cloudflare Pages 部署均成功；生产 API 返回 `configured: true`。
+10. 网站功能提交 `e06c445`、文档提交 `c080b0b`、问候语与引用修复 `2188b85`、确定性问候回复 `0e8f05d`、新会话清空 `27cff9f` 已包含在网站 `main` 中；本地与 GitHub `main` 一致；
+11. 提交 `27cff9f` 的 Code quality、Build and Check 和 Cloudflare Pages 部署均成功；生产 API 返回 `configured: true`。
 
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：最后核对的功能代码基线为 `2f6e9b0`，本交接文档提交位于其后，实际 `main`/`origin/main` 以 `git status` 和 `git rev-list` 为准；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：`main`/`origin/main` = `0e8f05d`；
-- 生产站点：`https://www.tommywutong.cn`；最后核对的 Pages 部署为 `https://5263a04a.tommywu-lab.pages.dev`；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：`main`/`origin/main` = `27cff9f`；
+- 生产站点：`https://www.tommywutong.cn`；最后核对的 Pages 部署为 `https://45ff439b.tommywu-lab.pages.dev`；
 - 公开健康检查显示 `configured: true`。登录后的完整 9 题运行时评估尚未重跑，因为终端没有管理员 `IOS_EVAL_COOKIE`。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
 该回复不调用 DeepSeek、不消耗每日 2 次额度，但仍记录请求指标并受每小时防刷限制。
+聊天记录不写入 `sessionStorage`；每次重新打开聊天窗口都会从空白会话开始，不能因上一次会话输入过 `hi` 而自动显示固定问候；同一次打开期间的多轮上下文只存在当前页面内。
 终端无登录 Cookie，且当前无可连接浏览器会话，因此本次没有冒充“登录态 `hi` 已端到端实测”。
 
 资料更新时：重新导出并 `wrangler vectorize upsert ios-kb --file=...`，先列出远端 ID 做备份，
