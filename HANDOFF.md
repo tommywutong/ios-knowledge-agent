@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-05（Retrieval v2 已导出、导入生产 D1 并完成全文/邻接 smoke test；代码部署待本轮推送）
+> 最后更新：2026-08-05（Retrieval v2 已导出、导入生产 D1、推送 GitHub 并完成 Pages 部署和公开 API 验证）
 
 ## 1. 这个项目是什么
 
@@ -99,7 +99,7 @@ uv run ioskb audit-cards                        # 审计原始来源与行号
 uv run ioskb index --source knowledge-cards     # 卡片回灌
 ```
 
-**第三阶段（网站问答接口，Retrieval v2 已完成代码与数据，待本轮代码发布）**：用户网站是 `/Users/tommywu/tommywu-lab`
+**第三阶段（网站问答接口，Retrieval v2 已完成代码、数据和生产发布）**：用户网站是 `/Users/tommywu/tommywu-lab`
 （Astro 7 静态博客，Cloudflare Pages 部署）。当前生产版已完成：
 1. `uv run ioskb export-vectorize` 导出 44,962 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
 2. Cloudflare Vectorize `ios-kb` 已用 `upsert` 同步，远端旧数字 ID 已清理；
@@ -116,18 +116,21 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；知识模式和通用模式均按问题复杂度组织回答，复杂问题展开机制、条件、示例和常见误区，API `max_tokens` 为 `2400`；
 8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧表 44,962 行；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；无引用或越界编号仍会校验失败；
-10. 网站功能代码与文档当前位于 `feat/retrieval-v2`，待 clean-commit 后推送 `main` 触发 Pages 部署；
-11. 本轮发布完成后应把最终网站 commit、GitHub Actions 结果和 Pages deployment URL 回填到本节，
-    不能把本地构建成功写成线上已验证。
+10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc` 和 `33c6d9a`，并快进推送到
+    网站 `main`/`origin/main`；
+11. GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+    最新 Pages deployment 为 `https://4cb7ff77.tommywu-lab.pages.dev`，自定义域名
+    `https://www.tommywutong.cn/api/ios-ask` 与预览地址均返回 HTTP 200、`configured: true`。
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2 功能与导出脚本在 `feat/retrieval-v2`，
-  实际 `main`/`origin/main` 以 `git status` 和 `git rev-list` 为准；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 代码在 `feat/retrieval-v2`，推送 `main` 后由 Actions 部署；
-- 生产站点：`https://www.tommywutong.cn`；最后核对的 Pages 部署为 `https://bd136cf3.tommywu-lab.pages.dev`；
-- 公开健康检查显示 `configured: true`。登录后的完整运行时评估尚未重跑，因为终端没有管理员 `IOS_EVAL_COOKIE`；
-  本轮只完成了公开配置检查、生产 D1 查询和本地/runtime 评测集检查。
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2 功能与导出脚本已提交为 `ccbeabf`、
+  `024f4aa` 并快进推送到 `main`/`origin/main`；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 已提交为 `59975bc`、`33c6d9a` 并快进推送到
+  `main`/`origin/main`；
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages 部署为 `https://4cb7ff77.tommywu-lab.pages.dev`；
+- 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`。登录后的完整运行时评估尚未重跑，
+  因为终端没有管理员 `IOS_EVAL_COOKIE`；本轮只完成了公开检查、生产 D1 查询和本地/runtime 评测集检查。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。

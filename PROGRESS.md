@@ -30,6 +30,7 @@
 | 22 | Retrieval v2 分层 FTS 导出 | ✅ 完成 | 保留 44,962 条 Tier 0 原始证据；从两个 FTS-only 来源按主题/平台/符号/路径评分，最终 SQL 为 86,307 行，含邻接索引和 230 MiB 硬上限 |
 | 23 | Retrieval v2 网站链路 | ✅ 完成 | 最多 4 路查询规划、Vectorize/D1 双路召回、RRF、Workers AI reranker、邻块扩展、段落引用校验、`no_evidence`/503 退款保护和 v1 回滚开关 |
 | 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；旧表 44,962 行保留至少 7 天；数据库 513 MB |
+| 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；Pages 部署 `4cb7ff77`，自定义域名公开 API `configured: true` |
 
 ## 已定决策（讨论阶段结论）
 
@@ -49,7 +50,7 @@
 - [x] 95 张细粒度卡片已生成、审计并回灌；本轮实际 443,950 输入 + 206,680 输出 = 650,630 tokens
 - [x] 网站版问答已接入博客；资料更新按 `HANDOFF.md` 的稳定 ID 同步流程执行
 - [x] Retrieval v2 本地导出、SQL 分批导入、生产 D1 原子切换与全文/邻接 smoke test 完成
-- [ ] Retrieval v2 网站代码推送 `main`、Pages 自动部署及公开 API 线上验证
+- [x] Retrieval v2 网站代码推送 `main`、Pages 自动部署及公开 API 线上验证
 
 ## 遇到的问题记录
 
@@ -78,5 +79,6 @@
 - 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧表 44,962 条；
 - 生产 D1 `wrangler d1 info` 显示数据库大小 513 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 代码发布完成后补写最终网站 commit、GitHub Actions、Pages deployment URL 和公开 API 验证结果；
+- 网站最终 commit 为 `33c6d9a`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+- 最新 Pages deployment 为 `https://4cb7ff77.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
 - 登录态运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。

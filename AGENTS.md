@@ -24,16 +24,17 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 最后核对时间：2026-08-05（Asia/Shanghai）。
 
 - 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，Retrieval v2 功能分支待推送并由 `main` 触发部署。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `33c6d9a`，Retrieval v2 已部署。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
 - 确定性问候回复：`0e8f05d Return fixed greetings without model calls`。
 - 新会话清空聊天记录：`27cff9f Reset chat when opening a new session`。
 - 恢复复杂问题详细回答：`36eb071 fix: restore detailed chat answers`。
-- 线上地址：`https://www.tommywutong.cn`；最新核对的 Pages 部署为
-  `https://bd136cf3.tommywu-lab.pages.dev`。
-- 线上 API `GET /api/ios-ask` 返回 `configured: true`。
+- 线上地址：`https://www.tommywutong.cn`；本轮最新 Pages 部署为
+  `https://4cb7ff77.tommywu-lab.pages.dev`。
+- 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
+  未登录状态按设计不执行问答。
 - 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。
 - 当前知识/通用回答均按问题复杂度组织：简单问题直接回答，复杂问题展开机制、条件、示例和常见误区；DeepSeek `max_tokens` 为 `2400`，不再强制一律简洁。
 - iOS 问题优先走 Workers AI embedding + Vectorize/D1 混合检索，答案要求引用。
@@ -53,7 +54,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 本地索引：`141,734` 文件、`1,069,089` 块、`46,154` 已向量化。
 - 本地测试：Retrieval v2 导出与知识库测试全部通过；网站的 Retrieval 逻辑测试、TypeScript、
   Astro Check、runtime 评测集覆盖检查、完整构建、链接检查和体积检查已通过。生产 D1
-  已完成真实导入和全文/邻接 smoke test；登录态问答仍未在没有管理员 Cookie 的情况下冒充完成。
+  已完成真实导入和全文/邻接 smoke test；GitHub Actions 的 Code quality、Build and Check、
+  Deploy to Cloudflare Pages 全部成功。登录态问答仍未在没有管理员 Cookie 的情况下冒充完成。
 
 尚未自动执行登录后的线上 `hi` 端到端对话，因为终端没有管理员
 `tw_auth_session`/`IOS_EVAL_COOKIE`。不要把公开健康检查误写成已完成登录态运行时评估。
