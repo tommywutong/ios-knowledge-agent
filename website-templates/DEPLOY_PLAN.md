@@ -11,11 +11,13 @@
 | bge-m3 | Workers AI `@cf/baai/bge-m3` | 查询向量 |
 | sqlite-vec | Vectorize `ios-kb` | 语义候选召回 |
 | SQLite FTS5 | D1 `ios_ask_fts` | 关键词候选召回 |
-| DeepSeek | `DEEPSEEK_API_KEY` | 带引用的流式答案 |
+| DeepSeek | `DEEPSEEK_API_KEY` | 知识库或通用流式答案 |
 | SQLite 用户/反馈表 | 同一 D1 绑定 `DB` | 登录、额度、限流、反馈、审计 |
 
-函数将两路候选合并后按来源权威等级、关键词覆盖率与语义阈值排序。无足够证据时返回
-`422 no_evidence`，不使用模型常识补全。非管理员账户每日有 2 次提问额度。
+函数将两路候选合并后按来源权威等级、关键词覆盖率与语义阈值排序。有可靠证据时走
+`knowledge` 模式并校验引用；`hi`、你好等问候跳过检索，没有可靠 iOS 证据的问题走
+`general` 模式，由 DeepSeek 直接回答且不返回知识库来源。检索服务异常时也降级到通用模式。
+非管理员账户每日有 2 次提问额度。
 
 ## 首次配置
 
@@ -25,7 +27,8 @@
 - Workers AI：`AI`
 - Vectorize：`VECTORIZE`，索引 `ios-kb`
 - Secret：`DEEPSEEK_API_KEY`
-- 可选变量：`DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL`、`ADMIN_EMAILS`
+- 可选变量：`DEEPSEEK_BASE_URL`、`DEEPSEEK_MODEL`、`ADMIN_EMAILS`；未配置模型覆盖时默认
+  `deepseek-v4-flash`
 
 不要配置旧的 `RATE_KV`，限流和反馈已迁移到 D1。
 
@@ -69,13 +72,14 @@ git push origin main
 ```
 
 部署完成后，无登录请求 `GET https://www.tommywutong.cn/api/ios-ask` 应返回未登录状态，不应暴露
-配置或知识库内容。完整的 8 题运行时评估需要管理员会话 cookie：
+密钥或知识库内容。完整的 9 题运行时评估需要管理员会话 cookie：
 
 ```bash
 IOS_EVAL_COOKIE='tw_auth_session=...' pnpm exec node scripts/run-ios-agent-evaluation.mjs
 ```
 
-评估应覆盖有证据回答、Android/无关问题拒答、引用编号和来源类型。生产 cookie 不写入仓库或日志。
+评估应覆盖有证据回答、`hi`、Android/菜谱/天气/写诗等通用回答、引用编号和来源类型。
+生产 cookie 不写入仓库或日志。
 
 ## 回滚
 
