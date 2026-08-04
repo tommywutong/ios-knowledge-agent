@@ -2,10 +2,30 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from ioskb.ingest import file_chunks
+from ioskb.ingest import file_chunks, iter_source_files
 
 
 class SourceIngestTests(unittest.TestCase):
+    def test_content_filter_keeps_ios_blog_and_rejects_life_blog(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            blogs = root / "blogs" / "zh"
+            blogs.mkdir(parents=True)
+            ios_post = blogs / "runtime.md"
+            life_post = blogs / "dinner.md"
+            ios_post.write_text("Objective-C runtime message dispatch", encoding="utf-8")
+            life_post.write_text("今天做番茄炒蛋。", encoding="utf-8")
+            source = {
+                "path": str(root),
+                "include": ["blogs/**/*.md"],
+                "content_filter": {
+                    "globs": ["blogs/**/*.md"],
+                    "include_any": ["objective-c", "swift"],
+                },
+            }
+
+            self.assertEqual(iter_source_files(source), [ios_post])
+
     def test_swift_and_assembly_are_ingested_as_source_code(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

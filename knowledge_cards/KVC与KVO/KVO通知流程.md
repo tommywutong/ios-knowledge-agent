@@ -58,8 +58,8 @@ KVC 是 KVO 的基础。通过 KVC 的 `setValue:forKey:` 修改属性值时，�
 [3] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/KVC、KVO的本质.md › 1. KVO的本质 › 1.5 KVO 面试题 › 1.5.2 如何手动触发KVO？（第242-244行）
 [4] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/KVC、KVO的本质.md › 1. KVO的本质 › 1.4 验证didChangeValueForKey:内部会调用observeValueForKeyPath:ofObject:change:context:方法（第187-228行）
 [5] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/KVO底层原理.md › KVO底层原理 › 手动触发 KVO › 手动触发（第168-183行）
-[6] /Users/tommywu/Obsidian/iOS/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.2 重写 setter：插入 will / did 通知（第1192-1259行）
+[6] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.2 重写 setter：插入 will / did 通知（第1192-1259行）
 [7] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/KVC和KVO学习笔记.md › 3. 键值观察 › 3.4 手动发送通知（第664-696行）
-[8] /Users/tommywu/Obsidian/iOS/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.2 重写 setter：插入 will / did 通知（第1261-1281行）
+[8] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.2 重写 setter：插入 will / did 通知（第1261-1281行）
 [9] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/KVC和KVO学习笔记.md › 3. 键值观察 › 3.4 手动发送通知（第606-662行）
 [10] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/objccn/kvc-和-kvo.md › 进阶 KVO › 值（第320-331行）

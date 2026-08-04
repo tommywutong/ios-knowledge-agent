@@ -74,8 +74,8 @@ Non-pointer isa 优化的是堆对象的 isa 指针，对象仍在堆上分配�
 [3] /Users/tommywu/Desktop/26暑期内容/iOS底层源码探索/msgSend-demo/实战素材-第1篇-isa.md › 第 1 篇《对象的本质 / isa》实战素材 › 一、源码出处（objc4-951.1） › isa 位域演进时间线（均为各版本真源码实测）（第35-46行）
 [4] /Users/tommywu/Obsidian/iOS/20 专题笔记/内存管理/iOS 内存：MRC 的所有权规则.md › MRC 的所有权规则：retain、release 与 autorelease › 四、引用计数存在哪：一个能测出来的问题 › nonpointer isa（第175-181行）
 [5] /Users/tommywu/Desktop/26暑期内容/iOS底层源码探索/msgSend-demo/实战素材-第1篇-isa.md › 第 1 篇《对象的本质 / isa》实战素材 › 三、结论（写博客可直接用）（第60-65行）
-[6] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › isa_t › isa 位域的历史演进（2015 → 至今）（第362-394行）
-[7] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › isa_t › ISA_BITFIELD：isa 的位布局（第254-287行）
+[6] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › isa_t › isa 位域的历史演进（2015 → 至今）（第362-394行）
+[7] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › isa_t › ISA_BITFIELD：isa 的位布局（第254-287行）
 [8] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/iOS中的内存管理.md › iOS中的内存管理 › 二、引用计数机制 › 引用计数的存储 › isa指针中的内联存储（第140-160行）
 [9] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/README.md › awesome-ios-interview › iOS 相关面试题 › 底层原理（第1234-1269行）
 [10] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/yulingtianxia/objective-c-引用计数原理.md › 引用计数如何存储 › isa 指针（NONPOINTER_ISA）（第131-156行）

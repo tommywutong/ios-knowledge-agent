@@ -75,9 +75,9 @@ C 语言无法保持未知类型参数栈帧一致性。`objc_msgSend` 作为汇
 ## 原始资料索引
 
 [1] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Part 2 - 消息发送与转发.before-renumber.md › 【iOS】Runtime - Part 2 && 消息发送：缓存、查找与转发 › 目录 › 第一部分 · 快速路径（缓存命中）（第7-21行）
-[2] /Users/tommywu/Obsidian/iOS/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 2. 快速路径汇编逐段（`objc-msg-arm64.s`）（第828-875行）
+[2] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 2. 快速路径汇编逐段（`objc-msg-arm64.s`）（第828-875行）
 [3] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Part 2 - 消息发送与转发.before-renumber.md › 【iOS】Runtime - Part 2 && 消息发送：缓存、查找与转发 › 第一部分 · 快速路径（缓存命中） › 4. 快速路径汇编逐段（`objc-msg-arm64.s`）（第815-862行）
-[4] /Users/tommywu/Obsidian/iOS/Runtime/Part 2 - 消息发送与转发.md › 第二部分 · 慢速查找（lookUpImpOrForward）（第1614-1666行）
+[4] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 2 - 消息发送与转发.md › 第二部分 · 慢速查找（lookUpImpOrForward）（第1614-1666行）
 [5] /Users/tommywu/Desktop/26暑期内容/iOS底层源码探索/msgSend-demo/实战素材.md › 消息发送实战素材（真机 macOS 26 / 系统 libobjc 实测） › 二、objc_msgSend 入口反汇编（对照 objc-msg-arm64.s 的 _objc_msgSend）（第27-33行）
 [8] /Users/tommywu/Obsidian/iOS/20 专题笔记/持久化与序列化/iOS YYModel 源码：为什么比 JSONModel 快.md › YYModel 源码：为什么比 JSONModel 快 › 三、`objc_msgSend` 强转函数指针，到底为什么必须精确 › 它为什么合法（第233-252行）
 [9] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/zhongwuzw.github.io/ios知识小集之为什么objc-msgsend-是用汇编实现的.md › iOS知识小集之为什么objc_msgSend()是用汇编实现的 › 参考（第50-56行）

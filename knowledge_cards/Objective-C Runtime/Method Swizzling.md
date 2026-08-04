@@ -62,13 +62,13 @@ Method Swizzling 是在运行时交换两个方法实现的技术，本质是改
 
 ## 原始资料索引
 
-[1] /Users/tommywu/Obsidian/iOS/Runtime/Method - Swizzling.md › Method Swizzling › 方式二：安全交换（class_addMethod + method_exchangeImplementations）（第76-76行）
+[1] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/素材/Method - Swizzling.md › Method Swizzling › 方式二：安全交换（class_addMethod + method_exchangeImplementations）（第76-76行）
 [2] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-advanced/崩溃/崩溃-治理.md › 崩溃-治理 › 防崩溃保护机制 › Method Swizzling防护（第1086-1114行）
-[3] /Users/tommywu/Obsidian/iOS/Runtime/Method - Swizzling.md › Method Swizzling › 三方框架对比（第327-362行）
+[3] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/素材/Method - Swizzling.md › Method Swizzling › 三方框架对比（第327-362行）
 [4] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/Runtime从入门到进阶二.md › 3. 具体应用 › 3.1 交换方法 Method Swizzling（第408-447行）
 [5] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/load与initialize的区别.md › +load与+initialize的区别 › Method Swizzling应该在+load还是+initialize中执行 › 不推荐：在+initialize中执行（第327-357行）
 [6] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/runtime.md › Runtime › Method Swizzling（第467-469行）
-[7] /Users/tommywu/Obsidian/iOS/Runtime/Part 4 - Runtime 应用篇.md › 3. Method Swizzling › 最小实现：`method_exchangeImplementations`（第187-230行）
+[7] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 4 - Runtime 应用篇.md › 3. Method Swizzling › 最小实现：`method_exchangeImplementations`（第187-230行）
 [8] /Users/tommywu/Desktop/26暑期内容/2026 暑假 iOS 底层学习计划.md › 2026 暑假 iOS 底层学习计划 › 第三周：Runtime 行为与 Cocoa 对象通信 › 本周精读路线 › Day 2｜有了方法查找，才学习 Swizzling（对应 W4-04）（第278-290行）
 [9] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/Runtime从入门到进阶二.md › 3. 具体应用 › 3.1 交换方法 Method Swizzling › 3.1.4 为何要先添加 method（第520-547行）
 [10] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-advanced/OOP-POP-AOP.md › OOP、POP与AOP › AOP - 面向切面编程 › iOS中AOP的实现方式 › 1. Method Swizzling（第527-529行）

@@ -22,8 +22,25 @@ def iter_source_files(source_cfg):
                 continue
             if any(fnmatch(rel.as_posix(), pat) for pat in excludes):
                 continue
+            if not _content_allowed(source_cfg, rel, p):
+                continue
             found.add(p)
     return sorted(found)
+
+
+def _content_allowed(source_cfg, relative_path, path):
+    """Apply an optional conservative domain filter to selected source files."""
+    rule = source_cfg.get("content_filter") or {}
+    globs = rule.get("globs") or []
+    relative = relative_path.as_posix()
+    if not rule or (globs and not any(fnmatch(relative, glob) for glob in globs)):
+        return True
+
+    searchable = f"{relative}\n{_read(path)[:12000]}".lower()
+    if any(str(term).lower() in searchable for term in rule.get("exclude_any") or []):
+        return False
+    required = [str(term).lower() for term in rule.get("include_any") or []]
+    return not required or any(term in searchable for term in required)
 
 
 def file_chunks(source_cfg, path, chunking_cfg):

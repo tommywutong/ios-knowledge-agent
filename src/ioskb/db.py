@@ -149,7 +149,7 @@ def store_vectors(con, ids, vectors):
         raise
 
 
-def _query_tokens(query):
+def query_tokens(query):
     toks, seen = [], set()
     for t in tokenize_for_fts(query).split():
         t = t.replace('"', "").strip()
@@ -167,26 +167,29 @@ def _query_tokens(query):
 
 
 def fts_search(con, query, top):
-    toks = _query_tokens(query)
+    toks = query_tokens(query)
     if not toks:
         return []
     match = " OR ".join(f'"{t}"' for t in toks)
     try:
         rows = con.execute(
-            "SELECT rowid FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?",
+            "SELECT rowid, rank FROM chunks_fts WHERE chunks_fts MATCH ? ORDER BY rank LIMIT ?",
             (match, top),
         ).fetchall()
     except sqlite3.OperationalError:
         return []
-    return [(r[0], i) for i, r in enumerate(rows)]
+    return [(rowid, index, float(rank)) for index, (rowid, rank) in enumerate(rows)]
 
 
 def vec_search(con, qvec, top):
     rows = con.execute(
-        "SELECT rowid FROM vec_chunks WHERE embedding MATCH ? AND k = ? ORDER BY distance",
+        "SELECT rowid, distance FROM vec_chunks WHERE embedding MATCH ? AND k = ? ORDER BY distance",
         (_to_blob(qvec), top),
     ).fetchall()
-    return [(r[0], i) for i, r in enumerate(rows)]
+    return [
+        (rowid, index, float(distance))
+        for index, (rowid, distance) in enumerate(rows)
+    ]
 
 
 def get_chunks(con, ids):

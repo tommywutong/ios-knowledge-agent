@@ -22,9 +22,36 @@ _LANGUAGES = {
     ".cpp": "C++",
     ".s": "Assembly",
 }
+_CONFIDENCE = re.compile(
+    r"(?:\*\*)?confidence(?:\*\*)?\s*(?:::|:|：)\s*([01](?:\.\d+)?)", re.I
+)
+_ORIGIN = re.compile(r"(?:\*\*)?来源(?:\*\*)?\s*[:：]\s*([^\s　]+)")
 
 
-def export_metadata(path, title_path, text):
+def evidence_metadata(source, ctype, path, text):
+    """Describe evidence provenance without treating a note as verified fact."""
+    if ctype in {"doc", "wwdc"}:
+        return {"authority": "official"}
+    if ctype == "source_code":
+        return {"authority": "primary_source"}
+    if ctype == "blog":
+        return {"authority": "community"}
+
+    metadata = {"authority": "unverified_note"}
+    confidence_match = _CONFIDENCE.search(text)
+    origin_match = _ORIGIN.search(text)
+    if confidence_match:
+        metadata["confidence"] = float(confidence_match.group(1))
+    if origin_match:
+        metadata["source_origin"] = origin_match.group(1)
+    origin = metadata.get("source_origin", "")
+    confidence = metadata.get("confidence", 0)
+    if ctype == "note" and origin in {"官方", "源码", "Apple"} and confidence >= 0.8:
+        metadata["authority"] = "reviewed_note"
+    return metadata
+
+
+def export_metadata(path, title_path, text, *, source="", ctype=""):
     """Return only labels directly visible in a source path or excerpt.
 
     Version fields are intentionally absent unless an explicit ``iOS 17`` or
@@ -33,7 +60,7 @@ def export_metadata(path, title_path, text):
     """
     value = f"{title_path}\n{text[:4000]}"
     lower = value.lower()
-    metadata = {}
+    metadata = evidence_metadata(source, ctype, path, text)
     ios_versions, swift_versions = [], []
     platforms = set()
     for family, version in _VERSION.findall(value):

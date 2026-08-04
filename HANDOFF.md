@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 读完本文件 + `SPEC.md` + `PROGRESS.md`，你就拥有继续这个项目所需的全部上下文。
-> 最后更新：2026-07-29（26 暑期资料增量同步完成）
+> 最后更新：2026-08-02（本地索引、网站接口和生产同步完成）
 
 ## 1. 这个项目是什么
 
@@ -18,7 +18,7 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
 
 | source 名 | 位置 | 内容 | 处理方式 |
 |---|---|---|---|
-| obsidian-ios | /Users/tommywu/Obsidian/iOS | 当前 60 篇高质量中文专题笔记（核心资产，会继续变化） | 全量向量+FTS |
+| obsidian-ios | /Users/tommywu/Obsidian/iOS | 当前 56 篇高质量中文专题笔记（核心资产，会继续变化） | 全量向量+FTS |
 | summer2026 | /Users/tommywu/Desktop/26暑期内容 | iOS 基础/进阶文章、Tips、实验说明及 docx 笔记 | docx 经 pandoc 转 md，全量向量+FTS；排除 `articles/ai/` 下 17 篇纯 AI 文章 |
 | summer-labs | /Users/tommywu/Desktop/26暑期内容 | MemoryMapLab 等活跃实验源码 | Objective-C/C/C++/Swift/汇编按源码切块并向量+FTS |
 | objc4-source | 同上 /iOS底层源码探索 | objc4 源码（含 Swift/汇编；排除两个旧版重复目录） | 按函数切块，type=source_code 降权 |
@@ -68,19 +68,19 @@ knowledge_cards/     # 生成的专题卡片
 
 ## 4. 三个阶段
 
-**第一阶段及 2026-07-29 增量同步（已完成）**：全部代码 + 用当前资料实测全链路。当前快照：
+**第一阶段及 2026-08-02 增量同步（已完成）**：全部代码 + 用当前资料实测全链路。当前快照：
 
 | source | 文件 | 块 | 向量 |
 |---|---:|---:|---:|
-| obsidian-ios | 60 | 1,966 | 1,966 |
-| summer2026 | 282 | 8,351 | 8,351 |
+| obsidian-ios | 56 | 1,730 | 1,730 |
+| summer2026 | 281 | 8,249 | 8,249 |
 | summer-labs | 4 | 11 | 11 |
 | objc4-source | 380 | 1,680 | 1,680 |
-| apple-docs-core | 3,411 | 43,816 | 43,816 |
+| apple-docs-core | 2,491 | 33,284 | 33,284 |
 | apple-docs-bulk | 98,164 | 505,374 | 0（按设计仅 FTS） |
 | apple-archive | 40,262 | 517,561 | 0（按设计仅 FTS） |
 | knowledge-cards | 95 | 1,191 | 1,191 |
-| **合计** | **142,658** | **1,079,950** | **57,015** |
+| **合计** | **141,733** | **1,069,080** | **46,145** |
 
 当前 `db/ios_kb.sqlite` 约 1.9GB。95 张卡片已生成并通过
 `ioskb audit-cards` 全量审计；生成报告记录实际 650,630 tokens。
@@ -98,16 +98,18 @@ uv run ioskb audit-cards                        # 审计原始来源与行号
 uv run ioskb index --source knowledge-cards     # 卡片回灌
 ```
 
-**第三阶段（网站问答接口，尚未开始）**：用户网站是 /Users/tommywu/tommywu-lab
-（Astro 6 静态博客，Cloudflare Pages 部署，已有 functions/ 目录）。方案已定：
-1. `uv run ioskb export-vectorize` 导出 NDJSON（本地 bge-m3 向量 + 出处 metadata）；
-2. `wrangler vectorize create ios-kb --dimensions=1024 --metric=cosine` 建索引，
-   `wrangler vectorize insert ios-kb --file=...` 上传（wrangler 在网站仓库里有，`pnpm wrangler`）；
-3. 网站 functions/ 加一个接口：Workers AI `@cf/baai/bge-m3` 对问题做 embedding →
-   Vectorize 查询 → 拼 prompt 调 DeepSeek（key 放 Cloudflare secret）→ 返回回答+引用；
-   引用链接到博客文章或 GitHub 文件地址；
-4. 必须加限流（Cloudflare KV 记每 IP 每日次数，建议 10 次/天）防止 DeepSeek key 被刷爆；
-5. Astro 加一个问答页面调这个接口。
+**第三阶段（网站问答接口，已完成）**：用户网站是 `/Users/tommywu/tommywu-lab`
+（Astro 7 静态博客，Cloudflare Pages 部署）。当前生产版已完成：
+1. `uv run ioskb export-vectorize` 导出 44,954 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
+2. Cloudflare Vectorize `ios-kb` 已用 `upsert` 同步，远端旧数字 ID 已清理；
+3. D1 的 `ios_ask_fts` 已按 SQL 批次原子切换，最终行数与导出一致；
+4. Pages Function 使用 Workers AI `@cf/baai/bge-m3` → Vectorize + D1 FTS → DeepSeek，
+   按 authority、关键词覆盖率和语义阈值排序，并返回带行号、来源类型和置信度的引用；
+5. API 有用户/管理员限流、无证据拒答、回答引用校验、反馈审计和断流状态；前端不保存未完成回答到后续上下文；
+6. 部署前通过 `pnpm exec tsc --noEmit`、`pnpm check`、`pnpm build` 和 `pnpm audit --prod`。
+
+资料更新时：重新导出并 `wrangler vectorize upsert ios-kb --file=...`，先列出远端 ID 做备份，
+再删除本次导出不存在的 stale ID；D1 依次执行 `data/export/ios_fts/*.sql`，最后执行 `999-finalize.sql`。
 
 ## 5. 已知注意点 / 坑
 

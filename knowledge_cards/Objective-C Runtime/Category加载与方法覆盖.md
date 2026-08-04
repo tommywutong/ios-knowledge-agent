@@ -59,9 +59,9 @@ Category 通过将自身方法列表插入到类 `class_rw_t.methods` 的**最�
 ## 原始资料索引
 
 [2] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Category_OC2_0.md › category如何加载 › Category 加载流程总览（第853-879行）
-[3] /Users/tommywu/Obsidian/iOS/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Category 加载流程总览（第773-799行）
+[3] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Category 加载流程总览（第773-799行）
 [4] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/App启动流程.md › 一、冷启动（Cold Launch） › Pre-main 阶段 › 4. ObjC Runtime 初始化 › 4.3 处理 Category（第450-490行）
-[5] /Users/tommywu/Obsidian/iOS/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Runtime 什么时候加载 Category（第765-771行）
+[5] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Runtime 什么时候加载 Category（第765-771行）
 [6] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/分类category、load、initialize的本质和源码分析.md › 1. 分类 category › 1.5 分类信息合并到类源码（第326-326行）
 [7] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/cnblogs.com/ios-load和-initialize方法调用时机.md › 一、+load 调用时机和顺序原理解析（第228-257行）
 [8] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/yulingtianxia/objective-c-runtime.md › [Objective-C Runtime](http://yulingtianxia.com/blog/2014/11/05/objective-c-runtime/) › Runtime 基础数据结构 › Category（第540-540行）

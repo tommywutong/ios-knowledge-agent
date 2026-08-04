@@ -15,7 +15,7 @@ class EvidenceBoundaryTests(unittest.TestCase):
     @patch("ioskb.retrieve.db.vec_search")
     @patch("ioskb.retrieve.db.fts_search")
     def test_search_can_exclude_generated_cards(self, fts_search, vec_search, get_chunks):
-        fts_search.return_value = [(1, 0), (2, 1)]
+        fts_search.return_value = [(1, 0, -2.0), (2, 1, -1.0)]
         vec_search.return_value = []
         get_chunks.return_value = {
             1: {
@@ -45,6 +45,7 @@ class EvidenceBoundaryTests(unittest.TestCase):
                 "vector_top": 10,
                 "final_top": 8,
                 "max_per_file": 2,
+                "min_keyword_coverage": 0,
                 "type_weights": {"card": 2.0},
             }
         }
@@ -53,6 +54,53 @@ class EvidenceBoundaryTests(unittest.TestCase):
 
         self.assertEqual([row["type"] for row in results], ["note"])
         fts_search.assert_called_once_with(None, "问题", 40)
+
+    @patch("ioskb.retrieve.db.get_chunks")
+    @patch("ioskb.retrieve.db.vec_search")
+    @patch("ioskb.retrieve.db.fts_search")
+    def test_search_rejects_weak_vector_and_partial_keyword_match(
+        self, fts_search, vec_search, get_chunks
+    ):
+        fts_search.return_value = [(1, 0, -1.0)]
+        vec_search.return_value = [(1, 0, 0.95)]
+        get_chunks.return_value = {
+            1: {
+                "id": 1,
+                "file_path": "/资料/番茄工作法.md",
+                "source": "blogs",
+                "type": "blog",
+                "title_path": "番茄工作法",
+                "start_line": 1,
+                "end_line": 10,
+                "text": "番茄计时可以帮助集中注意力。",
+            }
+        }
+        cfg = {
+            "retrieval": {
+                "fts_top": 10,
+                "vector_top": 10,
+                "final_top": 8,
+                "max_per_file": 2,
+                "max_vector_distance": 0.8,
+                "min_keyword_coverage": 0.55,
+                "type_weights": {},
+            }
+        }
+
+        self.assertEqual(search(None, cfg, "如何做番茄炒蛋", FakeEmbedder()), [])
+
+    @patch("ioskb.retrieve.db.get_chunks")
+    @patch("ioskb.retrieve.db.vec_search")
+    @patch("ioskb.retrieve.db.fts_search")
+    def test_search_rejects_competing_platform_question(
+        self, fts_search, vec_search, get_chunks
+    ):
+        cfg = {"retrieval": {}}
+
+        self.assertEqual(search(None, cfg, "Android Handler 如何工作", FakeEmbedder()), [])
+        fts_search.assert_not_called()
+        vec_search.assert_not_called()
+        get_chunks.assert_not_called()
 
     def test_card_source_index_is_programmatically_grounded(self):
         chunks = [

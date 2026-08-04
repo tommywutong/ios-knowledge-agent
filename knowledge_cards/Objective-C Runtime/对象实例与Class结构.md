@@ -98,10 +98,10 @@ Objective-C 中每个对象（实例、类、元类）底层都是 `objc_object`
 [2] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/Objective-C底层原理-NSObject.md › Objective-C底层原理 - NSObject › 内存分布 › 实例对象与类对象的内存对比（第498-511行）
 [3] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/Swift底层原理-结构体、类和协议.md › Swift底层原理-结构体、类和协议 › Swift类的底层实现 › 继承自NSObject的Swift类 › 类对象的内部结构（第59-82行）
 [4] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/Runtime从入门到进阶一.md › 2. 对象和类 › 2.2 类 Class（第99-117行）
-[5] /Users/tommywu/Obsidian/iOS/Runtime/_系列大纲.md › 已写篇章 · 展开目录 › Part 1 · 对象与类的本质  ✅ `draft: false`（第38-45行）
+[5] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/_系列大纲.md › 已写篇章 · 展开目录 › Part 1 · 对象与类的本质  ✅ `draft: false`（第38-45行）
 [6] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/Runtime从入门到进阶一.md › 2. 对象和类 › 2.3 元类 meta class（第238-254行）
-[7] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › objc_object：对象的骨架（第48-78行）
+[7] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › objc_object：对象的骨架（第48-78行）
 [8] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-advanced/包瘦身/包瘦身-可执行文件优化.md › 包瘦身-可执行文件优化 › ObjC元数据优化 › 类的内存布局（第499-523行）
 [10] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/southpeak/objective-c-runtime-运行时之一-类与对象.md › 类与对象基础数据结构 › objc_object与id（第82-98行）
-[11] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › bits ：class_rw_t → class_ro_t（第1056-1077行）
-[12] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › bits ：class_rw_t → class_ro_t（第1114-1115行）
+[11] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › bits ：class_rw_t → class_ro_t（第1056-1077行）
+[12] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › bits ：class_rw_t → class_ro_t（第1114-1115行）

@@ -103,6 +103,6 @@ A：不能。`OBJC_TAG` 枚举是一个私有运行时特性 [12]，其标签索
 [3] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/Objective-C底层原理-NSObject.md › Objective-C底层原理 - NSObject › Tagged Pointer › 性能优势（第200-210行）
 [5] /Users/tommywu/Desktop/26暑期内容/2026 暑假 iOS 底层学习计划.md › 2026 暑假 iOS 底层学习计划 › 第一周：对象、类与所有权的地基 › 本周精读路线 › Day 3｜在结构图上推导类型判断，再看 Tagged Pointer（对应 W1-05、W1-06）（第85-89行）
 [6] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/alwaysprocessing/objective-c-internals-tagged-pointer-objects-tagged-pointer-objects-a-private-runtime-feat.md › Objective-C 内部机制：Tagged Pointer 对象 › Tagged Pointer 对象（第33-37行）
-[7] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › Tagged Pointer 优化（第455-463行）
-[8] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › Tagged Pointer 优化 › 为什么内存里看到的值像「乱码」（第549-557行）
+[7] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › Tagged Pointer 优化（第455-463行）
+[8] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 对象的本质：objc_object › Tagged Pointer 优化 › 为什么内存里看到的值像「乱码」（第549-557行）
 [12] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots-zh/blog.timac.org/testing-if-an-arbitrary-pointer-is-a-valid-objective-c-object.md › Tagged Pointer（第53-94行）

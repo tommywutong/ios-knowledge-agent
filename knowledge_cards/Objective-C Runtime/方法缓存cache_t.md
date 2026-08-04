@@ -67,15 +67,15 @@ provider: deepseek
 
 ## 原始资料索引
 
-[1] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › cache：方法缓存（第773-806行）
+[1] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › cache：方法缓存（第773-806行）
 [2] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Part 2 - 消息发送与转发.before-renumber.md › 【iOS】Runtime - Part 2 && 消息发送：缓存、查找与转发 › 第一部分 · 快速路径（缓存命中） › 3. cache_t 数据结构（`objc-runtime-new.h:337`） › 3.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第575-597行）
-[3] /Users/tommywu/Obsidian/iOS/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 1. cache_t 数据结构（`objc-runtime-new.h:337`） › 1.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第588-610行）
+[3] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 1. cache_t 数据结构（`objc-runtime-new.h:337`） › 1.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第588-610行）
 [4] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/runtime.md › Runtime › 消息发送机制 › 方法缓存（第45-81行）
 [5] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/yulingtianxia/objective-c-runtime.md › [Objective-C Runtime](http://yulingtianxia.com/blog/2014/11/05/objective-c-runtime/) › Runtime 基础数据结构 › Class › cache_t（第211-244行）
-[6] /Users/tommywu/Obsidian/iOS/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › cache：方法缓存（第807-844行）
+[6] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 1 - 对象与类的本质.md › 类的本质：objc_class › 类的四大件：isa / superclass / cache / bits › cache：方法缓存（第807-844行）
 [7] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/zh/southpeak/objective-c-runtime-运行时之一-类与对象.md › 类与对象基础数据结构 › objc_cache（第100-118行）
 [8] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/kingcos.me/浅尝-objc-msgsend.md › Steps › 消息发送 › 方法缓存（第241-241行）
-[9] /Users/tommywu/Obsidian/iOS/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 1. cache_t 数据结构（`objc-runtime-new.h:337`） › 1.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第474-504行）
+[9] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 1. cache_t 数据结构（`objc-runtime-new.h:337`） › 1.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第474-504行）
 [10] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Part 2 - 消息发送与转发.before-renumber.md › 【iOS】Runtime - Part 2 && 消息发送：缓存、查找与转发 › 第一部分 · 快速路径（缓存命中） › 3. cache_t 数据结构（`objc-runtime-new.h:337`） › 3.1 `_bucketsAndMaybeMask`：指针与 mask 的融合（第492-513行）
-[11] /Users/tommywu/Obsidian/iOS/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 3. 缓存的写入与扩容（`objc-cache.mm`） › 3.1 `insert`：哈希落位（:873）（第1456-1499行）
+[11] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 2 - 消息发送与转发.md › 第一部分 · 快速路径（缓存命中） › 3. 缓存的写入与扩容（`objc-cache.mm`） › 3.1 `insert`：哈希落位（:873）（第1456-1499行）
 [12] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/kingcos.me/浅尝-objc-msgsend.md › Steps › 消息发送 › 当未命中缓存时（第251-285行）

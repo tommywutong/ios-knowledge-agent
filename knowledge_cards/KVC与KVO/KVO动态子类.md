@@ -76,8 +76,8 @@ Swift中继承`NSObject`且属性标记为`@objc dynamic`的走同样的ObjC Run
 [1] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-advanced/design-patterns/观察者模式.md › 观察者模式 › 面试常见问题 › Q1: KVO的实现原理是什么？（第693-695行）
 [2] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/KVO底层原理.md › KVO底层原理 › 常见面试题 › KVO 的底层原理是什么？（第311-346行）
 [3] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/KVO底层原理.md › KVO底层原理 › KVO 的底层实现原理：isa-swizzling（第30-32行）
-[4] /Users/tommywu/Obsidian/iOS/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.4 重写 `_isKVOA`：标记 KVO 动态子类（第1300-1313行）
-[5] /Users/tommywu/Obsidian/iOS/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO（第1097-1124行）
+[4] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO › 7.4 重写 `_isKVOA`：标记 KVO 动态子类（第1300-1313行）
+[5] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 4 - Runtime 应用篇.md › 7. Isa Swizzling 与 KVO（第1097-1124行）
 [8] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/README.md › awesome-ios-interview › iOS 相关面试题 › 底层原理（第674-711行）
 [9] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/jianshu.com/ios开发-kvo的实现原理与具体应用.md › 二、**实现原理？** › **深入剖析**：（第55-74行）
 [10] /Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/blogs/snapshots/huberyyang.com/kvo实现原理.md › (全文)（第39-54行）

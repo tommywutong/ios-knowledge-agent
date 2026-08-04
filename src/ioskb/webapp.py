@@ -21,11 +21,17 @@ cfg = load_config()
 embedder = Embedder(cfg)
 _model_ready = threading.Event()
 _encode_lock = threading.Lock()
+_model_error = None
 
 
 def _warmup():
-    embedder.encode(["warmup"])
-    _model_ready.set()
+    global _model_error
+    try:
+        embedder.encode(["warmup"])
+    except BaseException as error:
+        _model_error = str(error) or error.__class__.__name__
+    finally:
+        _model_ready.set()
 
 
 threading.Thread(target=_warmup, daemon=True).start()
@@ -66,6 +72,7 @@ def status():
     providers = [k for k in cfg["llm"] if isinstance(cfg["llm"][k], dict)]
     return {
         "model_ready": _model_ready.is_set(),
+        "model_error": _model_error,
         "chunks": total,
         "vectorized": vectorized,
         "files": files,
@@ -86,6 +93,12 @@ def api_ask(body: AskBody):
 
     def stream():
         _model_ready.wait()
+        if _model_error:
+            yield json.dumps(
+                {"type": "error", "message": f"向量模型加载失败：{_model_error}"},
+                ensure_ascii=False,
+            ) + "\n"
+            return
         con = db.open_db(cfg)
         try:
             with _encode_lock:

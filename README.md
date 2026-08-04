@@ -5,9 +5,8 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-当前第一阶段、2026-07-29 全部增量同步及细粒度知识卡片已完成：本地库包含 142,658 个文件、
-1,079,950 个文本块；57,015 个块有 bge-m3 语义向量，1,022,935 个大型官方镜像块使用
-FTS5 关键词检索。
+截至 2026-08-02，本地库包含 141,733 个文件、1,069,080 个文本块；46,145 个块有
+bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。
 
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
 Swift/Objective-C/C/C++/汇编源码；`articles/ai/` 下 17 篇纯 AI 文章、旧版重复 objc4 目录和构建/媒体产物按约定排除。
@@ -65,12 +64,14 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 引用，末尾原始资料索引由程序自动写入，不能自行伪造位置。生成报告在
 `knowledge_cards/_generation_report.json`。
 
-## 网站接口（第三阶段）
+## 网站接口
 
 ```bash
 uv run ioskb export-vectorize            # 导出 NDJSON，供上传 Cloudflare Vectorize
 ```
-后续步骤见 `HANDOFF.md` 的"第三阶段"一节。
+导出使用稳定的 `v1-*` ID。网站同步时用 Vectorize `upsert`，并删除远端已不存在的旧 ID；
+D1 的 `data/export/ios_fts/*.sql` 批次按顺序执行，最后执行 `999-finalize.sql`。
+部署和线上验证记录见 `HANDOFF.md`。
 
 ## 配置
 

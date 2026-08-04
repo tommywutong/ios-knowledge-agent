@@ -11,14 +11,16 @@ retrieval:
   fts_top: 30         # 关键词召回条数
   final_top: 12       # 最终喂给 LLM 的条数；兼顾覆盖面和上下文聚焦
   max_per_file: 2     # 同一文件最多入选几块，避免单文件霸屏
+  max_vector_distance: 0.80  # bge-m3/L2；超过此距离的语义结果不作为证据
+  min_keyword_coverage: 0.55 # FTS 至少覆盖过半有效查询词，避免 OR 查询误召回
   # 类型权重：乘在融合得分上。source_code 降权；card 只在显式浏览卡片时参与。
   type_weights:
     card: 0.85          # 卡片仅辅助浏览；ask/web 会强制排除 card，最终证据只来自原始资料
-    note: 1.15
-    doc: 1.0
-    wwdc: 1.0
-    blog: 0.95
-    source_code: 0.6
+    note: 0.9
+    doc: 1.12
+    wwdc: 1.12
+    blog: 0.82
+    source_code: 0.78
 
 llm:
   provider: deepseek            # ask 默认用的后端
@@ -43,6 +45,8 @@ sources:
     include: ["**/*.md"]
     exclude:
       - "10 学习计划/2026 暑假 iOS 底层学习计划.md"  # 学习安排，不作为技术问答证据
+      - "00 Inbox/**"  # 未整理、未核验的临时摘录不作为问答证据
+      - "99 归档/**"   # 旧稿可能与当前专题笔记冲突
     vectorize: true
 
   - name: summer2026
@@ -93,6 +97,37 @@ sources:
     type_overrides:
       "wwdc/": wwdc
       "blogs/": blog
+    # 博客仓库同时保存生活随笔和 Android/Flutter 内容。只让明确包含
+    # Apple 平台开发主题的博客进入问答索引；WWDC 不受此过滤影响。
+    content_filter:
+      globs: ["blogs/**/*.md"]
+      exclude_any: ["/android", "android-", "/flutter", "flutter-", "年终总结", "日记们", "pomodoro"]
+      include_any:
+        - "objective-c"
+        - "objc_"
+        - "swift"
+        - "uikit"
+        - "appkit"
+        - "foundation"
+        - "cocoa"
+        - "xcode"
+        - "wwdc"
+        - "runloop"
+        - "grand central dispatch"
+        - "core data"
+        - "core animation"
+        - "cloudkit"
+        - "webkit"
+        - "urlsession"
+        - "mach-o"
+        - "dyld"
+        - "autorelease"
+        - "ios sdk"
+        - "apple developer"
+        - "消息转发"
+        - "内存管理"
+        - "并发编程"
+        - "视图控制器"
     vectorize: true
 
   - name: apple-docs-bulk     # 大体量镜像（apple-docs 405MB / oss 435MB / meta）：只进 FTS

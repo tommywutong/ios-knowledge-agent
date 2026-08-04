@@ -68,7 +68,7 @@ Objective-C Runtime 初始化由 dyld 在镜像加载过程中通过 `_dyld_objc
 [1] /Users/tommywu/Obsidian/iOS/20 专题笔记/编译链接与启动/dyld.md › dyld源码 › _dyld_objc_notify_register（第542-580行）
 [2] /Users/tommywu/Desktop/26暑期内容/tips-master/sources/分类category、load、initialize的本质和源码分析.md › 1. 分类 category › 1.5 分类信息合并到类源码（第168-207行）
 [3] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/articles/ios-basics/App启动流程.md › 六、常见面试问题 › Q1: APP启动的详细流程 › Pre-main 阶段（第1128-1148行）
-[4] /Users/tommywu/Obsidian/iOS/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Runtime 什么时候加载 Category（第360-391行）
+[4] /Users/tommywu/Obsidian/iOS/20 专题笔记/Runtime/Part 3 - Category：加载、覆盖与关联对象.md › Runtime 什么时候加载 Category（第360-391行）
 [5] /Users/tommywu/Obsidian/iOS/20 专题笔记/编译链接与启动/dyld.md › dyld源码 › notifyObjCInit（第506-540行）
 [6] /Users/tommywu/Desktop/26暑期内容/awesome-ios-interview-main/README.md › awesome-ios-interview › iOS 相关面试题 › App 启动与优化（第26-30行）
 [8] /Users/tommywu/Obsidian/iOS/99 归档/Runtime 旧稿/Category_OC2_0.md › category如何加载（第340-367行）
