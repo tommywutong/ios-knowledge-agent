@@ -6,10 +6,11 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-截至 2026-08-05，本地库包含 141,734 个文件、1,069,089 个文本块；46,154 个块有
-bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。生产 D1
-已切换到 FTS v2：`ios_ask_fts_v2` 和邻接索引各 86,307 行。由于 D1 最大数据库大小限制，
-重复的旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 `data/export/ios_fts/` 或 D1 Time Travel 恢复。
+截至 2026-08-06，本地库包含 141,735 个文件、1,069,124 个文本块；46,189 个块有
+bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。生产 Vectorize
+现为 44,997 条；FTS v2 已按容量拆为 iOS 主库 84,997 条和扩展库 40,000 条，合计覆盖
+124,997 条证据。登录、额度和指标仍留在独立业务 D1；旧 FTS 已移除，业务库现约 0.35 MB，
+检索数据不再挤占业务库容量。
 
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
 Swift/Objective-C/C/C++/汇编源码；`articles/ai/` 下 17 篇纯 AI 文章、旧版重复 objc4 目录和构建/媒体产物按约定排除。
@@ -30,10 +31,22 @@ uv run python -c "from sentence_transformers import SentenceTransformer; Sentenc
 ## 建库 / 更新库
 
 ```bash
-uv run ioskb index            # 增量：只处理新增/修改过的文件（资料更新后跑这个）
+uv run ioskb freshness        # 只读检查新增/修改/删除及 Git 镜像远端更新
+uv run ioskb sync --dry-run   # 预演本地同步，不写索引、不拉仓库、不发布云端
+uv run ioskb sync             # 推荐：安全增量更新本地索引与向量
+uv run ioskb index            # 底层索引命令：只处理新增/修改过的文件
 uv run ioskb index --full     # 全量重建
 uv run ioskb stats            # 看库里有多少东西
 ```
+
+`freshness` 只读取原文件和本地数据库的内容哈希，并用 `git ls-remote`
+对比两个资料镜像的 HEAD；它不切块、不加载 bge-m3，也不写入索引。
+离线时可加 `--skip-upstreams`，自动化检查可加 `--json --check`。
+
+`sync` 默认只更新本地索引，不修改 Git 资料镜像，更不连接 Cloudflare。
+只有显式加 `--pull-upstreams` 才会对干净的镜像执行 `git pull --ff-only`；
+`--prepare-cloud` 也只在本地生成 Vectorize/FTS 发布包，不上传或导入。
+真正的 Cloudflare 发布仍是独立的受控维护流程。
 
 索引和检索本身完全在本机执行，不调用 DeepSeek、不消耗 API token；只有 `ask`、网页版提问和
 `cards` 会调用配置的模型 API。
@@ -69,18 +82,21 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 ## 网站接口
 
-网站上的 iOS 问题使用 Retrieval v2：最多 4 条查询规划、Vectorize + D1 FTS 双路召回、
+网站上的 iOS 问题使用 Retrieval v2：最多 4 条查询规划、Vectorize + 两个 D1 FTS 并行召回、
 RRF 去重、Workers AI reranker 和邻块扩展，并返回段落级引用；没有可靠 iOS 证据时返回
 `no_evidence`，不会让模型用常识补齐。`hi`、你好等问候仍由后端直接返回固定助手介绍；
-其他问题走 `general` 模式。生产默认模型为 `deepseek-v4-flash`，API 回答上限为 2400 tokens。
+其他问题走 `general` 模式。生产默认模型为 `deepseek-v4-flash`；普通 iOS 查阅题使用更聚焦的
+6 条证据/1,800 tokens，原理、对比、代码和排障题保留 8 条证据/2,400 tokens。接口显式关闭
+DeepSeek V4 默认隐藏思考，使 token 预算用于最终可见答案与引用，避免复杂题返回空正文。
 
 ```bash
 uv run ioskb export-vectorize            # 导出 NDJSON，供上传 Cloudflare Vectorize
 uv run ioskb export-fts                 # 生成生产 D1 FTS v2 分批 SQL
 ```
 导出使用稳定的 `v1-*` ID。网站同步时用 Vectorize `upsert`，并删除远端已不存在的旧 ID；
-D1 的 `data/export/ios_fts_v2/*.sql` 批次按顺序执行，确认 `*_next` 两张表各 86,307 行后，
-最后执行 `999-finalize.sql` 原子切换。D1 接近大小上限时，不要让可选诊断表或旧索引表阻断问答。
+先用 `scripts/build_fts_v2_import.py` 把 NDJSON 分为主库 84,997 条和扩展库 40,000 条，
+再把各自 SQL 批次导入 `tommywu-ios-kb-primary` 与 `tommywu-ios-kb-archive`，分别执行
+`999-finalize.sql` 原子切换。Pages 绑定名为 `IOS_DB` 与 `IOS_ARCHIVE_DB`。
 部署和线上验证记录见 `HANDOFF.md`。
 
 ## 配置

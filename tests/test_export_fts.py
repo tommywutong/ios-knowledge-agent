@@ -159,6 +159,30 @@ class FtsExportTests(unittest.TestCase):
         self.assertEqual(manifest["by_tier"], {"0": 1})
         self.assertEqual(manifest["dropped_for_size"], 1)
 
+    def test_sql_builder_can_partition_a_large_export_without_overlap(self):
+        def record(index):
+            return {
+                "id": f"f1-{index}",
+                "file_key": f"k1-{index}",
+                "chunk_ordinal": 1,
+                "content_hash": f"hash-{index}",
+                "tier": 1,
+                "metadata": {"source": "bulk", "type": "doc", "text": "UIKit evidence"},
+            }
+
+        with tempfile.TemporaryDirectory() as tmp:
+            source = Path(tmp) / "source.ndjson"
+            source.write_text(
+                "\n".join(json.dumps(record(index)) for index in range(5)) + "\n",
+                encoding="utf-8",
+            )
+            first = BUILD_FTS.build(source, Path(tmp) / "first", max_rows=3)
+            second = BUILD_FTS.build(source, Path(tmp) / "second", start_row=3)
+            self.assertEqual(first["rows"], 3)
+            self.assertEqual(second["rows"], 2)
+            self.assertEqual(first["start_row"], 0)
+            self.assertEqual(second["start_row"], 3)
+
 
 if __name__ == "__main__":
     unittest.main()

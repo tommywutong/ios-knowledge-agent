@@ -1,6 +1,7 @@
 import argparse
 import copy
 import hashlib
+import json
 import os
 import sys
 
@@ -229,6 +230,138 @@ def cmd_stats(args):
     _print_stats(con, cfg)
 
 
+def _selected_source_names(cfg, requested):
+    if not requested:
+        return None
+    names = {source["name"] for source in cfg["sources"]}
+    unknown = sorted(set(requested) - names)
+    if unknown:
+        raise SystemExit(f"config.yaml 中没有名为 {', '.join(unknown)} 的 source")
+    return set(requested)
+
+
+def _print_freshness(report):
+    labels = {
+        "added": "新增",
+        "modified": "修改",
+        "deleted": "删除",
+        "unavailable": "无法检查",
+    }
+    print("—— 资料新鲜度 ——")
+    print(
+        f"新增 {report.added}，修改 {report.modified}，删除 {report.deleted}，"
+        f"无法检查 {report.unavailable}"
+    )
+    for change in report.changes:
+        print(f"  [{change.source}] {labels[change.status]}: {change.path}")
+    if not report.changes:
+        print("  本地资料与索引一致。")
+    if report.upstreams:
+        print("—— Git 上游镜像 ——")
+    upstream_labels = {
+        "up_to_date": "已是最新",
+        "update_available": "远端有新提交",
+        "unavailable": "无法检查",
+    }
+    for upstream in report.upstreams:
+        suffix = f"：{upstream.detail}" if upstream.detail else ""
+        print(f"  {upstream.path}: {upstream_labels[upstream.status]}{suffix}")
+
+
+def cmd_freshness(args):
+    from .freshness import inspect_freshness, open_readonly_db
+
+    cfg = load_config()
+    source_names = _selected_source_names(cfg, args.source)
+    con = open_readonly_db(cfg)
+    try:
+        report = inspect_freshness(
+            cfg,
+            con,
+            source_names=source_names,
+            check_upstreams=not args.skip_upstreams,
+        )
+    finally:
+        con.close()
+    if args.json:
+        print(json.dumps(report.as_dict(), ensure_ascii=False, indent=2))
+    else:
+        _print_freshness(report)
+    if args.check and not report.clean:
+        raise SystemExit(1)
+
+
+def cmd_sync(args):
+    from .freshness import (
+        discover_upstream_repositories,
+        inspect_freshness,
+        open_readonly_db,
+        pull_upstream,
+    )
+
+    cfg = load_config()
+    source_names = _selected_source_names(cfg, args.source)
+    if args.prepare_cloud and args.no_embed:
+        raise SystemExit("--prepare-cloud 不能与 --no-embed 同时使用，先补齐本地向量。")
+    con = open_readonly_db(cfg)
+    try:
+        before = inspect_freshness(
+            cfg,
+            con,
+            source_names=source_names,
+            check_upstreams=not args.skip_upstreams,
+        )
+    finally:
+        con.close()
+    _print_freshness(before)
+    if args.dry_run:
+        print("\n预演完成：未拉取上游、未写入索引、未生成或发布云端数据。")
+        return
+
+    if args.pull_upstreams:
+        for repo in discover_upstream_repositories(cfg, source_names):
+            print(f"\n快进更新上游镜像：{repo}")
+            pull_upstream(repo)
+
+    index_args = argparse.Namespace(
+        source=args.source[0] if args.source else None,
+        full=False,
+        no_embed=args.no_embed,
+    )
+    cmd_index(index_args)
+
+    con = open_readonly_db(cfg)
+
+    try:
+        if args.prepare_cloud:
+            from .export_fts import export as export_fts
+            from .export_vectorize import export as export_vectorize
+
+            vector_out = resolve_path("data/export/vectorize.ndjson")
+            fts_out = resolve_path("data/export/fts-v2.ndjson")
+            vectors = export_vectorize(cfg, con, vector_out)
+            manifest = export_fts(cfg, con, fts_out)
+            print(
+                f"\n已生成本地发布包：{vectors} 条向量，"
+                f"{manifest['counts']['exported']} 条 FTS。"
+            )
+            print("未连接 Cloudflare，未修改任何远端数据。")
+
+        after = inspect_freshness(
+            cfg,
+            con,
+            source_names=source_names,
+            check_upstreams=False,
+        )
+    finally:
+        con.close()
+    if after.changes:
+        print("\n同步后仍有本地差异：")
+        _print_freshness(after)
+        raise SystemExit(1)
+    print("\n本地增量同步完成；云端数据未发布。")
+
+
 def cmd_web(args):
     import threading
     import webbrowser
@@ -292,12 +425,34 @@ def main():
     pst = sub.add_parser("stats", help="查看索引统计")
     pst.set_defaults(func=cmd_stats)
 
+    pfr = sub.add_parser("freshness", help="只读检查资料和上游镜像是否有更新")
+    pfr.add_argument("--source", action="append", help="只检查指定 source（可多次）")
+    pfr.add_argument("--skip-upstreams", action="store_true", help="不访问 Git 远端")
+    pfr.add_argument("--json", action="store_true", help="输出 JSON 报告")
+    pfr.add_argument("--check", action="store_true", help="有任何差异时以状态码 1 退出")
+    pfr.set_defaults(func=cmd_freshness)
+
+    psy = sub.add_parser("sync", help="安全编排本地增量同步（默认不发布云端）")
+    psy.add_argument("--dry-run", action="store_true", help="只显示将发生的变化")
+    psy.add_argument("--source", action="append", help="只同步指定 source（当前最多一个）")
+    psy.add_argument("--no-embed", action="store_true", help="只更新文本/FTS，不加载 embedding")
+    psy.add_argument("--pull-upstreams", action="store_true", help="显式快进拉取 Git 资料镜像")
+    psy.add_argument("--skip-upstreams", action="store_true", help="不访问 Git 远端")
+    psy.add_argument(
+        "--prepare-cloud",
+        action="store_true",
+        help="只生成本地云端发布包，不上传、不导入",
+    )
+    psy.set_defaults(func=cmd_sync)
+
     pw = sub.add_parser("web", help="启动本地网页版（模型常驻，浏览器聊天界面）")
     pw.add_argument("--port", type=int, default=8787)
     pw.add_argument("--no-browser", action="store_true", help="不自动打开浏览器")
     pw.set_defaults(func=cmd_web)
 
     args = p.parse_args()
+    if args.cmd == "sync" and args.source and len(args.source) > 1:
+        p.error("sync --source 当前最多指定一次")
     try:
         args.func(args)
     except KeyboardInterrupt:

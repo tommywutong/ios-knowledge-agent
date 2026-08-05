@@ -21,10 +21,10 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 
 ## Current Checkpoint
 
-最后核对时间：2026-08-05（Asia/Shanghai）。
+最后核对时间：2026-08-06（Asia/Shanghai）。
 
-- 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，本地 `main`、`feat/retrieval-v2`、`origin/main` 和 `origin/feat/retrieval-v2` 已统一到 `101cf86`；`0818ba0` 完成混合对话路由重构，`101cf86` 修复 DeepSeek 重试复用旧超时的问题。
+- 本知识库仓库的 `main`、`origin/main` 与 `feat/retrieval-v2` 已同步包含 Retrieval v2、资料新鲜度/安全同步和 FTS 分区导出；实际提交仍以开场核对命令为准。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，本地与远端 `main`、`feat/retrieval-v2` 已统一到 `a59622e`；本轮完成 API 拆分、分库检索、指标/留存、管理员来源预览、依赖升级、单一 CI 部署门禁和 DeepSeek 可见回答预算修复。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
@@ -35,12 +35,15 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 感谢语确定性回复：`7893c7d fix: answer casual acknowledgements directly`。
 - 混合对话状态机：`0818ba0 fix: make mixed chat routing turn-aware`。
 - DeepSeek 独立重试超时：`101cf86 fix: isolate DeepSeek retry timeouts`。
+- CI 全新环境 Astro 类型同步：`9fe2708 fix: generate Astro types before CI checks`。
+- DeepSeek 隐藏思考耗尽正文预算修复：`a59622e fix: reserve DeepSeek budget for visible answers`。
 - 线上地址：`https://www.tommywutong.cn`；本轮最新 production Pages 部署为
-  `https://3504e14d.tommywu-lab.pages.dev`（source `101cf86`）。
+  `https://5ee520a8.tommywu-lab.pages.dev`（source `a59622e`）。
 - 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
   未登录状态按设计不执行问答。
-- 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。
-- 当前知识/通用回答均按问题复杂度组织：简单问题直接回答，复杂问题展开机制、条件、示例和常见误区；DeepSeek `max_tokens` 为 `2400`，不再强制一律简洁。
+- 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。问答显式关闭
+  DeepSeek V4 默认隐藏思考，避免隐藏 reasoning 与正文共用 `max_tokens` 后挤掉最终答案。
+- 当前知识/通用回答均按问题复杂度组织：普通 iOS 查阅题用 6 条证据、12,000 字上下文和 1,800 tokens；原理、对比、代码、排障等复杂题保留 8 条证据、20,000 字上下文和 2,400 tokens。
 - iOS 问题优先走 Workers AI embedding + Vectorize/D1 混合检索，答案要求引用。
 - `hi`、你好等纯问候跳过检索，并只回复固定文本：
   `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
@@ -56,23 +59,41 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
   并统一为前端可点击的 `[1][2]`；越界编号会被移除，但不会再伪造 `[1]` 或把无引用段落强行归给第一个来源。知识回答若最终没有任何有效引用则退款并返回 `invalid_citations`。
 - DeepSeek 流首次无正文或在产生正文前异常时会自动重试一次；每次尝试有独立的 50 秒超时，第二次不再复用第一次已到期的中止信号。两次都为空时退款并返回 `empty_answer`。
 - 生产检索排序落实用户指定优先级：`26暑期内容`、官方文档、源码并列第一，个人笔记第二，技术博客第三；该权重在网站层按来源 metadata 生效，无需重建索引。
-- Cloudflare Vectorize `ios-kb` 保持 `44,962` 条稳定 `v1-*` 向量；生产 D1 已切换到
-  `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小已降至约 `338 MB`。
-  因 D1 最大数据库大小限制，旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 SQL 或 D1 Time Travel 恢复。
+- Cloudflare Vectorize `ios-kb` 为 `44,997` 条稳定 `v1-*` 向量。生产检索已拆到
+  `tommywu-ios-kb-primary`（两张 v2 表各 `84,997` 行，约 `332 MB`）和
+  `tommywu-ios-kb-archive`（各 `40,000` 行，约 `114 MB`）；Pages 绑定为 `IOS_DB`、
+  `IOS_ARCHIVE_DB`。登录/额度/指标仍在 `DB`，任一扩展库查询失败会降级使用其余检索库。
+  旧 v2 FTS 已在记录 D1 Time Travel 恢复点后从业务库移除，业务 D1 现约 `0.35 MB`。
 - Retrieval v2 的链路为查询规划（最多 4 路）→ Vectorize/D1 FTS 召回 → RRF 去重 →
   Workers AI `@cf/baai/bge-reranker-base`（失败自动回退）→ 邻块扩展 → 段落级引用校验。
   iOS 问题无可靠证据时返回 `422 no_evidence`，不调用 DeepSeek；检索故障返回 `503` 并退款。
-- 本地索引：`141,734` 文件、`1,069,089` 块、`46,154` 已向量化。
+- 本地索引：`141,735` 文件、`1,069,124` 块、`46,189` 已向量化。
+- 资料新鲜度已有只读命令 `uv run ioskb freshness`：按原文件 SHA-256 精确列出
+  新增/修改/删除，并只读对比 Git 镜像的远端 HEAD，不加载 embedding。
+  `uv run ioskb sync` 默认只做本地增量索引；`--dry-run` 零写入，拉取镜像须显式
+  `--pull-upstreams`，`--prepare-cloud` 也只生成本地发布包，不连接 Cloudflare。
+- 2026-08-06 已将 Obsidian 《Part 1 - 对象与类的本质》的最新修改增量入库：
+  随后新增的《2026 暑假第一周验收 - 对象模型与进程内存地图》也已增量入库；该来源现为
+  `58` 文件 / `1,773` 块 / `1,773` 向量，全库 freshness 本地差异已清零。两篇变更的相关向量均已
+  upsert；远端 Vectorize 现为 `44,997`，完整 FTS v2 也已同步到两个检索库。新增验收笔记的生产
+  真实问答已返回 knowledge 模式、6 个来源、25 处引用，并命中该笔记 14-54 行。
+- API 已拆分 DeepSeek 流处理与运营数据模块；空流/超时/HTTP/客户端中断有精确原因，配额退款、
+  无证据、非法引用和双库扇出都有回归测试。指标只保存长度、模式、原因和时延，不保存问题正文；
+  数据留存清理每 24 小时最多由一个认证请求在后台触发一次。管理员可看最多 300 字来源预览，
+  普通用户看不到个人笔记正文或本机绝对路径。
+- GitHub Actions 已合并为单一顺序门禁，复用一次完整构建后再部署；Cloudflare Git 自动部署已关闭，
+  不再为同一提交额外生成 Idle/404 部署。Actions 均锁定到官方最新稳定 release 的精确 SHA；
+  全新 checkout 会先运行 `astro sync` 再做独立 TypeScript 检查。Actions run `31029937311` 全部成功。
 - 本地测试：Retrieval v2 导出与知识库测试全部通过；网站的 Retrieval 逻辑测试、TypeScript、
   Astro Check、runtime 评测集覆盖检查、完整构建、链接检查和体积检查已通过。生产 D1
-  已完成真实导入和全文/邻接 smoke test；GitHub Actions 的 Code quality、Build and Check、
-  Deploy to Cloudflare Pages 在 `101cf86` 全部成功。网站 Retrieval 测试现为 18 项；生产自测扩为 10 项，
+  已完成两库真实导入和全文/邻接 smoke test；网站本地 14 项 API 测试、20 项 Retrieval 测试、
+  TypeScript、Astro Check、完整构建、链接/体积检查和生产依赖审计全部通过。网站生产自测仍为 10 项，
   覆盖 greeting、weak、ARC、general、感谢、确认、iOS 后切普通话题、iOS 短追问、iOS 新话题和 no-evidence。
-  `101cf86` 在自定义域名的首轮全套运行有 4 项遇到本机网络中断或引用门拦截，随后仅定向复测这 4 项全部通过；
-  因而 10 项均已在该生产版逐项通过，但不要写成一次连续运行 10/10。Pages 地址和自定义域名公开健康检查均为 HTTP 200、`configured: true`。
+  `a59622e` 已在自定义域名一次连续运行中达到 10/10；移除业务库旧 FTS 后，weak、ARC、general、
+  no-evidence 四个关键场景再次达到 4/4。Pages 地址和自定义域名公开健康检查均为 HTTP 200、`configured: true`。
 
 终端可从 macOS 钥匙串读取生产自测 Bearer token，但仓库不保存 token/Cookie。不要把上述定向复核
-误写成一次连续运行 10/10，也不要把 API 级登录态自测冒充为浏览器 Cookie 登录流程验证。
+或连续自测冒充为浏览器 Cookie 登录流程验证。
 
 ## Maintenance Rules
 

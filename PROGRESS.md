@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-05（网站混合对话状态机和 DeepSeek 重试可靠性重构已推送）
+> 本文件随工作实时更新。最后更新：2026-08-06（资料自动同步、API 加固、完整 FTS 分库、单一 CI 和生产回归已完成）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -14,7 +14,7 @@
 | 6 | 知识卡片脚本（cards） | ✅ 完成 | 95 张/11 组已生成；程序化原始来源索引、失败重试、usage 统计和 audit-cards 已完成 |
 | 7 | Vectorize 导出脚本 + 网站接口模板 | ✅ 完成 | website-templates/ 含 Pages Function 完整代码与部署说明 |
 | 8 | 依赖安装 + bge-m3 模型下载 | ✅ 完成 | SQLite 3.51；bge-m3 已下载并验证（dim=1024，MPS 可用、日常加载强制离线） |
-| 9 | 全链路建库实测 | ✅ 完成 | 141,734 文件 / 1,069,089 块；46,154 块向量化；大镜像 1,022,935 块全部进 FTS |
+| 9 | 全链路建库实测 | ✅ 完成 | 141,735 文件 / 1,069,124 块；46,189 块向量化；大镜像 1,022,935 块全部进 FTS |
 | 10 | 交接文档定稿 | ✅ 完成 | README / PROGRESS / HANDOFF 已同步最终状态、验证证据与后续操作 |
 | 11 | 本地网页版（ioskb web） | ✅ 完成 | 模型常驻+流式回答+可点击引用+多轮追问；桌面双击启动 `iOS知识库.command`；接口实测通过 |
 | 12 | 博客问答接口详细部署计划 | ✅ 完成 | `website-templates/DEPLOY_PLAN.md`，步骤级，含验证清单与回滚 |
@@ -29,7 +29,7 @@
 | 21 | 恢复复杂问题详细回答 | ✅ 完成 | 放宽知识/通用回答提示词，复杂问题展开机制、条件、示例和常见误区；`max_tokens` 从 1600 调为 2400；网站 `36eb071` 已上线 |
 | 22 | Retrieval v2 分层 FTS 导出 | ✅ 完成 | 保留 44,962 条 Tier 0 原始证据；从两个 FTS-only 来源按主题/平台/符号/路径评分，最终 SQL 为 86,307 行，含邻接索引和 230 MiB 硬上限 |
 | 23 | Retrieval v2 网站链路 | ✅ 完成 | 最多 4 路查询规划、Vectorize/D1 双路召回、RRF、Workers AI reranker、邻块扩展、段落引用校验、`no_evidence`/503 退款保护和 v1 回滚开关 |
-| 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；因 D1 大小上限移除重复旧表；数据库约 338 MB |
+| 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | 初版曾在 `tommywu-lab-db` 使用两张 86,307 行 v2 表、约 338 MB；该阶段状态后续已由第 34/36 项的水平分库和业务库清理取代 |
 | 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；初始 Pages 部署已验证，后续热修复为 `77f4779` |
 | 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；网站 `77f4779` 与 Pages `ed2b8461` 已上线 |
 | 27 | 引用格式容错 | ✅ 完成 | `ae14f97` 曾对格式漂移做自动修正；该策略已被第 31 项收紧：保留格式兼容，但不再伪造或自动补第一个来源 |
@@ -37,6 +37,11 @@
 | 29 | 感谢语上下文误判修复 | ✅ 完成 | `9fc6fad` 让纯感谢/夸赞退出 iOS 检索，`7893c7d` 改为后端确定性回复且不调 DeepSeek、不占每日额度；当时的 Pages `ee8cef76` 与自定义域名定向复核均通过 |
 | 30 | 混合对话路由重构 | ✅ 完成 | `0818ba0` 改为按当前轮次判断的新问题/追问状态机，只有显式追问继承相关历史；普通新话题隔离旧 iOS 上下文，边界技术问题先做证据探测；前端回传真实回答模式 |
 | 31 | 来源、引用与上游可靠性加固 | ✅ 完成 | 落实暑期资料/官方/源码并列第一的排序；禁止自动伪造 `[1]`；`101cf86` 让空流和无正文断流安全重试且每次尝试使用独立超时；生产自测扩到 10 个混合场景并支持定向用例 |
+| 32 | 资料新鲜度与安全同步 | ✅ 完成 | `ioskb freshness` 只读列出新增/修改/删除和 Git 镜像远端差异；`ioskb sync` 支持零写入预演、显式 fast-forward 拉取及仅本地云端发布包；最新对象模型笔记已增量入库，本地 freshness 已清零 |
+| 33 | API/隐私/可观测性加固 | ✅ 完成 | DeepSeek 流与配额指标拆模块；精确错误原因、独立重试超时、后台留存清理、管理员 300 字来源预览；普通用户不接收个人笔记正文或绝对路径；当前 14 项 API 测试通过 |
+| 34 | 完整 FTS 水平分库 | ✅ 完成 | Vectorize 44,997 条；主 D1 两张表各 84,997 行/约 332 MB，扩展 D1 各 40,000 行/约 114 MB，合计 124,997 条；双库 FTS/邻接 smoke test 通过 |
+| 35 | 单一 CI 与依赖升级 | ✅ 完成 | 三条重复 workflow 合为一次完整门禁/构建/部署；Cloudflare Git 空部署关闭；Actions 锁定官方 SHA；TypeScript 6 及相关依赖升级，生产审计无已知漏洞 |
+| 36 | DeepSeek V4 生成预算与生产收尾 | ✅ 完成 | 显式关闭默认隐藏思考，避免 ARC 等复杂题只消耗 reasoning 不输出正文；`a59622e` 上线后连续生产自测 10/10；业务 D1 旧 FTS 安全移除后约 0.35 MB，关键场景复测 4/4 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -79,15 +84,19 @@
 - 新增 WWDC、App Store Server Notifications、App Sandbox 文档均已验证检索命中并返回文件与行号；
 - 95 张卡片全量审计通过：固定结构、正文编号、原始路径、行号边界、无 card 自引用；
 - RunLoop Source0/Source1 真实问答通过，8 条来源全部为原始资料；
-- 本地网页 `/api/status`：141,734 文件、1,069,089 块、46,154 已向量化，模型离线预热完成；
+- 本地索引：141,735 文件、1,069,124 块、46,189 已向量化；Obsidian 修改笔记重建 85 块、随后新增验收笔记 28 块；
+- `ioskb freshness` 全库本地差异为 0，两个 Git 资料镜像均已是远端最新；
+- 2026-08-06 知识库全量单元测试为 35 项，全部通过；其中 freshness/sync 新增 11 项安全回归测试；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
-- 本仓库 Retrieval v2 代码和导出脚本位于 `feat/retrieval-v2`；网站同名功能分支已推送并与 `main` 同步；
-- 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧 v1 表因空间限制已移除；
-- 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
+- 本仓库 Retrieval v2、freshness/sync 和 FTS 分区导出已推送，`feat/retrieval-v2` 与 `main` 同步；网站同名功能分支也与 `main` 同步；
+- 生产 Vectorize `ios-kb` 为 44,997 条；主 D1 `ios_ask_fts_v2` 与邻接表各 84,997 条，扩展 D1 各 40,000 条；
+- 新增《2026 暑假第一周验收 - 对象模型与进程内存地图》28 块已同步生产；真实问答返回 knowledge 模式、6 个来源和 25 处引用，并引用该笔记 14-54 行；
+- 主/扩展 D1 分别约 332 MB/114 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；Pages production 已绑定 `IOS_DB`/`IOS_ARCHIVE_DB`；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 网站最终 commit 为 `101cf86`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-- 最新 Pages production deployment 为 `https://3504e14d.tommywu-lab.pages.dev`（source `101cf86`）；该地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
-- 网站本地 TypeScript、Astro Check、18 项 Retrieval 测试、runtime/eval 覆盖、完整构建、链接和体积检查均通过；
-- `101cf86` 的 10 场景生产验证中，首轮 6 项直接通过，4 项遇到网络中断或引用门拦截；定向复测 weak、ARC、general、new-ios-topic-after-ios 后 4 项全部通过，因此 10 项均已逐项通过，但不是单次连续 10/10；
+- 网站最终 commit 为 `a59622e`；本地 14 项 API + 20 项 Retrieval 测试、TypeScript、Astro Check、完整构建、链接/体积检查和生产依赖审计通过；
+- GitHub Actions 单一 CI/部署 run `31029937311` 全部成功；全新 checkout 会先运行 Astro 类型同步再做 TypeScript 检查；
+- 最新 Pages production deployment 为 `https://5ee520a8.tommywu-lab.pages.dev`（source `a59622e`）；该地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- `a59622e` 已在自定义域名一次连续完成 10 场景生产验证，10/10 全部通过；
+- 记录 D1 Time Travel 恢复点后，业务库旧 `ios_ask_fts_v2`/邻接表已移除，库大小由约 338 MB 降到约 0.35 MB；登录、额度、指标表保留，随后 weak、ARC、general、no-evidence 复测 4/4；
 - 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述是 API 级登录态复核，不冒充浏览器 Cookie 登录流程。

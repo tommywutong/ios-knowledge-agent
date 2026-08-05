@@ -98,8 +98,28 @@
 
 ## export_vectorize.py
 - `export(cfg, con, out_path: Path) -> int` — 导出 vectorized=1 且 type != card 的原始 chunk 为 NDJSON，每行
-  `{"id": str(id), "values": [...], "metadata": {source,type,path,title_path,lines,text}}`
+  `{"id": stable_vector_id(source,path,ordinal), "values": [...], "metadata": {source,type,path,title_path,lines,text}}`
   （text 截 2000 字符；values 从 vec_chunks 读回并转 list）。返回条数。
+
+## scripts/build_fts_v2_import.py
+- `build(input_path, output_dir, *, batch_size=750, max_bytes=230MiB, start_row=0, max_rows=None)` —
+  把 FTS v2 NDJSON 转为可原子切换的 D1 SQL 批次；先写 `*_next`，最后由
+  `999-finalize.sql` 切换正式表。`start_row`/`max_rows` 允许把一个稳定排序导出切为互不重叠的
+  D1 主库和扩展库，非法负数或零长度分片必须拒绝。
+
+## freshness.py
+- `open_readonly_db(cfg) -> sqlite3.Connection` — 以 SQLite `mode=ro` + `query_only=ON` 打开已有索引；
+  不加载 sqlite-vec、不建表、不创建新数据库，索引不存在时明确报错。
+- `indexed_path_for(source_cfg: dict, source_path: Path) -> str` — 不转换 DOCX 即计算稳定数据库键；
+  Markdown/源码为原文件绝对路径，DOCX 为 `data/converted/<source>/<relative>.md`。
+- `inspect_sources(cfg, con, source_names=None) -> tuple[FileChange, ...]` — 只读对比原文件 SHA-256
+  与 `files.hash`，列出 `added`/`modified`/`deleted`；来源根路径或文件无法读取时报
+  `unavailable`，不把卸载盘误判为全量删除或误报干净。不调用切块或 Embedder。
+- `inspect_upstream(repo: Path) -> UpstreamStatus` — 用 `git ls-remote origin HEAD` 只读对比远端，
+  不 fetch/pull、不修改本地 ref。
+- `inspect_freshness(...) -> FreshnessReport` — 合并语料变化和去重后的 Git 镜像状态。
+- `pull_upstream(repo: Path) -> None` — 仅对工作区干净的镜像执行 `git pull --ff-only`；
+  有本地修改或无法快进时必须拒绝。
 
 ## cli.py
 - `main()` — argparse 子命令：
@@ -107,6 +127,13 @@
     实现方式为先 DELETE 该 source 数据）；对每文件 sha256 内容 hash → upsert_file；结束后
     delete_missing_files；非 --no-embed 时对 vectorize=true 的 source 跑 pending → Embedder → store_vectors，
     分批（每批 256 条）提交并打印进度；最后打印各 source 统计。
+  - `freshness [--source NAME]... [--skip-upstreams] [--json] [--check]`：只读列出语料新增/修改/
+    删除和镜像远端 HEAD 差异；默认不加载 embedding；`--check` 在有差异或远端无法
+    确认最新时返回状态码 1。
+  - `sync [--dry-run] [--source NAME] [--no-embed] [--pull-upstreams] [--skip-upstreams]
+    [--prepare-cloud]`：默认只执行本地增量索引；`--dry-run` 零写入；上游拉取必须
+    显式指定且只允许 fast-forward；`--prepare-cloud` 只生成本地发布包，永不上传/导入
+    Cloudflare。`--prepare-cloud` 与 `--no-embed` 互斥且必须在打开数据库前拒绝。
   - `search QUERY [-k N] [--no-vector] [--include-cards]`：默认排除 card；打印每条序号、score、引用行和预览。
   - `ask QUESTION [-k N] [--provider P] [--show-chunks]`：先打印"—— 来源 ——"引用列表，再流式打印回答。
     （--show-chunks 额外打印每块全文。）

@@ -86,14 +86,24 @@ def statement(record, rowid):
     return fts_insert + neighbor_insert
 
 
-def build(input_path: Path, output_dir: Path, *, batch_size=750, max_bytes=DEFAULT_MAX_BYTES):
+def build(
+    input_path: Path,
+    output_dir: Path,
+    *,
+    batch_size=750,
+    max_bytes=DEFAULT_MAX_BYTES,
+    start_row=0,
+    max_rows=None,
+):
+    if start_row < 0 or (max_rows is not None and max_rows < 1):
+        raise ValueError("FTS v2 row slice must be positive")
     output_dir.mkdir(parents=True, exist_ok=True)
     for stale in output_dir.glob("*.sql"):
         stale.unlink()
     minimum_bytes = len(SCHEMA.encode("utf-8")) + len(FINALIZE.encode("utf-8"))
     if max_bytes < minimum_bytes:
         raise ValueError(f"FTS v2 SQL byte limit is smaller than its schema: {max_bytes}")
-    batch, part, count, input_count, dropped_for_size, total_bytes = [], 0, 0, 0, 0, 0
+    batch, part, count, input_count, source_rows_seen, dropped_for_size, total_bytes = [], 0, 0, 0, 0, 0, 0
     planned_bytes = minimum_bytes
     by_tier, by_source = {}, {}
 
@@ -109,6 +119,11 @@ def build(input_path: Path, output_dir: Path, *, batch_size=750, max_bytes=DEFAU
 
     with input_path.open(encoding="utf-8") as input_file:
         for line in input_file:
+            source_rows_seen += 1
+            if source_rows_seen <= start_row:
+                continue
+            if max_rows is not None and input_count >= max_rows:
+                break
             record = json.loads(line)
             input_count += 1
             sql_statement = statement(record, count + 1)
@@ -136,6 +151,8 @@ def build(input_path: Path, output_dir: Path, *, batch_size=750, max_bytes=DEFAU
     manifest = {
         "schema_version": 2,
         "input": str(input_path),
+        "start_row": start_row,
+        "max_rows": max_rows,
         "input_rows": input_count,
         "rows": count,
         "dropped_for_size": dropped_for_size,
@@ -160,9 +177,16 @@ def main():
     parser.add_argument("output", type=Path)
     parser.add_argument("--batch-size", type=int, default=750)
     parser.add_argument("--max-mb", type=int, default=230)
+    parser.add_argument("--start-row", type=int, default=0)
+    parser.add_argument("--max-rows", type=int)
     args = parser.parse_args()
     manifest = build(
-        args.input, args.output, batch_size=args.batch_size, max_bytes=args.max_mb * 1024 * 1024
+        args.input,
+        args.output,
+        batch_size=args.batch_size,
+        max_bytes=args.max_mb * 1024 * 1024,
+        start_row=args.start_row,
+        max_rows=args.max_rows,
     )
     print(
         f"Wrote {manifest['batches']} SQL batches for {manifest['rows']} records "
