@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-05（网站感谢语上下文误判修复已生产发布并完成定向复核）
+> 本文件随工作实时更新。最后更新：2026-08-05（网站混合对话状态机和 DeepSeek 重试可靠性重构已推送）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -23,7 +23,7 @@
 | 15 | 原始证据边界 | ✅ 完成 | ask/web/search 默认及 Vectorize 导出排除 card；实测回答来源全为原始资料 |
 | 16 | 细粒度知识卡片 | ✅ 完成 | 95 文件 / 1,192 块 / 1,192 向量；全量结构、路径、编号和行号审计通过 |
 | 17 | 网站版 Agent 审查与生产同步 | ✅ 完成 | API 检索阈值、权威等级、引用校验、断流状态和额度保护已修复；Vectorize 44,962 条、D1 FTS 44,962 条按稳定 ID 同步 |
-| 18 | 通用对话与 V4 Flash | ✅ 完成 | 问候及无可靠 iOS 证据的问题走 `general` 模式；检索故障自动降级；默认模型 `deepseek-v4-flash`；已部署生产 |
+| 18 | 通用对话与 V4 Flash | ✅ 完成 | 普通问题走 `general` 模式；默认模型 `deepseek-v4-flash`；已部署生产。后续 `0818ba0` 将可能为 iOS 的检索故障改为 503 退款，避免无依据降级 |
 | 19 | 固定问候语与引用兼容 | ✅ 完成 | `hi`/你好由后端直接返回指定助手介绍，不调模型不占每日额度；组合及中文引用规范为 `[n]`；安全校验保留；网站 `0e8f05d` 已上线 |
 | 20 | 新会话清空聊天记录 | ✅ 完成 | 前端移除 `sessionStorage` 聊天记录保存/恢复；聊天窗口每次重新打开为空，同一次打开仍支持多轮追问；网站 `27cff9f` 已上线 |
 | 21 | 恢复复杂问题详细回答 | ✅ 完成 | 放宽知识/通用回答提示词，复杂问题展开机制、条件、示例和常见误区；`max_tokens` 从 1600 调为 2400；网站 `36eb071` 已上线 |
@@ -32,15 +32,17 @@
 | 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；因 D1 大小上限移除重复旧表；数据库约 338 MB |
 | 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；初始 Pages 部署已验证，后续热修复为 `77f4779` |
 | 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；网站 `77f4779` 与 Pages `ed2b8461` 已上线 |
-| 27 | 引用格式容错 | ✅ 完成 | 模型引用越界或漏标段落时自动修正为本次证据编号，不再丢弃完整回答；网站 `ae14f97`、Pages `33383961` 已上线，Retrieval 测试 9 项通过 |
+| 27 | 引用格式容错 | ✅ 完成 | `ae14f97` 曾对格式漂移做自动修正；该策略已被第 31 项收紧：保留格式兼容，但不再伪造或自动补第一个来源 |
 | 28 | DeepSeek 空流重试与生产自测 | ✅ 完成 | 空正文流自动重试一次，两次为空退款并返回 `empty_answer`；网站 `3ebf6f0`、Pages `dfe8f355` 已上线；greeting、weak、ARC、general、no-evidence 五组生产自测全部通过 |
-| 29 | 感谢语上下文误判修复 | ✅ 完成 | `9fc6fad` 让纯感谢/夸赞退出 iOS 检索，`7893c7d` 改为后端确定性回复且不调 DeepSeek、不占每日额度；最新版 Pages `ee8cef76` 与自定义域名的“weak 后说你真棒”登录态定向复核均通过 |
+| 29 | 感谢语上下文误判修复 | ✅ 完成 | `9fc6fad` 让纯感谢/夸赞退出 iOS 检索，`7893c7d` 改为后端确定性回复且不调 DeepSeek、不占每日额度；当时的 Pages `ee8cef76` 与自定义域名定向复核均通过 |
+| 30 | 混合对话路由重构 | ✅ 完成 | `0818ba0` 改为按当前轮次判断的新问题/追问状态机，只有显式追问继承相关历史；普通新话题隔离旧 iOS 上下文，边界技术问题先做证据探测；前端回传真实回答模式 |
+| 31 | 来源、引用与上游可靠性加固 | ✅ 完成 | 落实暑期资料/官方/源码并列第一的排序；禁止自动伪造 `[1]`；`101cf86` 让空流和无正文断流安全重试且每次尝试使用独立超时；生产自测扩到 10 个混合场景并支持定向用例 |
 
 ## 已定决策（讨论阶段结论）
 
 1. Embedding 用本地 bge-m3（不依赖任何 API）；
 2. apple-developer-archive-vault（600MB 英文归档）只进关键词索引，不做向量；
-3. objc4 源码入库但以 `source_code` 类型降权；
+3. objc4 源码入库；生产网站按当前约定将源码与暑期资料、官方文档并列第一；
 4. 界面：本地 CLI + Cloudflare Pages Functions + Vectorize + Workers AI 网站版；
 5. 建库解耦：代码与当前资料已实测并完成增量建库；后续资料变化时可再次运行 `ioskb index`；
 6. 知识卡片脚本支持 DeepSeek / Claude 双后端（Anthropic OpenAI 兼容端点），不被 Claude 会员绑死；
@@ -84,7 +86,8 @@
 - 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 网站最终 commit 为 `7893c7d`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-- 最新 Pages production deployment 为 `https://ee8cef76.tommywu-lab.pages.dev`（source `7893c7d`）；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
-- `9fc6fad` 部署的生产自测入口六组全部通过（新增 `acknowledgement-after-ios`）；最新 `7893c7d` 已在 Pages production 与自定义域名定向验证“weak 后说你真棒”，均返回 HTTP 200、`general`、0 来源和固定感谢回复；
-- 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述最新版验证是 API 级定向复核，不冒充浏览器 Cookie 流程或完整六组重跑。
+- 网站最终 commit 为 `101cf86`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+- 最新 Pages production deployment 为 `https://3504e14d.tommywu-lab.pages.dev`（source `101cf86`）；该地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- 网站本地 TypeScript、Astro Check、18 项 Retrieval 测试、runtime/eval 覆盖、完整构建、链接和体积检查均通过；
+- `101cf86` 的 10 场景生产验证中，首轮 6 项直接通过，4 项遇到网络中断或引用门拦截；定向复测 weak、ARC、general、new-ios-topic-after-ios 后 4 项全部通过，因此 10 项均已逐项通过，但不是单次连续 10/10；
+- 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述是 API 级登录态复核，不冒充浏览器 Cookie 登录流程。
