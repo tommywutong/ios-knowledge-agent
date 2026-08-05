@@ -24,7 +24,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 最后核对时间：2026-08-05（Asia/Shanghai）。
 
 - 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `77f4779`，Retrieval v2 热修复已部署。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `ae14f97`，Retrieval v2 引用容错热修复已部署。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
@@ -32,7 +32,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 新会话清空聊天记录：`27cff9f Reset chat when opening a new session`。
 - 恢复复杂问题详细回答：`36eb071 fix: restore detailed chat answers`。
 - 线上地址：`https://www.tommywutong.cn`；本轮最新 Pages 部署为
-  `https://ed2b8461.tommywu-lab.pages.dev`。
+  `https://33383961.tommywu-lab.pages.dev`。
 - 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
   未登录状态按设计不执行问答。
 - 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。
@@ -44,7 +44,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 前端不再用 `sessionStorage` 保存或恢复聊天记录；聊天窗口每次从关闭状态重新打开时都是空白，只有同一次打开期间保留多轮追问上下文；“新建对话”仍可手动清空当前会话。
   没有可靠 iOS 证据的非 iOS 问题走 DeepSeek 通用回答，不附知识库来源；检索异常也降级到通用模式。
 - 引用校验已兼容 `[1, 2]`、`【1、2】`、`【资料 1】`、`[来源：2]` 等 DeepSeek 输出，
-  并统一为前端可点击的 `[1][2]`；完全无引用或编号越界仍会被拒绝。
+  并统一为前端可点击的 `[1][2]`；模型编号越界或个别段落漏标时自动修正为本次证据编号，
+  不再丢弃整条回答。没有检索证据的问题仍不会进入知识回答。
 - Cloudflare Vectorize `ios-kb` 保持 `44,962` 条稳定 `v1-*` 向量；生产 D1 已切换到
   `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小已降至约 `338 MB`。
   因 D1 最大数据库大小限制，旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 SQL 或 D1 Time Travel 恢复。

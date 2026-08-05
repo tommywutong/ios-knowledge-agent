@@ -32,6 +32,7 @@
 | 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；因 D1 大小上限移除重复旧表；数据库约 338 MB |
 | 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；初始 Pages 部署已验证，后续热修复为 `77f4779` |
 | 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；网站 `77f4779` 与 Pages `ed2b8461` 已上线 |
+| 27 | 引用格式容错 | ✅ 完成 | 模型引用越界或漏标段落时自动修正为本次证据编号，不再丢弃完整回答；网站 `ae14f97`、Pages `33383961` 已上线，Retrieval 测试 9 项通过 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -81,6 +82,6 @@
 - 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 网站最终 commit 为 `77f4779`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-- 最新 Pages deployment 为 `https://ed2b8461.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- 网站最终 commit 为 `ae14f97`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+- 最新 Pages deployment 为 `https://33383961.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
 - 登录态运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。
