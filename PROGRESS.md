@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-05（Retrieval v2 代码完成，生产 D1 已导入并切换，代码发布待本轮推送）
+> 本文件随工作实时更新。最后更新：2026-08-05（Retrieval v2 生产发布与 D1 容量热修复已完成）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -30,8 +30,8 @@
 | 22 | Retrieval v2 分层 FTS 导出 | ✅ 完成 | 保留 44,962 条 Tier 0 原始证据；从两个 FTS-only 来源按主题/平台/符号/路径评分，最终 SQL 为 86,307 行，含邻接索引和 230 MiB 硬上限 |
 | 23 | Retrieval v2 网站链路 | ✅ 完成 | 最多 4 路查询规划、Vectorize/D1 双路召回、RRF、Workers AI reranker、邻块扩展、段落引用校验、`no_evidence`/503 退款保护和 v1 回滚开关 |
 | 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；因 D1 大小上限移除重复旧表；数据库约 338 MB |
-| 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；Pages 部署 `4cb7ff77`，自定义域名公开 API `configured: true` |
-| 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；待热修复发布后复测登录态问答 |
+| 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；初始 Pages 部署已验证，后续热修复为 `77f4779` |
+| 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；网站 `77f4779` 与 Pages `ed2b8461` 已上线 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -77,10 +77,10 @@
 - 本地网页 `/api/status`：141,734 文件、1,069,089 块、46,154 已向量化，模型离线预热完成；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
 - 本仓库 Retrieval v2 代码和导出脚本位于 `feat/retrieval-v2`；网站同名功能分支待推送；
-- 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧表 44,962 条；
+- 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧 v1 表因空间限制已移除；
 - 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 网站最终 commit 为 `33c6d9a`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-- 最新 Pages deployment 为 `https://4cb7ff77.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- 网站最终 commit 为 `77f4779`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+- 最新 Pages deployment 为 `https://ed2b8461.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
 - 登录态运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。

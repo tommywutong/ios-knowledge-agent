@@ -24,7 +24,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 最后核对时间：2026-08-05（Asia/Shanghai）。
 
 - 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `33c6d9a`，Retrieval v2 已部署。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `77f4779`，Retrieval v2 热修复已部署。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
@@ -32,7 +32,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 新会话清空聊天记录：`27cff9f Reset chat when opening a new session`。
 - 恢复复杂问题详细回答：`36eb071 fix: restore detailed chat answers`。
 - 线上地址：`https://www.tommywutong.cn`；本轮最新 Pages 部署为
-  `https://4cb7ff77.tommywu-lab.pages.dev`。
+  `https://ed2b8461.tommywu-lab.pages.dev`。
 - 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
   未登录状态按设计不执行问答。
 - 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。

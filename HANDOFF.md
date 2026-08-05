@@ -117,19 +117,19 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；知识模式和通用模式均按问题复杂度组织回答，复杂问题展开机制、条件、示例和常见误区，API `max_tokens` 为 `2400`；
 8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧 v1 表因空间限制已移除；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；无引用或越界编号仍会校验失败；
-10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc` 和 `33c6d9a`，并快进推送到
+10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc`、`33c6d9a`、`42df2f9` 和 `77f4779`，并快进推送到
     网站 `main`/`origin/main`；
 11. GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-    最新 Pages deployment 为 `https://4cb7ff77.tommywu-lab.pages.dev`，自定义域名
+    最新 Pages deployment 为 `https://ed2b8461.tommywu-lab.pages.dev`，自定义域名
     `https://www.tommywutong.cn/api/ios-ask` 与预览地址均返回 HTTP 200、`configured: true`。
 
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2 功能与导出脚本已提交为 `ccbeabf`、
   `024f4aa` 并快进推送到 `main`/`origin/main`；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 已提交为 `59975bc`、`33c6d9a` 并快进推送到
+- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 已提交为 `59975bc`、`33c6d9a`、`42df2f9`、`77f4779` 并快进推送到
   `main`/`origin/main`；
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages 部署为 `https://4cb7ff77.tommywu-lab.pages.dev`；
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages 部署为 `https://ed2b8461.tommywu-lab.pages.dev`；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`。登录后的完整运行时评估尚未重跑，
   因为终端没有管理员 `IOS_EVAL_COOKIE`；本轮只完成了公开检查、生产 D1 查询和本地/runtime 评测集检查。
 
