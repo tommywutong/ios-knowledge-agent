@@ -24,15 +24,15 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 最后核对时间：2026-08-05（Asia/Shanghai）。
 
 - 本知识库仓库正在推进 Retrieval v2 功能分支；实际 `main`/`origin/main` 和功能分支提交以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，`main`/`origin/main` 已到 `ae14f97`，Retrieval v2 引用容错热修复已部署。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，本地 `main`、`feat/retrieval-v2`、`origin/main` 和 `origin/feat/retrieval-v2` 已统一到 `3ebf6f0`；该提交包含 DeepSeek 空流自动重试和准确的空回答错误分类。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
 - 确定性问候回复：`0e8f05d Return fixed greetings without model calls`。
 - 新会话清空聊天记录：`27cff9f Reset chat when opening a new session`。
 - 恢复复杂问题详细回答：`36eb071 fix: restore detailed chat answers`。
-- 线上地址：`https://www.tommywutong.cn`；本轮最新 Pages 部署为
-  `https://33383961.tommywu-lab.pages.dev`。
+- 线上地址：`https://www.tommywutong.cn`；本轮最新 production Pages 部署为
+  `https://dfe8f355.tommywu-lab.pages.dev`（source `3ebf6f0`）。
 - 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
   未登录状态按设计不执行问答。
 - 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。
@@ -46,6 +46,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 引用校验已兼容 `[1, 2]`、`【1、2】`、`【资料 1】`、`[来源：2]` 等 DeepSeek 输出，
   并统一为前端可点击的 `[1][2]`；模型编号越界或个别段落漏标时自动修正为本次证据编号，
   不再丢弃整条回答。没有检索证据的问题仍不会进入知识回答。
+- DeepSeek 流偶发 HTTP 200 但无正文时，Pages Function 会在同一请求额度内自动重试一次；
+  两次都为空时退款并返回 `empty_answer`，不再误报为引用错误。
 - Cloudflare Vectorize `ios-kb` 保持 `44,962` 条稳定 `v1-*` 向量；生产 D1 已切换到
   `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小已降至约 `338 MB`。
   因 D1 最大数据库大小限制，旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 SQL 或 D1 Time Travel 恢复。
@@ -56,7 +58,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 本地测试：Retrieval v2 导出与知识库测试全部通过；网站的 Retrieval 逻辑测试、TypeScript、
   Astro Check、runtime 评测集覆盖检查、完整构建、链接检查和体积检查已通过。生产 D1
   已完成真实导入和全文/邻接 smoke test；GitHub Actions 的 Code quality、Build and Check、
-  Deploy to Cloudflare Pages 全部成功。登录态问答仍未在没有管理员 Cookie 的情况下冒充完成。
+  Deploy to Cloudflare Pages 全部成功；生产自测入口五组用例（greeting、weak、ARC、general、
+  no-evidence）全部通过。登录态问答仍未在没有管理员 Cookie 的情况下冒充完成。
 
 尚未自动执行登录后的线上 `hi` 端到端对话，因为终端没有管理员
 `tw_auth_session`/`IOS_EVAL_COOKIE`。不要把公开健康检查误写成已完成登录态运行时评估。

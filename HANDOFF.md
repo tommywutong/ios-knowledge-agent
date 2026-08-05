@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-05（Retrieval v2 已导出、导入生产 D1、推送 GitHub 并完成 Pages 部署和公开 API 验证）
+> 最后更新：2026-08-05（网站 `3ebf6f0` 已推送并完成 Pages 部署、生产自测五组全部通过）
 
 ## 1. 这个项目是什么
 
@@ -118,19 +118,22 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧 v1 表因空间限制已移除；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；模型编号越界
    或个别技术段落漏标时自动修正为本次证据编号，避免因格式漂移丢弃整条回答；无检索证据仍不生成知识回答；
-10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc`、`33c6d9a`、`42df2f9`、`77f4779` 和 `ae14f97`，并快进推送到
-    网站 `main`/`origin/main`；
+10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc`、`33c6d9a`、`42df2f9`、`77f4779`、`ae14f97`、
+    `78cbd54`、`6b07d60` 和 `3ebf6f0`，并快进推送到网站 `main`/`origin/main`；
 11. GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-    最新 Pages deployment 为 `https://33383961.tommywu-lab.pages.dev`，自定义域名
+    最新 Pages production deployment 为 `https://dfe8f355.tommywu-lab.pages.dev`（source `3ebf6f0`），自定义域名
     `https://www.tommywutong.cn/api/ios-ask` 与预览地址均返回 HTTP 200、`configured: true`。
+12. 网站内置生产自测入口 `pnpm ios-self-test:production`，本轮在
+    `https://dfe8f355.tommywu-lab.pages.dev` 实测 `greeting`、`weak`、`ARC`、`general`、
+    `no-evidence` 五组全部通过；ARC 返回 8 条本次资料、11 个有效引用。
 
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2 功能与导出脚本已提交为 `ccbeabf`、
   `024f4aa` 并快进推送到 `main`/`origin/main`；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 已提交为 `59975bc`、`33c6d9a`、`42df2f9`、`77f4779`、`ae14f97` 并快进推送到
-  `main`/`origin/main`；
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages 部署为 `https://33383961.tommywu-lab.pages.dev`；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：Retrieval v2 已提交为 `59975bc`、`33c6d9a`、`42df2f9`、`77f4779`、`ae14f97`、`78cbd54`、`6b07d60`、`3ebf6f0` 并快进推送到
+    `main`/`origin/main`；
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://dfe8f355.tommywu-lab.pages.dev`（source `3ebf6f0`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`。登录后的完整运行时评估尚未重跑，
   因为终端没有管理员 `IOS_EVAL_COOKIE`；本轮只完成了公开检查、生产 D1 查询和本地/runtime 评测集检查。
 
