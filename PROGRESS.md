@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-05（网站空流重试修复已生产发布，五组自测全部通过）
+> 本文件随工作实时更新。最后更新：2026-08-05（网站感谢语上下文误判修复已生产发布并完成定向复核）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -34,6 +34,7 @@
 | 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；网站 `77f4779` 与 Pages `ed2b8461` 已上线 |
 | 27 | 引用格式容错 | ✅ 完成 | 模型引用越界或漏标段落时自动修正为本次证据编号，不再丢弃完整回答；网站 `ae14f97`、Pages `33383961` 已上线，Retrieval 测试 9 项通过 |
 | 28 | DeepSeek 空流重试与生产自测 | ✅ 完成 | 空正文流自动重试一次，两次为空退款并返回 `empty_answer`；网站 `3ebf6f0`、Pages `dfe8f355` 已上线；greeting、weak、ARC、general、no-evidence 五组生产自测全部通过 |
+| 29 | 感谢语上下文误判修复 | ✅ 完成 | `9fc6fad` 让纯感谢/夸赞退出 iOS 检索，`7893c7d` 改为后端确定性回复且不调 DeepSeek、不占每日额度；最新版 Pages `ee8cef76` 与自定义域名的“weak 后说你真棒”登录态定向复核均通过 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -83,7 +84,7 @@
 - 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
-- 网站最终 commit 为 `3ebf6f0`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
-- 最新 Pages production deployment 为 `https://dfe8f355.tommywu-lab.pages.dev`（source `3ebf6f0`）；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
-- 生产自测入口 `pnpm ios-self-test:production` 五组全部通过，ARC 用例返回 8 条本次资料和 11 个有效引用；空流重试修复已验证生效；
-- 登录态运行时评估待有管理员 `IOS_EVAL_COOKIE` 时重跑，不在仓库保存该 Cookie。
+- 网站最终 commit 为 `7893c7d`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
+- 最新 Pages production deployment 为 `https://ee8cef76.tommywu-lab.pages.dev`（source `7893c7d`）；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- `9fc6fad` 部署的生产自测入口六组全部通过（新增 `acknowledgement-after-ios`）；最新 `7893c7d` 已在 Pages production 与自定义域名定向验证“weak 后说你真棒”，均返回 HTTP 200、`general`、0 来源和固定感谢回复；
+- 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述最新版验证是 API 级定向复核，不冒充浏览器 Cookie 流程或完整六组重跑。
