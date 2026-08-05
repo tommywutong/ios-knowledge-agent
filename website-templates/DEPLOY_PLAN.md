@@ -59,8 +59,9 @@ pnpm exec wrangler d1 execute tommywu-lab-db --remote --command \
 ```
 
 两张 `*_next` 表都应为 `86,307` 行后，再执行 `999-finalize.sql` 原子切换。切换后核对：
-`ios_ask_fts_v2=86,307`、`ios_ask_fts_v2_neighbors=86,307`、旧 `ios_ask_fts=44,962`，
-并测试 `MATCH 'uikit'` 和按 `file_key + chunk_ordinal` 的邻接查询。旧表至少保留 7 天。
+`ios_ask_fts_v2=86,307`、`ios_ask_fts_v2_neighbors=86,307`，并测试 `MATCH 'uikit'` 和按
+`file_key + chunk_ordinal` 的邻接查询。D1 接近大小上限时，旧 v1 表和可选诊断表不能阻断主问答；
+旧表需从本地 SQL 或 D1 Time Travel 恢复后才能作为 v1 回滚源。
 
 ## 发布与验证
 
@@ -86,6 +87,6 @@ IOS_EVAL_COOKIE='tw_auth_session=...' pnpm exec node scripts/run-ios-agent-evalu
 
 ## 回滚
 
-网站代码问题通过回滚 `tommywu-lab` 的提交并重新部署处理。数据问题优先将 Pages 变量
-`IOS_RETRIEVAL_VERSION` 设为 `v1`，使用保留的 `ios_ask_fts`（44,962 行）和现有 Vectorize；
-不要删除当前生产索引或旧表。确认 v2 稳定运行至少 7 天后，才可另行安排旧表清理。
+网站代码问题通过回滚 `tommywu-lab` 的提交并重新部署处理。数据问题先从本地
+`data/export/ios_fts/` 或 D1 Time Travel 恢复旧 v1 表，再将 Pages 变量 `IOS_RETRIEVAL_VERSION`
+设为 `v1`；未恢复旧表前保持 `v2`，不要把不存在的旧表配置为回滚源。

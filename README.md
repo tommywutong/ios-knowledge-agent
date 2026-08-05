@@ -8,8 +8,8 @@
 
 截至 2026-08-05，本地库包含 141,734 个文件、1,069,089 个文本块；46,154 个块有
 bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。生产 D1
-已切换到 FTS v2：`ios_ask_fts_v2` 和邻接索引各 86,307 行，旧的 `ios_ask_fts`
-保留 44,962 行至少 7 天，便于回滚。
+已切换到 FTS v2：`ios_ask_fts_v2` 和邻接索引各 86,307 行。由于 D1 最大数据库大小限制，
+重复的旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 `data/export/ios_fts/` 或 D1 Time Travel 恢复。
 
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
 Swift/Objective-C/C/C++/汇编源码；`articles/ai/` 下 17 篇纯 AI 文章、旧版重复 objc4 目录和构建/媒体产物按约定排除。
@@ -80,7 +80,7 @@ uv run ioskb export-fts                 # 生成生产 D1 FTS v2 分批 SQL
 ```
 导出使用稳定的 `v1-*` ID。网站同步时用 Vectorize `upsert`，并删除远端已不存在的旧 ID；
 D1 的 `data/export/ios_fts_v2/*.sql` 批次按顺序执行，确认 `*_next` 两张表各 86,307 行后，
-最后执行 `999-finalize.sql` 原子切换。旧 `ios_ask_fts` 至少保留 7 天，再按回滚窗口清理。
+最后执行 `999-finalize.sql` 原子切换。D1 接近大小上限时，不要让可选诊断表或旧索引表阻断问答。
 部署和线上验证记录见 `HANDOFF.md`。
 
 ## 配置

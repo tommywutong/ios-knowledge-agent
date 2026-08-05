@@ -104,8 +104,9 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 1. `uv run ioskb export-vectorize` 导出 44,962 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
 2. Cloudflare Vectorize `ios-kb` 已用 `upsert` 同步，远端旧数字 ID 已清理；
 3. D1 Retrieval v2 已按 `data/export/ios_fts_v2/000.sql`–`115.sql` 导入并用
-   `999-finalize.sql` 原子切换：`ios_ask_fts_v2` 和 `ios_ask_fts_v2_neighbors` 各 `86,307` 行，
-   数据库大小 `513 MB`；旧 `ios_ask_fts` 保留 `44,962` 行至少 7 天；
+   `999-finalize.sql` 原子切换：`ios_ask_fts_v2` 和 `ios_ask_fts_v2_neighbors` 各 `86,307` 行。
+   v2 导入后数据库达到 `513 MB` 并触发最大大小限制，已移除重复的旧 `ios_ask_fts`，当前约 `338 MB`；
+   旧表可由本地 `data/export/ios_fts/` 或 D1 Time Travel 恢复；
 4. Pages Function 使用 Workers AI `@cf/baai/bge-m3` → Vectorize + D1 FTS v2，最多 4 路
    查询规划、RRF 合并、`@cf/baai/bge-reranker-base` 重排和邻块扩展，返回段落级引用；
 5. API 有用户/管理员限流、知识回答引用校验、反馈审计和断流状态；前端不保存未完成回答到后续上下文；
@@ -114,7 +115,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
    返回用户指定的固定助手介绍，不调用模型且不占每日额度；非 iOS 问题走 `general` 模式；
    前端不再用 `sessionStorage` 保存或恢复聊天记录，聊天窗口每次从关闭状态重新打开时为空；同一次打开期间仍保留多轮追问上下文，“新建对话”仍可手动清空当前会话；
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；知识模式和通用模式均按问题复杂度组织回答，复杂问题展开机制、条件、示例和常见误区，API `max_tokens` 为 `2400`；
-8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧表 44,962 行；
+8. 生产 Vectorize `ios-kb` 为 44,962 条；D1 v2 两张表各 86,307 行，旧 v1 表因空间限制已移除；
 9. 引用解析已兼容 DeepSeek 可能返回的组合引用和中文引用格式，统一规范为 `[n]`；无引用或越界编号仍会校验失败；
 10. 网站功能代码与文档已按 clean-commit 拆为 `59975bc` 和 `33c6d9a`，并快进推送到
     网站 `main`/`origin/main`；
@@ -141,8 +142,8 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 资料更新时：重新导出并 `wrangler vectorize upsert ios-kb --file=...`，先列出远端 ID 做备份，
 再删除本次导出不存在的 stale ID；运行 `uv run ioskb export-fts` 生成 `data/export/ios_fts_v2/`，
-依次导入 `000.sql`–`115.sql`，核对 `*_next` 各 86,307 行后执行 `999-finalize.sql`。旧表至少保留 7 天；
-紧急回滚只需把 Pages 环境变量 `IOS_RETRIEVAL_VERSION` 设为 `v1` 并重新部署。
+依次导入 `000.sql`–`115.sql`，核对 `*_next` 各 86,307 行后执行 `999-finalize.sql`。若接近 D1 大小上限，
+不要创建可选诊断表阻断问答；v1 回滚需先恢复旧表再设置 `IOS_RETRIEVAL_VERSION=v1`。
 
 ## 5. 已知注意点 / 坑
 

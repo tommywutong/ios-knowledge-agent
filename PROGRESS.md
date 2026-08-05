@@ -29,8 +29,9 @@
 | 21 | 恢复复杂问题详细回答 | ✅ 完成 | 放宽知识/通用回答提示词，复杂问题展开机制、条件、示例和常见误区；`max_tokens` 从 1600 调为 2400；网站 `36eb071` 已上线 |
 | 22 | Retrieval v2 分层 FTS 导出 | ✅ 完成 | 保留 44,962 条 Tier 0 原始证据；从两个 FTS-only 来源按主题/平台/符号/路径评分，最终 SQL 为 86,307 行，含邻接索引和 230 MiB 硬上限 |
 | 23 | Retrieval v2 网站链路 | ✅ 完成 | 最多 4 路查询规划、Vectorize/D1 双路召回、RRF、Workers AI reranker、邻块扩展、段落引用校验、`no_evidence`/503 退款保护和 v1 回滚开关 |
-| 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；旧表 44,962 行保留至少 7 天；数据库 513 MB |
+| 24 | 生产 D1 FTS v2 导入 | ✅ 完成 | `tommywu-lab-db` 已切换到 `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 86,307 行；因 D1 大小上限移除重复旧表；数据库约 338 MB |
 | 25 | Retrieval v2 GitHub/Pages 发布 | ✅ 完成 | 知识库 `ccbeabf`/`024f4aa`、网站 `59975bc`/`33c6d9a` 已推送 `main`；三条 GitHub Actions 全部成功；Pages 部署 `4cb7ff77`，自定义域名公开 API `configured: true` |
+| 26 | D1 容量故障修复 | ✅ 完成 | 确认 `Exceeded maximum DB size` 导致请求失败；移除重复旧 FTS，诊断表改为非阻断初始化；待热修复发布后复测登录态问答 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -77,7 +78,8 @@
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
 - 本仓库 Retrieval v2 代码和导出脚本位于 `feat/retrieval-v2`；网站同名功能分支待推送；
 - 生产 Vectorize `ios-kb` 为 44,962 条；D1 `ios_ask_fts_v2` 与邻接表各 86,307 条，旧表 44,962 条；
-- 生产 D1 `wrangler d1 info` 显示数据库大小 513 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
+- 生产 D1 `wrangler d1 info` 显示数据库大小约 338 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；
+- 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
 - 网站最终 commit 为 `33c6d9a`；GitHub Actions 的 Code quality、Build and Check、Deploy to Cloudflare Pages 全部成功；
 - 最新 Pages deployment 为 `https://4cb7ff77.tommywu-lab.pages.dev`；预览地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；

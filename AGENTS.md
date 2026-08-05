@@ -46,8 +46,8 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 引用校验已兼容 `[1, 2]`、`【1、2】`、`【资料 1】`、`[来源：2]` 等 DeepSeek 输出，
   并统一为前端可点击的 `[1][2]`；完全无引用或编号越界仍会被拒绝。
 - Cloudflare Vectorize `ios-kb` 保持 `44,962` 条稳定 `v1-*` 向量；生产 D1 已切换到
-  `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小为 `513 MB`。
-  旧 `ios_ask_fts` 保留 `44,962` 行至少 7 天；紧急回滚时设置 `IOS_RETRIEVAL_VERSION=v1`。
+  `ios_ask_fts_v2` 与 `ios_ask_fts_v2_neighbors`，各 `86,307` 行，数据库大小已降至约 `338 MB`。
+  因 D1 最大数据库大小限制，旧 `ios_ask_fts` 已移除；v1 回滚需先从本地 SQL 或 D1 Time Travel 恢复。
 - Retrieval v2 的链路为查询规划（最多 4 路）→ Vectorize/D1 FTS 召回 → RRF 去重 →
   Workers AI `@cf/baai/bge-reranker-base`（失败自动回退）→ 邻块扩展 → 段落级引用校验。
   iOS 问题无可靠证据时返回 `422 no_evidence`，不调用 DeepSeek；检索故障返回 `503` 并退款。
