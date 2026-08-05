@@ -24,7 +24,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 最后核对时间：2026-08-06（Asia/Shanghai）。
 
 - 本知识库仓库的 `main`、`origin/main` 与 `feat/retrieval-v2` 已同步包含 Retrieval v2、资料新鲜度/安全同步和 FTS 分区导出；实际提交仍以开场核对命令为准。
-- 网站仓库：`/Users/tommywu/tommywu-lab`，本地与远端 `main`、`feat/retrieval-v2` 已统一到 `a59622e`；本轮完成 API 拆分、分库检索、指标/留存、管理员来源预览、依赖升级、单一 CI 部署门禁和 DeepSeek 可见回答预算修复。
+- 网站仓库：`/Users/tommywu/tommywu-lab`，本地与远端 `main`、`feat/retrieval-v2` 已统一到 `0f9cff5`；本轮完成 API 拆分、分库检索、指标/留存、管理员来源预览、依赖升级、单一 CI 部署门禁、DeepSeek 可见回答预算修复和聊天交互升级。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
 - 问候语与引用兼容修复：`2188b85 Fix chat greetings and citation formats`。
@@ -37,8 +37,9 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - DeepSeek 独立重试超时：`101cf86 fix: isolate DeepSeek retry timeouts`。
 - CI 全新环境 Astro 类型同步：`9fe2708 fix: generate Astro types before CI checks`。
 - DeepSeek 隐藏思考耗尽正文预算修复：`a59622e fix: reserve DeepSeek budget for visible answers`。
+- 聊天输入历史、顺序队列、动态追问与操作区升级：`0f9cff5 feat: improve knowledge chat interactions`。
 - 线上地址：`https://www.tommywutong.cn`；本轮最新 production Pages 部署为
-  `https://5ee520a8.tommywu-lab.pages.dev`（source `a59622e`）。
+  `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`）。
 - 线上 API `GET /api/ios-ask` 在 Pages 预览地址和自定义域名均返回 HTTP 200、`configured: true`；
   未登录状态按设计不执行问答。
 - 当前默认回答模型为 `deepseek-v4-flash`；生产环境没有 `DEEPSEEK_MODEL` 覆盖项。问答显式关闭
@@ -55,6 +56,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 明确 iOS 问题必须检索；明确普通问题直接走通用回答；边界不清的技术问题先做证据探测，只有强证据才进入知识模式。可能是 iOS 的问题遇到检索故障时返回 `503` 并退款，不用无依据的通用回答冒充。
 - 前端不再用 `sessionStorage` 保存或恢复聊天记录；聊天窗口每次从关闭状态重新打开时都是空白，只有同一次打开期间保留多轮追问上下文；“新建对话”仍可手动清空当前会话。
   普通问题走 DeepSeek 通用回答，不附知识库来源；只有真实追问才把相关历史送入提示词，新话题的提示词与检索词都不混入旧上下文。
+- 输入框支持上/下箭头浏览本次会话的提问历史并恢复未发送草稿；回答生成期间仍可输入，提交后进入最多 4 条的前端 FIFO 队列，停止当前回答使用独立按钮。已问过或本会话已展示过的拓展问题会被排除，服务端按主题提供最多 5 个候选用于轮换；回答操作区改为带图标的两组 32px 控件。
 - 引用校验已兼容 `[1, 2]`、`【1、2】`、`【资料 1】`、`[来源：2]` 等 DeepSeek 输出，
   并统一为前端可点击的 `[1][2]`；越界编号会被移除，但不会再伪造 `[1]` 或把无引用段落强行归给第一个来源。知识回答若最终没有任何有效引用则退款并返回 `invalid_citations`。
 - DeepSeek 流首次无正文或在产生正文前异常时会自动重试一次；每次尝试有独立的 50 秒超时，第二次不再复用第一次已到期的中止信号。两次都为空时退款并返回 `empty_answer`。
@@ -83,14 +85,14 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
   普通用户看不到个人笔记正文或本机绝对路径。
 - GitHub Actions 已合并为单一顺序门禁，复用一次完整构建后再部署；Cloudflare Git 自动部署已关闭，
   不再为同一提交额外生成 Idle/404 部署。Actions 均锁定到官方最新稳定 release 的精确 SHA；
-  全新 checkout 会先运行 `astro sync` 再做独立 TypeScript 检查。Actions run `31029937311` 全部成功。
+  全新 checkout 会先运行 `astro sync` 再做独立 TypeScript 检查。Actions run `31034429859` 全部成功。
 - 本地测试：Retrieval v2 导出与知识库测试全部通过；网站的 Retrieval 逻辑测试、TypeScript、
   Astro Check、runtime 评测集覆盖检查、完整构建、链接检查和体积检查已通过。生产 D1
   已完成两库真实导入和全文/邻接 smoke test；网站本地 14 项 API 测试、20 项 Retrieval 测试、
-  TypeScript、Astro Check、完整构建、链接/体积检查和生产依赖审计全部通过。网站生产自测仍为 10 项，
-  覆盖 greeting、weak、ARC、general、感谢、确认、iOS 后切普通话题、iOS 短追问、iOS 新话题和 no-evidence。
-  `a59622e` 已在自定义域名一次连续运行中达到 10/10；移除业务库旧 FTS 后，weak、ARC、general、
-  no-evidence 四个关键场景再次达到 4/4。Pages 地址和自定义域名公开健康检查均为 HTTP 200、`configured: true`。
+  TypeScript、Astro Check、完整构建、链接/体积检查和生产依赖审计全部通过。网站生产自测为 11 项，
+  新增用户原始问题 `给我讲讲iOS内存管理`；该题线上返回 knowledge、6 个来源和 27 处引用。其余 10 项
+  也通过；完整批次中 general 曾遇到一次终端网络 `fetch failed`，随即定向重跑成功。Pages 地址和
+  自定义域名公开健康检查均为 HTTP 200、`configured: true`，线上静态资源已确认包含新版交互代码。
 
 终端可从 macOS 钥匙串读取生产自测 Bearer token，但仓库不保存 token/Cookie。不要把上述定向复核
 或连续自测冒充为浏览器 Cookie 登录流程验证。

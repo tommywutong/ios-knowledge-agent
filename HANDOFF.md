@@ -127,26 +127,28 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 9. 当前轮次先分为问候、感谢、确认、新问题、追问，再决定领域与是否继承历史。明确 iOS 必须检索，明确普通问题不检索，边界技术问题先证据探测；只有明确指代的追问继承相关上下文，新话题隔离旧历史；
 10. 检索排序在网站层落实 `26暑期内容`/官方文档/源码并列第一、个人笔记第二、技术博客第三。引用解析兼容组合及中文格式并统一为 `[n]`；越界引用会移除，但不再伪造来源或自动补 `[1]`，最终无有效引用则退款报错；
 11. DeepSeek 首次空流或在输出正文前断流时重试一次；每次尝试重新创建中止控制器并获得独立 50 秒超时。生产自测脚本支持 `IOS_SELF_TEST_CASES` 按用例定向运行；
-12. 网站功能代码与后续修复已提交至 `a59622e` 并快进推送到网站 `main`/`origin/main`；API 拆为
+12. 网站功能代码与后续修复已提交至 `0f9cff5` 并快进推送到网站 `main`/`origin/main` 和 `feat/retrieval-v2`；API 拆为
     流处理、运营数据和主编排模块，新增精确故障指标、后台留存清理、双库降级、管理员安全来源预览，
     并修复 DeepSeek 默认思考模式耗尽正文 token 的问题；
 13. GitHub Actions 已合并为单一 CI/部署门禁，Cloudflare Git 自动部署已关闭；
-    全新 checkout 先生成 Astro 类型再检查 TypeScript；run `31029937311` 成功。最新 Pages production
-    deployment 为 `https://5ee520a8.tommywu-lab.pages.dev`（source `a59622e`），自定义域名
+    全新 checkout 先生成 Astro 类型再检查 TypeScript；run `31034429859` 成功。最新 Pages production
+    deployment 为 `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`），自定义域名
     `https://www.tommywutong.cn/api/ios-ask` 与该地址均返回 HTTP 200、`configured: true`。
-14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 10 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行。
-    `a59622e` 在自定义域名已一次连续 10/10；业务库旧 FTS 移除后又定向复测 weak、ARC、general、
-    no-evidence，4/4 通过。
+14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行。
+    新增 `给我讲讲iOS内存管理` 回归用例，生产返回 knowledge、6 个来源和 27 处引用；完整批次其余场景也通过，
+    其中 general 曾出现一次终端网络 `fetch failed`，立即定向重跑通过。
+15. 前端支持本会话输入历史、未发送草稿恢复、回答期间继续输入和最多 4 条 FIFO 排队；当前回答的停止按钮独立保留。
+    已问/已展示拓展问题会过滤，服务端每个主题提供最多 5 个候选轮换；回答工具与反馈改为分组图标按钮。
 
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
   导出已完成，并快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：最新加固、分库支持和生成预算修复已提交至 `a59622e`，并快进推送到
-    `main`/`origin/main`；
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://5ee520a8.tommywu-lab.pages.dev`（source `a59622e`）；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：最新加固、分库支持、生成预算和聊天交互修复已提交至 `0f9cff5`，并快进推送到
+    `main`/`origin/main` 与 `feat/retrieval-v2`；
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
-  可用于自定义域名的受控登录态自测且不会写入仓库。最新版已一次连续 10/10，清旧表后关键场景 4/4。
+  可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
