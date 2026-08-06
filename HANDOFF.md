@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-06（新增只读 freshness/安全本地 sync，并同步最新 Obsidian 对象模型笔记）
+> 最后更新：2026-08-06（新增只读 freshness/安全本地 sync，同步最新 Obsidian 笔记，并记录已推送的聊天 UI 稳定修复）
 
 ## 1. 这个项目是什么
 
@@ -131,8 +131,8 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
     流处理、运营数据和主编排模块，新增精确故障指标、后台留存清理、双库降级、管理员安全来源预览，
     并修复 DeepSeek 默认思考模式耗尽正文 token 的问题；
 13. GitHub Actions 已合并为单一 CI/部署门禁，Cloudflare Git 自动部署已关闭；
-    全新 checkout 先生成 Astro 类型再检查 TypeScript；run `31034429859` 成功。最新 Pages production
-    deployment 为 `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`），自定义域名
+    全新 checkout 先生成 Astro 类型再检查 TypeScript；最新 run `31095416698` 成功。最新 Pages production
+    deployment 为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`），自定义域名
     `https://www.tommywutong.cn/api/ios-ask` 与该地址均返回 HTTP 200、`configured: true`。
 14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行。
     新增 `给我讲讲iOS内存管理` 回归用例，生产返回 knowledge、6 个来源和 27 处引用；完整批次其余场景也通过，
@@ -140,13 +140,14 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 15. 前端支持本会话输入历史、未发送草稿恢复、回答期间继续输入和最多 4 条 FIFO 排队；当前回答的停止按钮独立保留。
     已问/已展示拓展问题会过滤，服务端每个主题提供最多 5 个候选轮换；回答工具与反馈改为分组图标按钮。
 
+网站提交 `0571bb0` 已快进推送到 `main`/`origin/main`：关闭弹窗或 Astro 页面切换时，前端清空未发送队列、中止当前请求，请求收尾后强制重置会话并跳过队列续跑；流式回答期间改为 80ms 节流纯文本增长，结束/停止/中断时只渲染一次最终 Markdown，自动滚动也合并到单个 animation frame；回答排版补齐长文行高、列表间距/标记和引用块；输入框 Enter 只换行，不再发送，真正发送时统一清空输入框。“停止回答”仍只停当前请求、保留后续队列。本地 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API 测试、20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算通过；Actions run `31095416698` 完成 CI 与 Cloudflare Pages 部署。`https://00e20626.tommywu-lab.pages.dev` 和自定义域名首页及公开 API 均为 HTTP 200、`configured: true`，线上 HTML 已确认包含 `enterkeyhint="enter"`。当前会话没有可用浏览器实例，不得宣称已完成真实 `<dialog>` 自动化验证。
+
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
-  导出已完成，并快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：最新加固、分库支持、生成预算和聊天交互修复已提交至 `0f9cff5`，并快进推送到
-    `main`/`origin/main` 与 `feat/retrieval-v2`；
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`）；
+  导出的已提交基线快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；三份交接文档同步记录网站 `0571bb0` 的推送与验证边界；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍为 `0f9cff5`；
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
   可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
 

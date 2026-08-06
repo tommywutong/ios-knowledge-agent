@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-06（资料自动同步、API 加固、完整 FTS 分库、单一 CI 和生产回归已完成）
+> 本文件随工作实时更新。最后更新：2026-08-06（聊天 UI 稳定修复已推送 `main`、部署并完成公开健康检查）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -43,6 +43,8 @@
 | 35 | 单一 CI 与依赖升级 | ✅ 完成 | 三条重复 workflow 合为一次完整门禁/构建/部署；Cloudflare Git 空部署关闭；Actions 锁定官方 SHA；TypeScript 6 及相关依赖升级，生产审计无已知漏洞 |
 | 36 | DeepSeek V4 生成预算与生产收尾 | ✅ 完成 | 显式关闭默认隐藏思考，避免 ARC 等复杂题只消耗 reasoning 不输出正文；`a59622e` 上线后连续生产自测 10/10；业务 D1 旧 FTS 安全移除后约 0.35 MB，关键场景复测 4/4 |
 | 37 | 聊天交互与内存管理回归 | ✅ 完成 | `0f9cff5` 增加输入历史、草稿恢复、4 条 FIFO 队列、动态拓展问题和分组图标操作区；生产原始问题返回 knowledge、6 来源、27 引用；Pages `97710bd9` 已上线 |
+| 38 | 关闭聊天会话清理 | ✅ 完成 | `0571bb0` 关闭弹窗或 Astro 页面切换时清空未发送 FIFO 队列、中止当前请求，并在收尾后强制重置会话；停止按钮仍只停当前回答。Pages `00e20626` 已上线 |
+| 39 | 聊天流式稳定与输入体验 | ✅ 完成 | `0571bb0` 流式期间不再每 48ms 重建 Markdown DOM，改为 80ms 纯文本更新+最终单次 Markdown 渲染，合并自动滚动帧；优化长文、列表和引用块排版；Enter 只换行，发送时统一清空输入框。Pages `00e20626` 已上线 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -96,8 +98,9 @@
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
 - 网站本地 Retrieval v2 测试、TypeScript、Astro Check、runtime 评测集覆盖、完整构建、链接和体积检查均通过；
 - 网站最终 commit 为 `0f9cff5`；本地 14 项 API + 20 项 Retrieval 测试、TypeScript、Astro Check、完整构建、链接/体积检查和浏览器交互验证通过；
-- GitHub Actions 单一 CI/部署 run `31034429859` 全部成功；全新 checkout 会先运行 Astro 类型同步再做 TypeScript 检查；
-- 最新 Pages production deployment 为 `https://97710bd9.tommywu-lab.pages.dev`（source `0f9cff5`）；该地址和 `https://www.tommywutong.cn` 的公开 API 均返回 HTTP 200、`configured: true`；
+- `0571bb0` 聊天前端修复（关闭清理、流式稳定、Markdown 排版与 Enter 行为）已通过 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API + 20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算；本次无可用浏览器实例，未进行真实 `<dialog>` 自动化回归；
+- GitHub Actions 单一 CI/部署 run `31095416698` 全部成功；全新 checkout 会先运行 Astro 类型同步再做 TypeScript 检查；
+- 最新 Pages production deployment 为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；该地址和 `https://www.tommywutong.cn` 的首页与公开 API 均返回 HTTP 200、`configured: true`，线上 HTML 已确认包含 `enterkeyhint="enter"`；
 - 生产自测现为 11 项；`给我讲讲iOS内存管理` 返回 knowledge、6 来源、27 引用。完整批次中的 general 曾瞬时 `fetch failed`，立即定向重跑通过；
 - 记录 D1 Time Travel 恢复点后，业务库旧 `ios_ask_fts_v2`/邻接表已移除，库大小由约 338 MB 降到约 0.35 MB；登录、额度、指标表保留，随后 weak、ARC、general、no-evidence 复测 4/4；
 - 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述是 API 级登录态复核，不冒充浏览器 Cookie 登录流程。
