@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-06（新增只读 freshness/安全本地 sync，同步最新 Obsidian 笔记，并记录已推送的聊天 UI 稳定修复）
+> 最后更新：2026-08-27（记录自动回复仓库启动追补策略修复及 PR 合并状态）
 
 ## 1. 这个项目是什么
 
@@ -147,6 +147,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
   导出的已提交基线快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；三份交接文档同步记录网站 `0571bb0` 的推送与验证边界；
 - 网站仓库 `/Users/tommywu/tommywu-lab`：本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍为 `0f9cff5`；
+- 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：本地 `main`、`origin/main` 已统一到 `a1de282`；PR #2、PR #3 已合并，默认启动跳过停机期间历史消息，只有控制 App 开关或 `--replay-offline` 才追补；批次认领状态已在模型调用前落盘；Python 193 项、Swift 7 项测试通过；功能分支已删除；
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
   可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
