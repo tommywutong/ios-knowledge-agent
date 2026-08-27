@@ -25,8 +25,9 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 
 - 本知识库仓库的 `main`、`origin/main` 与 `feat/retrieval-v2` 已同步包含 Retrieval v2、资料新鲜度/安全同步和 FTS 分区导出；实际提交仍以开场核对命令为准。
 - 网站仓库：`/Users/tommywu/tommywu-lab`，本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍停在 `0f9cff5`。`ea0a2c3` 新增资源文章目录，`0571bb0` 完成聊天流式稳定与输入体验修复。
-- 自动回复仓库：`/Users/tommywu/wechat-auto-reply` 的 `main`、`origin/main` 已同步到 `a1de282`。PR #2（默认启动跳过停机期间历史消息）与 PR #3（显式追补模式覆盖首次发现会话）均已合并，功能分支已删除；Python 193 项、Swift 7 项测试通过。
+- 自动回复仓库：`/Users/tommywu/wechat-auto-reply` 的 `main`、`origin/main` 已同步到 `cef5812`。PR #2（默认启动跳过停机期间历史消息）与 PR #3（显式追补模式覆盖首次发现会话）及 PR #4（Android/macOS README 与 macOS 自安装说明）均已合并，功能分支已删除；Python 193 项、Swift 7 项测试通过；Android 本机测试因缺少 SDK 未运行。
 - 自动回复默认启动只建立当前历史游标，不追补停机期间消息；控制 App 的“启动时追补停机消息”或 CLI `--replay-offline` 才会显式启用追补。批次交给模型前立即持久化 `seen_ids`，降低重启重复回复风险。
+- 自动回复 README 现已说明 Android 与 macOS 的消息入口、前台要求、消息完整度、媒体能力和数据流向差异，并给出从环境准备、Keychain、构建控制 App、权限、安全试跑到停止服务的完整 macOS 安装流程；`安装到Mac.command` 的更新源已指向 `tommywutong/wechat-auto-reply`。
 - `0571bb0` 关闭弹窗或 Astro 页面切换时会清空未发送 FIFO 队列、中止当前请求，并在请求收尾后强制重置会话；流式回答改为 80ms 节流纯文本刷新，完成时只渲染一次 Markdown，并合并自动滚动帧；回答排版增强了列表、引用块和长文行高；输入框 Enter 只换行，发送只由按钮触发，真正发送时统一清空输入框。修复已提交、推送 `main` 并部署生产。
 - 通用对话实现提交：`e06c445 Route general chat to DeepSeek V4 Flash`。
 - 对应文档提交：`c080b0b Document general DeepSeek answer routing`。
