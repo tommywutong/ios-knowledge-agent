@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-27（记录自动回复仓库模块记忆文档及 PR 合并状态）
+> 最后更新：2026-08-27（记录自动回复消息链路性能优化及 PR 合并状态）
 
 ## 1. 这个项目是什么
 
@@ -147,7 +147,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
   导出的已提交基线快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；三份交接文档同步记录网站 `0571bb0` 的推送与验证边界；
 - 网站仓库 `/Users/tommywu/tommywu-lab`：本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍为 `0f9cff5`；
-- 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：本地 `main`、`origin/main` 已统一到 `3951ea6`；PR #2、PR #3、PR #4、PR #5、PR #6 已合并，默认启动跳过停机期间历史消息，只有控制 App 开关或 `--replay-offline` 才追补；批次认领状态已在模型调用前落盘；README 已补充 Android/macOS 差异、完整 macOS 自安装流程和双服务生命周期语义；控制 App 将规则服务与轮询器聚合为统一状态，按依赖顺序启动/停止/重启并确认最终状态；macOS Bash 3.2 空数组导致轮询器启动即退出的问题已修复。本机 App 已真实验证三项操作并恢复双服务运行；PR #6 新增根级/模块级 Agent 记忆和开发者 README，仅为文档变更；Python 194 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除；
+- 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：本地 `main`、`origin/main` 已统一到 `f127a88`；PR #2、PR #3、PR #4、PR #5、PR #6、PR #7 已合并，默认启动跳过停机期间历史消息，只有控制 App 开关或 `--replay-offline` 才追补；批次认领状态已在模型调用前落盘；README 已补充 Android/macOS 差异、完整 macOS 自安装流程和双服务生命周期语义；控制 App 将规则服务与轮询器聚合为统一状态，按依赖顺序启动/停止/重启并确认最终状态；macOS Bash 3.2 空数组导致轮询器启动即退出的问题已修复；PR #7 让 TraceMemo 白名单会话并行读取、按固定节拍轮询、复用 HTTP 连接，且微信已有窗口时跳过重复启动等待，同时保持决策/认领/发送串行和全部安全复核。本机 App 已重新构建并打开，原先停止的真实自动回复服务状态未被擅自改变；Python 197 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除；
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
   可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
