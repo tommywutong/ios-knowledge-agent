@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-27（记录自动回复个性化回复修复及 PR 合并状态）
+> 最后更新：2026-08-27（记录自动回复控制 App 自动更新及 PR 合并状态）
 
 ## 1. 这个项目是什么
 
@@ -147,7 +147,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
   导出的已提交基线快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；三份交接文档同步记录网站 `0571bb0` 的推送与验证边界；
 - 网站仓库 `/Users/tommywu/tommywu-lab`：本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍为 `0f9cff5`；
-- 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（合并提交 `0c087b3`）。本轮增加按联系人独立画像和当前来信相似样本检索，最多向模型传 3 组相关历史示例；过滤“忙完再说/等会儿再说/晚点回”等低信息样本，低风险闲聊检测到机械拖延候选时要求重写，并修正本机“在不在、忙不忙”规则为自然接话。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
+- 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
   可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
