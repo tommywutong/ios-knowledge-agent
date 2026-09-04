@@ -45,7 +45,7 @@
 | 37 | 聊天交互与内存管理回归 | ✅ 完成 | `0f9cff5` 增加输入历史、草稿恢复、4 条 FIFO 队列、动态拓展问题和分组图标操作区；生产原始问题返回 knowledge、6 来源、27 引用；Pages `97710bd9` 已上线 |
 | 38 | 关闭聊天会话清理 | ✅ 完成 | `0571bb0` 关闭弹窗或 Astro 页面切换时清空未发送 FIFO 队列、中止当前请求，并在收尾后强制重置会话；停止按钮仍只停当前回答。Pages `00e20626` 已上线 |
 | 39 | 聊天流式稳定与输入体验 | ✅ 完成 | `0571bb0` 流式期间不再每 48ms 重建 Markdown DOM，改为 80ms 纯文本更新+最终单次 Markdown 渲染，合并自动滚动帧；优化长文、列表和引用块排版；Enter 只换行，发送时统一清空输入框。Pages `00e20626` 已上线 |
-| 40 | 资料源边界清理与生产同步 | 🟡 数据已上线，自测待额度恢复 | 两个 Git 镜像已更新；`summer-labs` 排除 `ios-source-learning/**` 并清理误收录的 3,469 文件。本地 1,080,698 块 / 56,827 向量；生产 Vectorize 55,635 条，新主 D1 84,818 行、归档 D1 40,000 行，Pages 部署 `2ed9ad9f` 已切换绑定。认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓。 |
+| 40 | 资料源边界清理与生产同步 | 🟡 数据已上线，自测待额度恢复 | 两个 Git 镜像已更新；`summer-labs` 排除 `ios-source-learning/**` 并清理误收录的 3,469 文件。本地 1,080,698 块 / 56,827 向量；生产 Vectorize 55,635 条，新主 D1 84,818 行、归档 D1 40,000 行，Pages 部署 `2ed9ad9f` 已切换绑定。认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓；2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
@@ -89,7 +89,7 @@
 
 - 2026-09-05 当前同步结果：本地 `uv run ioskb stats` 为 1,080,698 块 / 56,827 向量，`freshness --skip-upstreams --check` clean；39 项知识库单元测试全部通过，SQLite `quick_check` 为 `ok`。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
-- Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测暂因 Cloudflare 免费 D1 当日写入额度耗尽返回 HTTP 500，等待额度重置后重跑。
+- Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测在 2026-09-05 04:31（Asia/Shanghai）仍因 Cloudflare 免费 D1 当日写入额度耗尽返回 HTTP 500，等待额度重置后重跑。
 
 - SQLite `PRAGMA quick_check = ok`；
 - orphan chunks / files.nchunks 不一致 / vector 标记不一致 / 空块 / Markdown 超限块均为 0；

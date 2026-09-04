@@ -75,8 +75,8 @@ knowledge_cards/     # 生成的专题卡片
 `ioskb freshness --skip-upstreams --check` clean。生产 Vectorize 已更新为 55,635 条，
 新主 D1 正式 FTS/邻接表各 84,818 行，归档 D1 各 40,000 行，并已将 Pages `IOS_DB` 切换到
 `tommywu-ios-kb-primary-20260905`。首页与公开 GET 均为 HTTP 200、`configured: true`；
-认证 POST 自测暂因本次导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500，
-待 UTC 午夜重置或升级套餐后重跑 11 个场景。
+认证 POST 自测暂因本次导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500；
+2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，待 UTC 午夜重置或升级套餐后重跑。
 
 **历史基线（2026-08-04 增量同步）**：全部代码 + 当时资料实测全链路。以下数字仅用于追溯，当前实时统计以
 2026-09-05 维护状态和 `uv run ioskb stats` 为准：
@@ -144,8 +144,8 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
     为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`），自定义域名与该地址首页/API 均返回
     HTTP 200、`configured: true`。
 14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行；
-    本轮认证 POST 因 Cloudflare 免费套餐当日 D1 写入额度耗尽统一返回 HTTP 500，错误位于 `reserveHourlyRequest`，
-    不是新 FTS/Vectorize 数据错误；待额度重置后重跑并补记结果。
+    本轮认证 POST 因 Cloudflare 免费套餐当日 D1 写入额度耗尽统一返回 HTTP 500，错误位于 `reserveHourlyRequest`；
+    2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，不是新 FTS/Vectorize 数据错误；待额度重置后重跑并补记结果。
 15. 前端支持本会话输入历史、未发送草稿恢复、回答期间继续输入和最多 4 条 FIFO 排队；当前回答的停止按钮独立保留。
     已问/已展示拓展问题会过滤，服务端每个主题提供最多 5 个候选轮换；回答工具与反馈改为分组图标按钮。
 
@@ -158,7 +158,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token 未写入仓库。
-  认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓，不能宣称 11 个场景已通过。
+ 认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓；2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，不能宣称 11 个场景已通过。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
