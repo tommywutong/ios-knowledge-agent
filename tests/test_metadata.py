@@ -38,6 +38,25 @@ class ExportMetadataTests(unittest.TestCase):
         self.assertEqual(reviewed["authority"], "reviewed_note")
         self.assertEqual(reviewed["confidence"], 0.9)
 
+    def test_downgrades_bulk_community_and_marks_open_source(self):
+        community = export_metadata(
+            "/data/repos/apple-docs-vault/oss/iOS-Weekly/objc-runtime.md",
+            "objc_msgSend",
+            "社区文章正文",
+            source="apple-docs-bulk",
+            ctype="doc",
+        )
+        open_source = export_metadata(
+            "/data/repos/apple-docs-vault/oss/libdispatch/src/queue.c",
+            "dispatch_async",
+            "libdispatch source",
+            source="apple-docs-bulk",
+            ctype="doc",
+        )
+
+        self.assertEqual(community["authority"], "community")
+        self.assertEqual(open_source["authority"], "primary_source")
+
 
 if __name__ == "__main__":
     unittest.main()

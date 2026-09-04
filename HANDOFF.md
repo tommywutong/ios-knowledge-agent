@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-08-27（记录自动回复控制 App 自动更新及 PR 合并状态）
+> 最后更新：2026-09-05（资料源边界清理、生产同步与额度阻塞记录）
 
 ## 1. 这个项目是什么
 
@@ -20,7 +20,7 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
 |---|---|---|---|
 | obsidian-ios | /Users/tommywu/Obsidian/iOS | 当前 57 篇高质量中文专题笔记（核心资产，会继续变化） | 全量向量+FTS |
 | summer2026 | /Users/tommywu/Desktop/26暑期内容 | iOS 基础/进阶文章、Tips、实验说明及 docx 笔记 | docx 经 pandoc 转 md，全量向量+FTS；排除 `articles/ai/` 下 17 篇纯 AI 文章 |
-| summer-labs | /Users/tommywu/Desktop/26暑期内容 | MemoryMapLab 等活跃实验源码 | Objective-C/C/C++/Swift/汇编按源码切块并向量+FTS |
+| summer-labs | /Users/tommywu/Desktop/26暑期内容 | MemoryMapLab 等活跃实验源码 | Objective-C/C/C++/Swift/汇编按源码切块并向量+FTS；明确排除 `iOS底层源码探索/**` 和 `ios-source-learning/**` |
 | objc4-source | 同上 /iOS底层源码探索 | objc4 源码（含 Swift/汇编；排除两个旧版重复目录） | 按函数切块，type=source_code 降权 |
 | apple-docs-core | data/repos/apple-docs-vault 的 wwdc/+blogs/ | WWDC 逐字稿+博客（含中文翻译） | 向量+FTS，子目录映射类型 |
 | apple-docs-bulk | 同仓库 apple-docs/+oss/+meta/ | 大体量文档与源码镜像 | **只进 FTS**（全量向量耗时和体积不划算） |
@@ -69,7 +69,17 @@ knowledge_cards/     # 生成的专题卡片
 
 ## 4. 三个阶段
 
-**第一阶段及 2026-08-04 增量同步（已完成）**：全部代码 + 用当前资料实测全链路。当前快照：
+**2026-09-05 维护状态（数据已发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
+`summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理
+3,469 个文件。当前数据库为 1,080,698 块、56,827 块已向量化，待向量化为 0；
+`ioskb freshness --skip-upstreams --check` clean。生产 Vectorize 已更新为 55,635 条，
+新主 D1 正式 FTS/邻接表各 84,818 行，归档 D1 各 40,000 行，并已将 Pages `IOS_DB` 切换到
+`tommywu-ios-kb-primary-20260905`。首页与公开 GET 均为 HTTP 200、`configured: true`；
+认证 POST 自测暂因本次导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500，
+待 UTC 午夜重置或升级套餐后重跑 11 个场景。
+
+**历史基线（2026-08-04 增量同步）**：全部代码 + 当时资料实测全链路。以下数字仅用于追溯，当前实时统计以
+2026-09-05 维护状态和 `uv run ioskb stats` 为准：
 
 | source | 文件 | 块 | 向量 |
 |---|---:|---:|---:|
@@ -81,7 +91,7 @@ knowledge_cards/     # 生成的专题卡片
 | apple-docs-bulk | 98,164 | 505,374 | 0（按设计仅 FTS） |
 | apple-archive | 40,262 | 517,561 | 0（按设计仅 FTS） |
 | knowledge-cards | 95 | 1,192 | 1,192 |
-| **合计** | **141,735** | **1,069,124** | **46,189** |
+| **历史合计** | **141,735** | **1,069,124** | **46,189** |
 
 当前 `db/ios_kb.sqlite` 约 1.9GB。95 张卡片已生成并通过
 `ioskb audit-cards` 全量审计；生成报告记录实际 650,630 tokens。
@@ -106,10 +116,10 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 **第三阶段（网站问答接口，Retrieval v2 已完成代码、数据和生产发布）**：用户网站是 `/Users/tommywu/tommywu-lab`
 （Astro 7 静态博客，Cloudflare Pages 部署）。当前生产版已完成：
-1. `uv run ioskb export-vectorize` 导出 44,997 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
+1. `uv run ioskb export-vectorize` 导出 55,635 条稳定 `v1-*` ID（本地 bge-m3 向量 + 出处 metadata）；
 2. Cloudflare Vectorize `ios-kb` 已用 `upsert` 同步，远端旧数字 ID 已清理；
-3. D1 Retrieval v2 已水平拆分并原子导入：`IOS_DB` 对应 `tommywu-ios-kb-primary`，两张 v2 表
-   各 84,997 行、约 332 MB；`IOS_ARCHIVE_DB` 对应 `tommywu-ios-kb-archive`，各 40,000 行、
+3. D1 Retrieval v2 已水平拆分并原子导入：`IOS_DB` 对应 `tommywu-ios-kb-primary-20260905`，两张 v2 表
+   各 84,818 行、约 338 MB；`IOS_ARCHIVE_DB` 对应 `tommywu-ios-kb-archive`，各 40,000 行、
    约 114 MB。业务 `DB` 只保留登录、额度、反馈和指标；旧 v2 FTS 在记录 Time Travel 恢复点后
    已移除，业务库现约 0.35 MB；
 4. Pages Function 使用 Workers AI `@cf/baai/bge-m3` → Vectorize + 两个 D1 FTS v2，最多 4 路
@@ -123,34 +133,32 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 7. DeepSeek 默认模型是 `deepseek-v4-flash`，生产没有 `DEEPSEEK_MODEL` 覆盖项；普通 iOS 查阅题
    使用 6 条证据/12,000 字上下文/1,800 tokens，复杂题使用 8 条/20,000 字/2,400 tokens；
    V4 默认隐藏思考已显式关闭，使该预算全部用于最终可见答案和引用；
-8. 生产 Vectorize `ios-kb` 为 44,997 条；D1 两库合计 124,997 条 FTS v2 证据；
+8. 生产 Vectorize `ios-kb` 为 55,635 条；D1 两库合计 124,818 条 FTS v2 证据；
 9. 当前轮次先分为问候、感谢、确认、新问题、追问，再决定领域与是否继承历史。明确 iOS 必须检索，明确普通问题不检索，边界技术问题先证据探测；只有明确指代的追问继承相关上下文，新话题隔离旧历史；
 10. 检索排序在网站层落实 `26暑期内容`/官方文档/源码并列第一、个人笔记第二、技术博客第三。引用解析兼容组合及中文格式并统一为 `[n]`；越界引用会移除，但不再伪造来源或自动补 `[1]`，最终无有效引用则退款报错；
 11. DeepSeek 首次空流或在输出正文前断流时重试一次；每次尝试重新创建中止控制器并获得独立 50 秒超时。生产自测脚本支持 `IOS_SELF_TEST_CASES` 按用例定向运行；
 12. 网站功能代码与后续修复已提交至 `0f9cff5` 并快进推送到网站 `main`/`origin/main` 和 `feat/retrieval-v2`；API 拆为
     流处理、运营数据和主编排模块，新增精确故障指标、后台留存清理、双库降级、管理员安全来源预览，
     并修复 DeepSeek 默认思考模式耗尽正文 token 的问题；
-13. GitHub Actions 已合并为单一 CI/部署门禁，Cloudflare Git 自动部署已关闭；
-    全新 checkout 先生成 Astro 类型再检查 TypeScript；最新 run `31095416698` 成功。最新 Pages production
-    deployment 为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`），自定义域名
-    `https://www.tommywutong.cn/api/ios-ask` 与该地址均返回 HTTP 200、`configured: true`。
-14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行。
-    新增 `给我讲讲iOS内存管理` 回归用例，生产返回 knowledge、6 个来源和 27 处引用；完整批次其余场景也通过，
-    其中 general 曾出现一次终端网络 `fetch failed`，立即定向重跑通过。
+13. GitHub Actions 已合并为单一 CI/部署门禁，Cloudflare Git 自动部署已关闭；本轮 Pages 绑定更新部署
+    为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`），自定义域名与该地址首页/API 均返回
+    HTTP 200、`configured: true`。
+14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行；
+    本轮认证 POST 因 Cloudflare 免费套餐当日 D1 写入额度耗尽统一返回 HTTP 500，错误位于 `reserveHourlyRequest`，
+    不是新 FTS/Vectorize 数据错误；待额度重置后重跑并补记结果。
 15. 前端支持本会话输入历史、未发送草稿恢复、回答期间继续输入和最多 4 条 FIFO 排队；当前回答的停止按钮独立保留。
     已问/已展示拓展问题会过滤，服务端每个主题提供最多 5 个候选轮换；回答工具与反馈改为分组图标按钮。
 
-网站提交 `0571bb0` 已快进推送到 `main`/`origin/main`：关闭弹窗或 Astro 页面切换时，前端清空未发送队列、中止当前请求，请求收尾后强制重置会话并跳过队列续跑；流式回答期间改为 80ms 节流纯文本增长，结束/停止/中断时只渲染一次最终 Markdown，自动滚动也合并到单个 animation frame；回答排版补齐长文行高、列表间距/标记和引用块；输入框 Enter 只换行，不再发送，真正发送时统一清空输入框。“停止回答”仍只停当前请求、保留后续队列。本地 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API 测试、20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算通过；Actions run `31095416698` 完成 CI 与 Cloudflare Pages 部署。`https://00e20626.tommywu-lab.pages.dev` 和自定义域名首页及公开 API 均为 HTTP 200、`configured: true`，线上 HTML 已确认包含 `enterkeyhint="enter"`。当前会话没有可用浏览器实例，不得宣称已完成真实 `<dialog>` 自动化验证。
+网站提交 `0571bb0` 的聊天稳定修复仍为已验证代码基线；本轮未覆盖网站工作区用户修改，仅更新 Pages 绑定并发布 `d331ef3` 构建。生产数据发布后，`https://2ed9ad9f.tommywu-lab.pages.dev` 与自定义域名首页/API 均为 HTTP 200、`configured: true`；认证问答自测待 D1 免费写入额度重置。当前会话没有可用浏览器实例，不得宣称已完成真实 `<dialog>` 自动化验证。
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：Retrieval v2、资料新鲜度/安全同步和 FTS 水平分区
-  导出的已提交基线快进同步到 `main`/`origin/main` 与 `feat/retrieval-v2`；三份交接文档同步记录网站 `0571bb0` 的推送与验证边界；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：本地 `main`、`origin/main` 和 `fix/chat-ui-stability` 已统一到 `0571bb0`；`feat/retrieval-v2` 仍为 `0f9cff5`；
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；本地修改待按 clean-commit 提交并推送；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `d331ef3`；生产 Pages 已部署 `2ed9ad9f`，`IOS_DB` 指向新主库，预览环境仍保留旧主库绑定作回退；工作区用户未提交内容未处理；
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；
-- 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token
-  可用于自定义域名的受控登录态自测且不会写入仓库。当前 11 个场景均已通过，原始内存管理问题已单独复核。
+- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；
+- 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token 未写入仓库。
+  认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓，不能宣称 11 个场景已通过。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。

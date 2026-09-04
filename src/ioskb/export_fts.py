@@ -16,6 +16,11 @@ from .metadata import export_metadata
 
 DEFAULT_TIER1_LIMIT = 80_000
 DEFAULT_PER_FILE_LIMIT = 24
+DEFAULT_TIER1_PER_SOURCE_LIMIT = 60_000
+# The production D1 layout is a 84,997-row primary corpus plus a 40,000-row
+# archive corpus. Tier 0 is non-negotiable evidence, so Tier 1 must contract
+# as the vectorized corpus grows instead of overflowing the verified layout.
+DEFAULT_TOTAL_LIMIT = 124_997
 EXCERPT_LIMIT = 2_000
 
 _PLATFORM = re.compile(
@@ -164,9 +169,23 @@ def _record(
     }
 
 
-def export(cfg, con, out_path, *, tier1_limit=DEFAULT_TIER1_LIMIT, per_file_limit=DEFAULT_PER_FILE_LIMIT):
+def export(
+    cfg,
+    con,
+    out_path,
+    *,
+    tier1_limit=DEFAULT_TIER1_LIMIT,
+    per_file_limit=DEFAULT_PER_FILE_LIMIT,
+    tier1_per_source_limit=DEFAULT_TIER1_PER_SOURCE_LIMIT,
+    total_limit=DEFAULT_TOTAL_LIMIT,
+):
     """Export all vector evidence plus a bounded high-value FTS-only tier."""
-    if tier1_limit < 0 or per_file_limit < 1:
+    if (
+        tier1_limit < 0
+        or per_file_limit < 1
+        or tier1_per_source_limit < 1
+        or total_limit < 1
+    ):
         raise ValueError("tier limits must be positive")
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rows = con.execute(
@@ -175,7 +194,7 @@ def export(cfg, con, out_path, *, tier1_limit=DEFAULT_TIER1_LIMIT, per_file_limi
         "ORDER BY file_path, start_line, end_line, id"
     )
     core_records = []
-    tier1_heap = []
+    tier1_heaps = {}
     file_candidates = []
     core_hashes = set()
     tier1_hashes = set()
@@ -189,10 +208,12 @@ def export(cfg, con, out_path, *, tier1_limit=DEFAULT_TIER1_LIMIT, per_file_limi
         for item in heapq.nlargest(
             per_file_limit, file_candidates, key=lambda candidate: candidate[:2]
         ):
-            if len(tier1_heap) < tier1_limit:
-                heapq.heappush(tier1_heap, item)
-            elif item[:2] > tier1_heap[0][:2]:
-                heapq.heapreplace(tier1_heap, item)
+            source = item[2][1]
+            source_heap = tier1_heaps.setdefault(source, [])
+            if len(source_heap) < tier1_per_source_limit:
+                heapq.heappush(source_heap, item)
+            elif item[:2] > source_heap[0][:2]:
+                heapq.heapreplace(source_heap, item)
         file_candidates = []
 
     for row in rows:
@@ -227,9 +248,25 @@ def export(cfg, con, out_path, *, tier1_limit=DEFAULT_TIER1_LIMIT, per_file_limi
         file_candidates.append((score, record_id, row, ordinal, content_hash))
     keep_file_candidates()
 
+    if len(core_records) > total_limit:
+        raise ValueError(
+            f"Tier 0 evidence ({len(core_records)}) exceeds the production FTS capacity "
+            f"({total_limit}); expand D1 capacity before publishing"
+        )
+    effective_tier1_limit = min(tier1_limit, total_limit - len(core_records))
+
+    # Keep the global cap after applying the per-source cap. This prevents a
+    # large archive from consuming every FTS-only slot while preserving the
+    # deterministic score/id ordering used by the previous exporter.
+    tier1_candidates = [item for source_heap in tier1_heaps.values() for item in source_heap]
     selected_tier1 = [
         _record(item[2], item[3], 1, item[0], content_hash=item[4])
-        for item in sorted(tier1_heap, key=lambda candidate: (-candidate[0], candidate[1]))
+        for item in sorted(
+            heapq.nlargest(
+                effective_tier1_limit, tier1_candidates, key=lambda candidate: candidate[:2]
+            ),
+            key=lambda candidate: (-candidate[0], candidate[1]),
+        )
     ]
     with out_path.open("w", encoding="utf-8") as output:
         for record in core_records:
@@ -245,7 +282,10 @@ def export(cfg, con, out_path, *, tier1_limit=DEFAULT_TIER1_LIMIT, per_file_limi
         "output": str(out_path),
         "bytes": out_path.stat().st_size,
         "tier1_limit": tier1_limit,
+        "effective_tier1_limit": effective_tier1_limit,
         "per_file_limit": per_file_limit,
+        "tier1_per_source_limit": tier1_per_source_limit,
+        "total_limit": total_limit,
         "counts": dict(sorted(counters.items())),
         "selected_by_source": dict(sorted(selected_by_source.items())),
     }

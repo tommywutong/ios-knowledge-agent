@@ -43,6 +43,23 @@ class SourceIngestTests(unittest.TestCase):
                 self.assertTrue(all(chunk["type"] == "source_code" for chunk in chunks))
                 self.assertTrue(all(chunk["source"] == "labs" for chunk in chunks))
 
+    def test_recursive_exclude_keeps_source_learning_workspace_out(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            lab = root / "MemoryMapLab" / "experiment.m"
+            source_learning = root / "ios-source-learning" / "runtime" / "objc.m"
+            lab.parent.mkdir(parents=True)
+            source_learning.parent.mkdir(parents=True)
+            lab.write_text("int main(void) { return 0; }\n", encoding="utf-8")
+            source_learning.write_text("int internal(void) { return 0; }\n", encoding="utf-8")
+            source = {
+                "path": str(root),
+                "include": ["**/*.m"],
+                "exclude": ["ios-source-learning/**"],
+            }
+
+            self.assertEqual(iter_source_files(source), [lab])
+
 
 if __name__ == "__main__":
     unittest.main()

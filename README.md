@@ -6,10 +6,10 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-截至 2026-08-06，本地库包含 141,735 个文件、1,069,124 个文本块；46,189 个块有
-bge-m3 语义向量，另外 1,022,935 个大型官方镜像块使用 FTS5 关键词检索。生产 Vectorize
-现为 44,997 条；FTS v2 已按容量拆为 iOS 主库 84,997 条和扩展库 40,000 条，合计覆盖
-124,997 条证据。登录、额度和指标仍留在独立业务 D1；旧 FTS 已移除，业务库现约 0.35 MB，
+截至 2026-09-05，本地库包含 1,080,698 个文本块；56,827 个块有
+bge-m3 语义向量，另外 1,023,871 个大型官方镜像块使用 FTS5 关键词检索。生产 Vectorize
+现为 55,635 条；FTS v2 已按容量拆为 iOS 主库 84,818 条和扩展库 40,000 条，合计覆盖
+124,818 条证据。登录、额度和指标仍留在独立业务 D1；旧 FTS 已移除，业务库现约 0.35 MB，
 检索数据不再挤占业务库容量。
 
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
@@ -94,8 +94,12 @@ uv run ioskb export-vectorize            # 导出 NDJSON，供上传 Cloudflare 
 uv run ioskb export-fts                 # 生成生产 D1 FTS v2 分批 SQL
 ```
 导出使用稳定的 `v1-*` ID。网站同步时用 Vectorize `upsert`，并删除远端已不存在的旧 ID；
-先用 `scripts/build_fts_v2_import.py` 把 NDJSON 分为主库 84,997 条和扩展库 40,000 条，
-再把各自 SQL 批次导入 `tommywu-ios-kb-primary` 与 `tommywu-ios-kb-archive`，分别执行
+FTS-only 的 Tier 1 最多 80,000 条，并限制单一 source 最多 60,000 条，避免大型
+历史归档挤占所有扩展候选。导出会优先保留全部 Tier 0 证据，并把 Tier 1 自动收缩到生产两座
+D1 合计 124,997 条的已验证容量内；需要调整时可传 `--tier1-per-source-limit` 或
+`--total-limit`。再用
+`scripts/build_fts_v2_import.py` 把 NDJSON 分为主库最多 84,997 条和扩展库 40,000 条，
+再把各自 SQL 批次导入当前生产主库与 `tommywu-ios-kb-archive`，分别执行
 `999-finalize.sql` 原子切换。Pages 绑定名为 `IOS_DB` 与 `IOS_ARCHIVE_DB`。
 部署和线上验证记录见 `HANDOFF.md`。
 

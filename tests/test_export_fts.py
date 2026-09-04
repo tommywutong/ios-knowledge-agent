@@ -159,6 +159,79 @@ class FtsExportTests(unittest.TestCase):
         self.assertEqual(manifest["by_tier"], {"0": 1})
         self.assertEqual(manifest["dropped_for_size"], 1)
 
+    def test_tier1_source_cap_preserves_multiple_fts_sources(self):
+        def row(index, source):
+            return (
+                index,
+                source,
+                "doc",
+                f"/{source}/{index}.md",
+                "UIKit API",
+                1,
+                4,
+                f"UIKit iOS UIViewController lifecycle evidence {index} " * 4,
+                0,
+            )
+
+        con = sqlite3.connect(":memory:")
+        con.execute(
+            "CREATE TABLE chunks(id INTEGER PRIMARY KEY, source, type, file_path, title_path, "
+            "start_line, end_line, text, vectorized)"
+        )
+        con.executemany(
+            "INSERT INTO chunks VALUES(?,?,?,?,?,?,?,?,?)",
+            [row(index, "archive") for index in range(1, 5)]
+            + [row(index, "bulk") for index in range(10, 12)],
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = export(
+                {},
+                con,
+                Path(tmp) / "fts.ndjson",
+                tier1_limit=4,
+                per_file_limit=24,
+                tier1_per_source_limit=2,
+            )
+        con.close()
+        self.assertEqual(manifest["counts"]["tier1"], 4)
+        self.assertEqual(manifest["selected_by_source"]["archive"], 2)
+        self.assertEqual(manifest["selected_by_source"]["bulk"], 2)
+
+    def test_total_capacity_preserves_tier0_and_contracts_tier1(self):
+        con = sqlite3.connect(":memory:")
+        con.execute(
+            "CREATE TABLE chunks(id INTEGER PRIMARY KEY, source, type, file_path, title_path, "
+            "start_line, end_line, text, vectorized)"
+        )
+        rows = [
+            (
+                index,
+                "core" if index <= 3 else "bulk",
+                "doc",
+                f"/{index}.md",
+                "UIKit API",
+                1,
+                4,
+                f"UIKit iOS UIViewController lifecycle evidence {index} " * 4,
+                1 if index <= 3 else 0,
+            )
+            for index in range(1, 7)
+        ]
+        con.executemany("INSERT INTO chunks VALUES(?,?,?,?,?,?,?,?,?)", rows)
+        with tempfile.TemporaryDirectory() as tmp:
+            manifest = export(
+                {},
+                con,
+                Path(tmp) / "fts.ndjson",
+                tier1_limit=10,
+                total_limit=5,
+            )
+        con.close()
+        self.assertEqual(manifest["counts"]["tier0"], 3)
+        self.assertEqual(manifest["counts"]["tier1"], 2)
+        self.assertEqual(manifest["effective_tier1_limit"], 2)
+        self.assertEqual(manifest["counts"]["exported"], 5)
+
     def test_sql_builder_can_partition_a_large_export_without_overlap(self):
         def record(index):
             return {

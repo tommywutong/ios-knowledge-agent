@@ -26,11 +26,23 @@ _CONFIDENCE = re.compile(
     r"(?:\*\*)?confidence(?:\*\*)?\s*(?:::|:|：)\s*([01](?:\.\d+)?)", re.I
 )
 _ORIGIN = re.compile(r"(?:\*\*)?来源(?:\*\*)?\s*[:：]\s*([^\s　]+)")
+_OPEN_SOURCE_PATHS = (
+    "/oss/libdispatch/",
+    "/oss/cf/",
+    "/oss/dyld/",
+    "/oss/swift-",
+    "/oss/xnu-",
+)
 
 
 def evidence_metadata(source, ctype, path, text):
     """Describe evidence provenance without treating a note as verified fact."""
     if ctype in {"doc", "wwdc"}:
+        normalized_path = path.replace("\\", "/").lower()
+        if "/oss/" in normalized_path:
+            if any(marker in normalized_path for marker in _OPEN_SOURCE_PATHS):
+                return {"authority": "primary_source"}
+            return {"authority": "community"}
         return {"authority": "official"}
     if ctype == "source_code":
         return {"authority": "primary_source"}

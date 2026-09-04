@@ -100,12 +100,23 @@ def _print_stats(con, cfg):
         "SELECT source, COUNT(*), SUM(vectorized) FROM chunks GROUP BY source ORDER BY source"
     ).fetchall()
     fcounts = dict(con.execute("SELECT source, COUNT(*) FROM files GROUP BY source").fetchall())
+    vectorized_sources = {
+        source["name"] for source in cfg["sources"] if source.get("vectorize")
+    }
     total_c = total_v = 0
     for source, nchunks, nvec in rows:
         nvec = nvec or 0
         total_c += nchunks
         total_v += nvec
-        print(f"  {source}: {fcounts.get(source, 0)} 文件 / {nchunks} 块 / {nvec} 已向量化")
+        suffix = (
+            f" / {nchunks - nvec} 待向量化"
+            if source in vectorized_sources and nchunks > nvec
+            else ""
+        )
+        print(
+            f"  {source}: {fcounts.get(source, 0)} 文件 / {nchunks} 块 / "
+            f"{nvec} 已向量化{suffix}"
+        )
     db_path = resolve_path(cfg["db_path"])
     if db_path.exists():
         size_mb = os.path.getsize(db_path) / 1048576
@@ -216,6 +227,8 @@ def cmd_export_fts(args):
         out,
         tier1_limit=args.tier1_limit,
         per_file_limit=args.per_file_limit,
+        tier1_per_source_limit=args.tier1_per_source_limit,
+        total_limit=args.total_limit,
     )
     counts = manifest["counts"]
     print(
@@ -420,6 +433,18 @@ def main():
     pf.add_argument("-o", "--output", help="输出路径（默认 data/export/fts-v2.ndjson）")
     pf.add_argument("--tier1-limit", type=int, default=80_000, help="FTS-only 精选上限")
     pf.add_argument("--per-file-limit", type=int, default=24, help="单文件 Tier 1 上限")
+    pf.add_argument(
+        "--tier1-per-source-limit",
+        type=int,
+        default=60_000,
+        help="单 source 的 Tier 1 上限，避免大型归档挤占全部候选",
+    )
+    pf.add_argument(
+        "--total-limit",
+        type=int,
+        default=124_997,
+        help="生产 D1 两库总容量上限；Tier 0 增长时自动压缩 Tier 1",
+    )
     pf.set_defaults(func=cmd_export_fts)
 
     pst = sub.add_parser("stats", help="查看索引统计")

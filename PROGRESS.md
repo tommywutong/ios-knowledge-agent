@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-08-27（自动回复控制 App 自动更新已通过 PR 合并）
+> 本文件随工作实时更新。最后更新：2026-09-05（资料源边界清理与本地同步状态）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -14,7 +14,7 @@
 | 6 | 知识卡片脚本（cards） | ✅ 完成 | 95 张/11 组已生成；程序化原始来源索引、失败重试、usage 统计和 audit-cards 已完成 |
 | 7 | Vectorize 导出脚本 + 网站接口模板 | ✅ 完成 | website-templates/ 含 Pages Function 完整代码与部署说明 |
 | 8 | 依赖安装 + bge-m3 模型下载 | ✅ 完成 | SQLite 3.51；bge-m3 已下载并验证（dim=1024，MPS 可用、日常加载强制离线） |
-| 9 | 全链路建库实测 | ✅ 完成 | 141,735 文件 / 1,069,124 块；46,189 块向量化；大镜像 1,022,935 块全部进 FTS |
+| 9 | 全链路建库实测（历史基线） | ✅ 完成 | 2026-08-04 基线：141,735 文件 / 1,069,124 块；46,189 块向量化；大镜像 1,022,935 块全部进 FTS。当前数字见 2026-09-05 快照 |
 | 10 | 交接文档定稿 | ✅ 完成 | README / PROGRESS / HANDOFF 已同步最终状态、验证证据与后续操作 |
 | 11 | 本地网页版（ioskb web） | ✅ 完成 | 模型常驻+流式回答+可点击引用+多轮追问；桌面双击启动 `iOS知识库.command`；接口实测通过 |
 | 12 | 博客问答接口详细部署计划 | ✅ 完成 | `website-templates/DEPLOY_PLAN.md`，步骤级，含验证清单与回滚 |
@@ -45,14 +45,15 @@
 | 37 | 聊天交互与内存管理回归 | ✅ 完成 | `0f9cff5` 增加输入历史、草稿恢复、4 条 FIFO 队列、动态拓展问题和分组图标操作区；生产原始问题返回 knowledge、6 来源、27 引用；Pages `97710bd9` 已上线 |
 | 38 | 关闭聊天会话清理 | ✅ 完成 | `0571bb0` 关闭弹窗或 Astro 页面切换时清空未发送 FIFO 队列、中止当前请求，并在收尾后强制重置会话；停止按钮仍只停当前回答。Pages `00e20626` 已上线 |
 | 39 | 聊天流式稳定与输入体验 | ✅ 完成 | `0571bb0` 流式期间不再每 48ms 重建 Markdown DOM，改为 80ms 纯文本更新+最终单次 Markdown 渲染，合并自动滚动帧；优化长文、列表和引用块排版；Enter 只换行，发送时统一清空输入框。Pages `00e20626` 已上线 |
+| 40 | 资料源边界清理与生产同步 | 🟡 数据已上线，自测待额度恢复 | 两个 Git 镜像已更新；`summer-labs` 排除 `ios-source-learning/**` 并清理误收录的 3,469 文件。本地 1,080,698 块 / 56,827 向量；生产 Vectorize 55,635 条，新主 D1 84,818 行、归档 D1 40,000 行，Pages 部署 `2ed9ad9f` 已切换绑定。认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓。 |
 
-| 40 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
-| 41 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
-| 42 | macOS 双服务生命周期统一 | ✅ 完成 | 自动回复仓库 PR #5 已合并至 `main`（`cdf5c43`）。控制 App 聚合规则服务与自动回复轮询器状态，启动只补齐未运行项，停止会卸载两项，重启按依赖顺序完整停启并轮询确认最终状态；修复 macOS Bash 3.2 空追补参数数组导致轮询器启动即退出。Python 194 项、Swift 11 项、release App 构建通过，本机真实停止/启动/重启均验证并恢复双服务运行 |
-| 43 | 自动回复模块记忆与开发者地图 | ✅ 完成 | 自动回复仓库 PR #6 已合并至 `main`（`3951ea6`），新增根级 `AGENTS.md`/`MEMORY.md` 和各模块 `MEMORY.md`/`README.md`，提供渐进式上下文路由与开发约束；仅文档变更，未修改运行逻辑，Python 194 项回归测试通过 |
-| 44 | 自动回复消息链路性能优化 | ✅ 完成 | 自动回复仓库 PR #7 已合并至 `main`（`f127a88`）。TraceMemo 白名单会话并行读取但按原顺序决策/认领/发送；TraceMemo、引擎和媒体下载复用 HTTP 连接；轮询按固定节拍运行，草稿模式统一读取 `var/poll-interval`；微信已有可用窗口时跳过重复启动等待。新增并行读取、失败隔离和脚本间隔回归测试；Python 197 项、macOS 测试 40 项、shell 语法与编译检查通过；本地 App 已重新构建并打开，未擅自启动原先停止的真实自动回复服务 |
-| 45 | 按联系人个性化回复与机械拖延修复 | ✅ 完成 | 自动回复仓库 PR #8 已合并至 `main`（`0c087b3`）。每会话独立风格画像保留近30天最多48组“来信→本人回复”样本，按当前消息选最多3组相关示例；过滤历史“忙完再说/等会儿再说/晚点回”，低风险闲聊候选触发一次自然重写；本机“在不在、忙不忙”规则改为直接接话。Python 205 项、Swift 11 项、编译/脚本语法与差异检查通过，功能分支已删除 |
-| 46 | 控制 App 自动更新与 Dock 窗口恢复 | ✅ 完成 | 自动回复仓库 PR #9 已合并至 `main`（`b1da74b`）。App 启动或 Dock 重新打开时，在工作区干净且 `main` 可 fast-forward 时自动拉取并重建控制 App；记录 bundle 对应提交号，关闭窗口后点击 Dock 恢复主窗口；本地有修改、分叉或网络失败时跳过，不强制重启后台服务。Python 205 项、Swift 11 项、编译/脚本语法与差异检查通过 |
+| 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
+| 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
+| 43 | macOS 双服务生命周期统一 | ✅ 完成 | 自动回复仓库 PR #5 已合并至 `main`（`cdf5c43`）。控制 App 聚合规则服务与自动回复轮询器状态，启动只补齐未运行项，停止会卸载两项，重启按依赖顺序完整停启并轮询确认最终状态；修复 macOS Bash 3.2 空追补参数数组导致轮询器启动即退出。Python 194 项、Swift 11 项、release App 构建通过，本机真实停止/启动/重启均验证并恢复双服务运行 |
+| 44 | 自动回复模块记忆与开发者地图 | ✅ 完成 | 自动回复仓库 PR #6 已合并至 `main`（`3951ea6`），新增根级 `AGENTS.md`/`MEMORY.md` 和各模块 `MEMORY.md`/`README.md`，提供渐进式上下文路由与开发约束；仅文档变更，未修改运行逻辑，Python 194 项回归测试通过 |
+| 45 | 自动回复消息链路性能优化 | ✅ 完成 | 自动回复仓库 PR #7 已合并至 `main`（`f127a88`）。TraceMemo 白名单会话并行读取但按原顺序决策/认领/发送；TraceMemo、引擎和媒体下载复用 HTTP 连接；轮询按固定节拍运行，草稿模式统一读取 `var/poll-interval`；微信已有可用窗口时跳过重复启动等待。新增并行读取、失败隔离和脚本间隔回归测试；Python 197 项、macOS 测试 40 项、shell 语法与编译检查通过；本地 App 已重新构建并打开，未擅自启动原先停止的真实自动回复服务 |
+| 46 | 按联系人个性化回复与机械拖延修复 | ✅ 完成 | 自动回复仓库 PR #8 已合并至 `main`（`0c087b3`）。每会话独立风格画像保留近30天最多48组“来信→本人回复”样本，按当前消息选最多3组相关示例；过滤历史“忙完再说/等会儿再说/晚点回”，低风险闲聊候选触发一次自然重写；本机“在不在、忙不忙”规则改为直接接话。Python 205 项、Swift 11 项、编译/脚本语法与差异检查通过，功能分支已删除 |
+| 47 | 控制 App 自动更新与 Dock 窗口恢复 | ✅ 完成 | 自动回复仓库 PR #9 已合并至 `main`（`b1da74b`）。App 启动或 Dock 重新打开时，在工作区干净且 `main` 可 fast-forward 时自动拉取并重建控制 App；记录 bundle 对应提交号，关闭窗口后点击 Dock 恢复主窗口；本地有修改、分叉或网络失败时跳过，不强制重启后台服务。Python 205 项、Swift 11 项、编译/脚本语法与差异检查通过 |
 
 ## 已定决策（讨论阶段结论）
 
@@ -86,6 +87,10 @@
 
 ## 最终验证快照
 
+- 2026-09-05 当前同步结果：本地 `uv run ioskb stats` 为 1,080,698 块 / 56,827 向量，`freshness --skip-upstreams --check` clean；39 项知识库单元测试全部通过，SQLite `quick_check` 为 `ok`。
+- 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
+- Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测暂因 Cloudflare 免费 D1 当日写入额度耗尽返回 HTTP 500，等待额度重置后重跑。
+
 - SQLite `PRAGMA quick_check = ok`；
 - orphan chunks / files.nchunks 不一致 / vector 标记不一致 / 空块 / Markdown 超限块均为 0；
 - 混合检索命中个人笔记、暑期提纲与 RunLoop 博客；
@@ -100,7 +105,7 @@
 - 2026-08-06 知识库全量单元测试为 35 项，全部通过；其中 freshness/sync 新增 11 项安全回归测试；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
 - 本仓库 Retrieval v2、freshness/sync 和 FTS 分区导出已推送，`feat/retrieval-v2` 与 `main` 同步；网站同名功能分支也与 `main` 同步；
-- 生产 Vectorize `ios-kb` 为 44,997 条；主 D1 `ios_ask_fts_v2` 与邻接表各 84,997 条，扩展 D1 各 40,000 条；
+- 生产 Vectorize `ios-kb` 为 55,635 条；新主 D1 `ios_ask_fts_v2` 与邻接表各 84,818 条，扩展 D1 各 40,000 条；旧主库保留作回退快照；
 - 新增《2026 暑假第一周验收 - 对象模型与进程内存地图》28 块已同步生产；真实问答返回 knowledge 模式、6 个来源和 25 处引用，并引用该笔记 14-54 行；
 - 主/扩展 D1 分别约 332 MB/114 MB，远程 `MATCH 'uikit'` 与邻接查询均成功；Pages production 已绑定 `IOS_DB`/`IOS_ARCHIVE_DB`；
 - 2026-08-05 曾因 D1 返回 `Exceeded maximum DB size` 导致请求失败；已移除重复旧 FTS 并将诊断表初始化改为非阻断，热修复发布后需复测登录态问答；
@@ -108,7 +113,7 @@
 - 网站最终 commit 为 `0f9cff5`；本地 14 项 API + 20 项 Retrieval 测试、TypeScript、Astro Check、完整构建、链接/体积检查和浏览器交互验证通过；
 - `0571bb0` 聊天前端修复（关闭清理、流式稳定、Markdown 排版与 Enter 行为）已通过 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API + 20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算；本次无可用浏览器实例，未进行真实 `<dialog>` 自动化回归；
 - GitHub Actions 单一 CI/部署 run `31095416698` 全部成功；全新 checkout 会先运行 Astro 类型同步再做 TypeScript 检查；
-- 最新 Pages production deployment 为 `https://00e20626.tommywu-lab.pages.dev`（source `0571bb0`）；该地址和 `https://www.tommywutong.cn` 的首页与公开 API 均返回 HTTP 200、`configured: true`，线上 HTML 已确认包含 `enterkeyhint="enter"`；
+- 最新 Pages production deployment 为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；该地址和 `https://www.tommywutong.cn` 的首页与公开 API 均返回 HTTP 200、`configured: true`；认证问答自测因 Cloudflare 免费 D1 当日写入额度耗尽暂缓；
 - 生产自测现为 11 项；`给我讲讲iOS内存管理` 返回 knowledge、6 来源、27 引用。完整批次中的 general 曾瞬时 `fetch failed`，立即定向重跑通过；
 - 记录 D1 Time Travel 恢复点后，业务库旧 `ios_ask_fts_v2`/邻接表已移除，库大小由约 338 MB 降到约 0.35 MB；登录、额度、指标表保留，随后 weak、ARC、general、no-evidence 复测 4/4；
 - 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述是 API 级登录态复核，不冒充浏览器 Cookie 登录流程。

@@ -72,7 +72,9 @@ sources:
       - "**/*.swift"
       - "**/*.s"
       - "**/*.S"
-    exclude: ["iOS底层源码探索/**"]  # 底层目录由 objc4-source 单独处理，避免重复
+    exclude:
+      - "iOS底层源码探索/**"  # 底层目录由 objc4-source 单独处理，避免重复
+      - "ios-source-learning/**"  # 源码学习工作区由专用流程管理，不混入实验源码
     vectorize: true
 
   - name: objc4-source
