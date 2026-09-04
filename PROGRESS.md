@@ -100,7 +100,7 @@
 - 新增 WWDC、App Store Server Notifications、App Sandbox 文档均已验证检索命中并返回文件与行号；
 - 95 张卡片全量审计通过：固定结构、正文编号、原始路径、行号边界、无 card 自引用；
 - RunLoop Source0/Source1 真实问答通过，8 条来源全部为原始资料；
-- 本地索引：141,735 文件、1,069,124 块、46,189 已向量化；Obsidian 修改笔记重建 85 块、随后新增验收笔记 28 块；
+- 历史本地索引基线：141,735 文件、1,069,124 块、46,189 已向量化；Obsidian 修改笔记重建 85 块、随后新增验收笔记 28 块；当前统计见本节首条 2026-09-05 快照；
 - `ioskb freshness` 全库本地差异为 0，两个 Git 资料镜像均已是远端最新；
 - 2026-08-06 知识库全量单元测试为 35 项，全部通过；其中 freshness/sync 新增 11 项安全回归测试；
 - 2026-08-04 重新运行 16 项单元测试，全部通过；
@@ -114,6 +114,6 @@
 - `0571bb0` 聊天前端修复（关闭清理、流式稳定、Markdown 排版与 Enter 行为）已通过 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API + 20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算；本次无可用浏览器实例，未进行真实 `<dialog>` 自动化回归；
 - GitHub Actions 单一 CI/部署 run `31095416698` 全部成功；全新 checkout 会先运行 Astro 类型同步再做 TypeScript 检查；
 - 最新 Pages production deployment 为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；该地址和 `https://www.tommywutong.cn` 的首页与公开 API 均返回 HTTP 200、`configured: true`；认证问答自测因 Cloudflare 免费 D1 当日写入额度耗尽暂缓；
-- 生产自测现为 11 项；`给我讲讲iOS内存管理` 返回 knowledge、6 来源、27 引用。完整批次中的 general 曾瞬时 `fetch failed`，立即定向重跑通过；
+- 历史生产自测记录（此前数据批次）：`给我讲讲iOS内存管理` 曾返回 knowledge、6 来源、27 引用；完整批次中的 general 曾瞬时 `fetch failed`，立即定向重跑通过。当前数据批次的 11 项认证自测仍待额度恢复；
 - 记录 D1 Time Travel 恢复点后，业务库旧 `ios_ask_fts_v2`/邻接表已移除，库大小由约 338 MB 降到约 0.35 MB；登录、额度、指标表保留，随后 weak、ARC、general、no-evidence 复测 4/4；
 - 生产自测认证信息只从 macOS 钥匙串读取，不写入仓库；上述是 API 级登录态复核，不冒充浏览器 Cookie 登录流程。

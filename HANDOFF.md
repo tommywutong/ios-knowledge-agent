@@ -93,7 +93,7 @@ knowledge_cards/     # 生成的专题卡片
 | knowledge-cards | 95 | 1,192 | 1,192 |
 | **历史合计** | **141,735** | **1,069,124** | **46,189** |
 
-当前 `db/ios_kb.sqlite` 约 1.9GB。95 张卡片已生成并通过
+当时 `db/ios_kb.sqlite` 约 1.9GB（历史基线；当前约 2.0GB）。95 张卡片已生成并通过
 `ioskb audit-cards` 全量审计；生成报告记录实际 650,630 tokens。
 2026-07-29 同步到的仓库提交：apple-docs-vault `fcbf992d`，
 apple-developer-archive-vault `c0fc987f`。
