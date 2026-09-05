@@ -21,12 +21,12 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 
 ## Current Checkpoint
 
-最后核对时间：2026-09-05（Asia/Shanghai）。
+最后核对时间：2026-09-06（Asia/Shanghai）。
 
 - 2026-09-05 资料维护与生产同步已完成：两个 Git 镜像已更新；`summer-labs` 已显式排除 `ios-source-learning/**`，清理误收录的 3,469 个文件。本地实时统计为 1,080,698 块、56,827 个已向量化块（无待向量化块），数据库约 2.0 GB。
 - 新版知识数据已发布：Vectorize `ios-kb` 为 55,635 条稳定 `v1-*` 向量；新主 D1 `tommywu-ios-kb-primary-20260905`（`IOS_DB`）正式表 84,818 行，归档 D1 正式表 40,000 行，合计 124,818 行 FTS v2 证据。生产 Pages 部署为 `2ed9ad9f`（`https://2ed9ad9f.tommywu-lab.pages.dev`），自定义域名已切换到同一生产配置。
-- 本轮认证问答自测暂未通过：发布导入消耗了 Cloudflare 免费套餐当日 D1 写入额度，`reserveHourlyRequest` 返回 D1 额度错误并使请求 HTTP 500；2026-09-05 04:31（Asia/Shanghai）重试时仍为 11/11 HTTP 500，待下一个 UTC 午夜重置或升级套餐后重新执行。未登录 GET 健康检查仍为 HTTP 200、`configured: true`。
-- 本知识库仓库本轮变更已提交为 `f468b22`、`74ac4d5` 并推送到 `origin/feat/knowledge-sync-20260905`；默认 `main` 保持原状，合并前以该分支审查为准。
+- 2026-09-06 00:13（Asia/Shanghai）额度恢复后，生产认证问答 11/11 全部通过；覆盖问候、弱证据、ARC、内存管理、普通问题、上下文隔离、追问和 no-evidence。未登录 GET 健康检查仍为 HTTP 200、`configured: true`。
+- 本知识库仓库本轮资料变更已在 `feat/knowledge-sync-20260905` 完成验证；生产认证自测通过后可合并到 `main`。
 - 网站仓库：`/Users/tommywu/tommywu-lab` 的远端 `main` 当前为 `d331ef3`；本轮仅更新 Pages 生产绑定与部署，未覆盖工作区中用户未提交的 `iOS知识库/` 等内容。
 - 自动回复仓库：`/Users/tommywu/wechat-auto-reply` 的 `main`、`origin/main` 已同步到 `b1da74b`。PR #2（默认启动跳过停机期间历史消息）、PR #3（显式追补模式覆盖首次发现会话）、PR #4（Android/macOS README 与 macOS 自安装说明）、PR #5（统一 macOS 双服务生命周期）、PR #6（模块级 Agent 记忆和开发者地图）、PR #7（macOS 接收/发送链路性能优化）、PR #8（按联系人个性化回复与机械拖延修复）及 PR #9（控制 App 自动更新与 Dock 窗口恢复）均已合并，功能分支已删除；Python 205 项、Swift 11 项测试通过；Android 本机测试因缺少 SDK 未运行。
 - 自动回复默认启动只建立当前历史游标，不追补停机期间消息；控制 App 的“启动时追补停机消息”或 CLI `--replay-offline` 才会显式启用追补。批次交给模型前立即持久化 `seen_ids`，降低重启重复回复风险。
@@ -104,9 +104,9 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
   已完成两库真实导入和全文/邻接 smoke test；网站本地 14 项 API 测试、20 项 Retrieval 测试、
   TypeScript、Astro Check、完整构建、链接/体积检查和生产依赖审计全部通过。此前生产自测中，
   `给我讲讲iOS内存管理` 曾返回 knowledge、6 个来源和 27 处引用；本轮新数据发布后的 11 项认证
-  自测因 D1 写入额度耗尽暂缓，不能把此前批次结果当作当前数据的完整验证。Pages 地址和
+  自测于 2026-09-06 00:13（Asia/Shanghai）全部通过。Pages 地址和
   自定义域名公开健康检查均为 HTTP 200、`configured: true`，线上静态资源已确认包含新版交互代码。
-- `0571bb0` 已通过 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API 测试、20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算；本轮绑定更新部署 `2ed9ad9f` 成功。Pages 地址和自定义域名首页及公开 API 均为 HTTP 200、`configured: true`；认证问答自测因 Cloudflare 免费 D1 当日写入额度耗尽暂缓，不能写成 11/11 通过。当前会话无可用浏览器实例，因此不能将该项写成真实 `<dialog>` 浏览器自动化验证。
+- `0571bb0` 已通过 Prettier、TypeScript、Astro Check（156 个文件）、14 项 API 测试、20 项 Retrieval 测试、253 页完整构建、261 页链接检查和体积预算；本轮绑定更新部署 `2ed9ad9f` 成功。Pages 地址和自定义域名首页及公开 API 均为 HTTP 200、`configured: true`；2026-09-06 00:13（Asia/Shanghai）认证问答 11/11 全部通过。当前会话无可用浏览器实例，因此不能将该项写成真实 `<dialog>` 浏览器自动化验证。
 
 终端可从 macOS 钥匙串读取生产自测 Bearer token，但仓库不保存 token/Cookie。不要把上述定向复核
 或连续自测冒充为浏览器 Cookie 登录流程验证。

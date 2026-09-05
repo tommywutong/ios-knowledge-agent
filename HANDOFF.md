@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-05（资料源边界清理、生产同步与额度阻塞记录）
+> 最后更新：2026-09-06（生产认证自测恢复并全部通过）
 
 ## 1. 这个项目是什么
 
@@ -69,14 +69,14 @@ knowledge_cards/     # 生成的专题卡片
 
 ## 4. 三个阶段
 
-**2026-09-05 维护状态（数据已发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
+**2026-09-06 维护状态（数据已发布并完成生产自测）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
 `summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理
 3,469 个文件。当前数据库为 1,080,698 块、56,827 块已向量化，待向量化为 0；
 `ioskb freshness --skip-upstreams --check` clean。生产 Vectorize 已更新为 55,635 条，
 新主 D1 正式 FTS/邻接表各 84,818 行，归档 D1 各 40,000 行，并已将 Pages `IOS_DB` 切换到
 `tommywu-ios-kb-primary-20260905`。首页与公开 GET 均为 HTTP 200、`configured: true`；
-认证 POST 自测暂因本次导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500；
-2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，待 UTC 午夜重置或升级套餐后重跑。
+认证 POST 在 2026-09-05 曾因导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500；
+额度恢复后于 2026-09-06 00:13（Asia/Shanghai）重跑，11/11 场景全部通过。
 
 **历史基线（2026-08-04 增量同步）**：全部代码 + 当时资料实测全链路。以下数字仅用于追溯，当前实时统计以
 2026-09-05 维护状态和 `uv run ioskb stats` 为准：
@@ -144,21 +144,21 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
     为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`），自定义域名与该地址首页/API 均返回
     HTTP 200、`configured: true`。
 14. 网站内置生产自测入口 `pnpm ios-self-test:production`，现含 11 个混合场景并支持 `IOS_SELF_TEST_CASES` 定向运行；
-    本轮认证 POST 因 Cloudflare 免费套餐当日 D1 写入额度耗尽统一返回 HTTP 500，错误位于 `reserveHourlyRequest`；
-    2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，不是新 FTS/Vectorize 数据错误；待额度重置后重跑并补记结果。
+    早期认证 POST 曾因 Cloudflare 免费套餐当日 D1 写入额度耗尽统一返回 HTTP 500，错误位于 `reserveHourlyRequest`；
+    额度恢复后于 2026-09-06 00:13（Asia/Shanghai）重跑，11/11 场景全部通过，确认不是新 FTS/Vectorize 数据错误。
 15. 前端支持本会话输入历史、未发送草稿恢复、回答期间继续输入和最多 4 条 FIFO 排队；当前回答的停止按钮独立保留。
     已问/已展示拓展问题会过滤，服务端每个主题提供最多 5 个候选轮换；回答工具与反馈改为分组图标按钮。
 
-网站提交 `0571bb0` 的聊天稳定修复仍为已验证代码基线；本轮未覆盖网站工作区用户修改，仅更新 Pages 绑定并发布 `d331ef3` 构建。生产数据发布后，`https://2ed9ad9f.tommywu-lab.pages.dev` 与自定义域名首页/API 均为 HTTP 200、`configured: true`；认证问答自测待 D1 免费写入额度重置。当前会话没有可用浏览器实例，不得宣称已完成真实 `<dialog>` 自动化验证。
+网站提交 `0571bb0` 的聊天稳定修复仍为已验证代码基线；本轮未覆盖网站工作区用户修改，仅更新 Pages 绑定并发布 `d331ef3` 构建。生产数据发布后，`https://2ed9ad9f.tommywu-lab.pages.dev` 与自定义域名首页/API 均为 HTTP 200、`configured: true`；2026-09-06 00:13（Asia/Shanghai）认证问答 11/11 全部通过。当前会话没有可用浏览器实例，不得宣称已完成真实 `<dialog>` 自动化验证。
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；提交 `f468b22`、`74ac4d5` 已推送到 `feat/knowledge-sync-20260905`，`mermaid-diagram.svg` 仍为用户未跟踪文件；
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；`feat/knowledge-sync-20260905` 已完成本地与生产验证，可合并到 `main`，`mermaid-diagram.svg` 仍为用户未跟踪文件；
 - 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `d331ef3`；生产 Pages 已部署 `2ed9ad9f`，`IOS_DB` 指向新主库，预览环境仍保留旧主库绑定作回退；工作区用户未提交内容未处理；
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token 未写入仓库。
- 认证问答自测因 Cloudflare 免费套餐当日 D1 写入额度耗尽暂缓；2026-09-05 04:31（Asia/Shanghai）重试仍为 11/11 HTTP 500，不能宣称 11 个场景已通过。
+ 认证问答于 2026-09-06 00:13（Asia/Shanghai）重跑，11/11 全部通过。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
 `我是TommyWu的ai学习助手，有什么可以帮你吗？无论是iOS、日常聊天还是其他问题，都可以告诉我`。
