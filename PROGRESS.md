@@ -87,7 +87,7 @@
 
 ## 最终验证快照
 
-- 2026-09-06 当前同步结果：本地 `uv run ioskb stats` 为 1,080,698 块 / 56,827 向量，`freshness --skip-upstreams --check` clean；39 项知识库单元测试全部通过，SQLite `quick_check` 为 `ok`。生产认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过。
+- 2026-09-06 当前同步结果：本地 `uv run ioskb stats` 为 1,080,698 块 / 56,827 向量，`freshness --skip-upstreams --check` clean；39 项知识库单元测试全部通过，SQLite `quick_check` 为 `ok`。生产认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过；本轮变更已快进合并并推送到 `main`（`dec7c8d`）。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
 - Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测于 2026-09-06 00:13（Asia/Shanghai）11/11 全部通过。
 

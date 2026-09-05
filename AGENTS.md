@@ -26,7 +26,7 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 - 2026-09-05 资料维护与生产同步已完成：两个 Git 镜像已更新；`summer-labs` 已显式排除 `ios-source-learning/**`，清理误收录的 3,469 个文件。本地实时统计为 1,080,698 块、56,827 个已向量化块（无待向量化块），数据库约 2.0 GB。
 - 新版知识数据已发布：Vectorize `ios-kb` 为 55,635 条稳定 `v1-*` 向量；新主 D1 `tommywu-ios-kb-primary-20260905`（`IOS_DB`）正式表 84,818 行，归档 D1 正式表 40,000 行，合计 124,818 行 FTS v2 证据。生产 Pages 部署为 `2ed9ad9f`（`https://2ed9ad9f.tommywu-lab.pages.dev`），自定义域名已切换到同一生产配置。
 - 2026-09-06 00:13（Asia/Shanghai）额度恢复后，生产认证问答 11/11 全部通过；覆盖问候、弱证据、ARC、内存管理、普通问题、上下文隔离、追问和 no-evidence。未登录 GET 健康检查仍为 HTTP 200、`configured: true`。
-- 本知识库仓库本轮资料变更已在 `feat/knowledge-sync-20260905` 完成验证；生产认证自测通过后可合并到 `main`。
+- 本知识库仓库本轮资料变更已由 `feat/knowledge-sync-20260905` 快进合并到 `main`，并推送至 `origin/main`（`dec7c8d`）。
 - 网站仓库：`/Users/tommywu/tommywu-lab` 的远端 `main` 当前为 `d331ef3`；本轮仅更新 Pages 生产绑定与部署，未覆盖工作区中用户未提交的 `iOS知识库/` 等内容。
 - 自动回复仓库：`/Users/tommywu/wechat-auto-reply` 的 `main`、`origin/main` 已同步到 `b1da74b`。PR #2（默认启动跳过停机期间历史消息）、PR #3（显式追补模式覆盖首次发现会话）、PR #4（Android/macOS README 与 macOS 自安装说明）、PR #5（统一 macOS 双服务生命周期）、PR #6（模块级 Agent 记忆和开发者地图）、PR #7（macOS 接收/发送链路性能优化）、PR #8（按联系人个性化回复与机械拖延修复）及 PR #9（控制 App 自动更新与 Dock 窗口恢复）均已合并，功能分支已删除；Python 205 项、Swift 11 项测试通过；Android 本机测试因缺少 SDK 未运行。
 - 自动回复默认启动只建立当前历史游标，不追补停机期间消息；控制 App 的“启动时追补停机消息”或 CLI `--replay-offline` 才会显式启用追补。批次交给模型前立即持久化 `seen_ids`，降低重启重复回复风险。
