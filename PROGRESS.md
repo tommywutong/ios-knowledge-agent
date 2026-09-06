@@ -46,6 +46,7 @@
 | 38 | 关闭聊天会话清理 | ✅ 完成 | `0571bb0` 关闭弹窗或 Astro 页面切换时清空未发送 FIFO 队列、中止当前请求，并在收尾后强制重置会话；停止按钮仍只停当前回答。Pages `00e20626` 已上线 |
 | 39 | 聊天流式稳定与输入体验 | ✅ 完成 | `0571bb0` 流式期间不再每 48ms 重建 Markdown DOM，改为 80ms 纯文本更新+最终单次 Markdown 渲染，合并自动滚动帧；优化长文、列表和引用块排版；Enter 只换行，发送时统一清空输入框。Pages `00e20626` 已上线 |
 | 40 | 资料源边界清理与生产同步 | ✅ 完成 | 两个 Git 镜像已更新；`summer-labs` 排除 `ios-source-learning/**` 并清理误收录的 3,469 文件。本地 1,080,698 块 / 56,827 向量；生产 Vectorize 55,635 条，新主 D1 84,818 行、归档 D1 40,000 行，Pages 部署 `2ed9ad9f` 已切换绑定。Cloudflare D1 额度恢复后，2026-09-06 00:13（Asia/Shanghai）生产认证问答 11/11 全部通过。 |
+| 48 | GLM 离线评测与本地索引卫生 | ✅ 本地完成 | 生成 `data/glm/overnight-rag-evaluation-20260906/` 的 3,143 行候选资产并加入可复跑校验器；发现并清理 `summer2026` 中 32 个已删除 `ios-basics/` 文件的 1,521 个本地块。当前本地为 1,079,177 块 / 55,306 向量，目标来源 freshness clean；候选尚未接入生产，Cloudflare 数据仍是清理前批次。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
@@ -87,7 +88,7 @@
 
 ## 最终验证快照
 
-- 2026-09-06 当前同步结果：本地 `uv run ioskb stats` 为 1,080,698 块 / 56,827 向量，`freshness --skip-upstreams --check` clean；39 项知识库单元测试全部通过，SQLite `quick_check` 为 `ok`。生产认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过；本轮变更已快进合并并推送到 `main`（`dec7c8d`）。
+- 2026-09-06 当前本地同步结果：GLM 离线批次发现并清理 32 个已删除 `summer2026` 文件（1,521 块）；`uv run ioskb stats` 为 1,079,177 块 / 55,306 向量，`freshness --source summer2026 --skip-upstreams --check` clean。`data/glm/overnight-rag-evaluation-20260906/` 的 3,143 行候选可由 `scripts/validate_glm_batch.py` 复核，但 1,381 条模板题仍待人工语义抽查。生产仍为清理前 Vectorize 55,635 条/D1 快照，未经稳定 ID 流程重新发布；此前认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
 - Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测于 2026-09-06 00:13（Asia/Shanghai）11/11 全部通过。
 

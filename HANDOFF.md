@@ -69,14 +69,22 @@ knowledge_cards/     # 生成的专题卡片
 
 ## 4. 三个阶段
 
-**2026-09-06 维护状态（数据已发布并完成生产自测）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
+**2026-09-06 维护状态（生产数据已发布，本地清理待下次生产发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
 `summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理
-3,469 个文件。当前数据库为 1,080,698 块、56,827 块已向量化，待向量化为 0；
-`ioskb freshness --skip-upstreams --check` clean。生产 Vectorize 已更新为 55,635 条，
+3,469 个文件。随后离线评测发现 `summer2026` 的 `ios-basics/` 有 32 个已删除文件仍留在本地索引；
+已用 `uv run ioskb sync --source summer2026 --no-embed` 清理 1,521 个块。当前本地数据库为
+1,079,177 块、55,306 块已向量化，待向量化为 0；`freshness --source summer2026 --skip-upstreams --check`
+clean。生产 Vectorize 仍是清理前的 55,635 条，
 新主 D1 正式 FTS/邻接表各 84,818 行，归档 D1 各 40,000 行，并已将 Pages `IOS_DB` 切换到
 `tommywu-ios-kb-primary-20260905`。首页与公开 GET 均为 HTTP 200、`configured: true`；
 认证 POST 在 2026-09-05 曾因导入触发 Cloudflare 免费套餐当日 D1 写入额度耗尽而返回 HTTP 500；
 额度恢复后于 2026-09-06 00:13（Asia/Shanghai）重跑，11/11 场景全部通过。
+
+**GLM 离线评测批次（2026-09-06）**：`data/glm/overnight-rag-evaluation-20260906/` 保存 3,143 行
+候选资产（评测题、术语别名、资料质量发现、FTS-only 样本和失败归因），用
+`uv run python scripts/validate_glm_batch.py data/glm/overnight-rag-evaluation-20260906` 复核。
+它不是生产回归集：1,381 条标题模板题必须先人工确认题面与锚定小节相符，且本地 FTS-only 结果不能
+推断生产 Vectorize/RRF/reranker 效果。`CODEX_REVIEW.md` 记录了这些边界和本地清理结果。
 
 **历史基线（2026-08-04 增量同步）**：全部代码 + 当时资料实测全链路。以下数字仅用于追溯，当前实时统计以
 2026-09-05 维护状态和 `uv run ioskb stats` 为准：
@@ -153,7 +161,7 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；`feat/knowledge-sync-20260905` 已快进合并并推送到 `main`（`dec7c8d`），`mermaid-diagram.svg` 仍为用户未跟踪文件；
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；本地已清理 32 个陈旧 `summer2026` 文件的 1,521 块，但生产仍保留清理前快照，后续发布必须按稳定 ID 流程同步；GLM 离线候选批次已保留且未自动接入检索；`mermaid-diagram.svg` 仍为用户未跟踪文件；
 - 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `d331ef3`；生产 Pages 已部署 `2ed9ad9f`，`IOS_DB` 指向新主库，预览环境仍保留旧主库绑定作回退；工作区用户未提交内容未处理；
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；

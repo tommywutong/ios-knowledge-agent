@@ -1,0 +1,2218 @@
+{
+ "symbols": [
+  {
+   "sym": "isa_t",
+   "topic": "runtime",
+   "files": [
+    "isa.h",
+    "objc-object.h",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "isa 结构体",
+    "isa union"
+   ]
+  },
+  {
+   "sym": "ISA_MASK",
+   "topic": "runtime",
+   "files": [
+    "isa.h",
+    "objc-private.h",
+    "objc-runtime-new.h"
+   ],
+   "aliases": [
+    "ISA_MASK 掩码",
+    "isa 掩码"
+   ]
+  },
+  {
+   "sym": "cache_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-cache.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "cache t",
+    "方法缓存结构"
+   ]
+  },
+  {
+   "sym": "bucket_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-cache.mm"
+   ],
+   "aliases": [
+    "bucket t",
+    "缓存桶"
+   ]
+  },
+  {
+   "sym": "class_ro_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-runtime-new.mm",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "ro 结构",
+    "class ro t"
+   ]
+  },
+  {
+   "sym": "class_rw_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-runtime-new.mm",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "rw 结构",
+    "class rw t"
+   ]
+  },
+  {
+   "sym": "category_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "category 结构体",
+    "分类结构"
+   ]
+  },
+  {
+   "sym": "method_t",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "method t",
+    "方法结构体"
+   ]
+  },
+  {
+   "sym": "objc_object",
+   "topic": "runtime",
+   "files": [
+    "objc-object.h",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "objc object 结构",
+    "对象根结构"
+   ]
+  },
+  {
+   "sym": "objc_class",
+   "topic": "runtime",
+   "files": [
+    "objc-runtime-new.h",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "objc class 结构",
+    "类结构"
+   ]
+  },
+  {
+   "sym": "SideTable",
+   "topic": "memory",
+   "files": [
+    "objc-runtime-new.mm",
+    "NSObject.mm",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "side table",
+    "sidetable"
+   ]
+  },
+  {
+   "sym": "weak_table_t",
+   "topic": "memory",
+   "files": [
+    "objc-weak.h",
+    "objc-weak.mm"
+   ],
+   "aliases": [
+    "weak table",
+    "weak 表结构"
+   ]
+  },
+  {
+   "sym": "weak_entry_t",
+   "topic": "memory",
+   "files": [
+    "objc-weak.h"
+   ],
+   "aliases": [
+    "weak entry",
+    "weak 条目"
+   ]
+  },
+  {
+   "sym": "weak_register_no_lock",
+   "topic": "memory",
+   "files": [
+    "objc-weak.mm"
+   ],
+   "aliases": [
+    "weak 注册函数"
+   ]
+  },
+  {
+   "sym": "weak_clear_no_lock",
+   "topic": "memory",
+   "files": [
+    "objc-weak.mm"
+   ],
+   "aliases": [
+    "weak 清理函数"
+   ]
+  },
+  {
+   "sym": "objc_storeWeak",
+   "topic": "memory",
+   "files": [
+    "objc-weak.mm",
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "storeWeak",
+    "store weak"
+   ]
+  },
+  {
+   "sym": "objc_initWeak",
+   "topic": "memory",
+   "files": [
+    "objc-weak.mm",
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "initWeak",
+    "weak 初始化"
+   ]
+  },
+  {
+   "sym": "storeWeak",
+   "topic": "memory",
+   "files": [
+    "objc-weak.mm"
+   ],
+   "aliases": [
+    "store weak 实现"
+   ]
+  },
+  {
+   "sym": "AutoreleasePoolPage",
+   "topic": "memory",
+   "files": [
+    "objc-auto.mm",
+    "objc-runtime-new.mm",
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "autorelease pool page",
+    "释放池页"
+   ]
+  },
+  {
+   "sym": "POOL_BOUNDARY",
+   "topic": "memory",
+   "files": [
+    "objc-auto.mm",
+    "NSObject.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "pool boundary",
+    "哨兵边界"
+   ]
+  },
+  {
+   "sym": "objc_autoreleasePoolPush",
+   "topic": "memory",
+   "files": [
+    "objc-auto.mm",
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "poolPush",
+    "pool push"
+   ]
+  },
+  {
+   "sym": "objc_autoreleasePoolPop",
+   "topic": "memory",
+   "files": [
+    "objc-auto.mm",
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "poolPop",
+    "pool pop"
+   ]
+  },
+  {
+   "sym": "objc_retain",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm",
+    "objc-object.h"
+   ],
+   "aliases": [
+    "objc retain 函数"
+   ]
+  },
+  {
+   "sym": "objc_release",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm",
+    "objc-object.h"
+   ],
+   "aliases": [
+    "objc release 函数"
+   ]
+  },
+  {
+   "sym": "objc_rootRetain",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "rootRetain",
+    "root retain"
+   ]
+  },
+  {
+   "sym": "rootRelease",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm",
+    "objc-object.h"
+   ],
+   "aliases": [
+    "root release"
+   ]
+  },
+  {
+   "sym": "rootAutorelease",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm",
+    "objc-object.h"
+   ],
+   "aliases": [
+    "root autorelease"
+   ]
+  },
+  {
+   "sym": "_objc_rootDealloc",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm"
+   ],
+   "aliases": [
+    "rootDealloc",
+    "根析构函数"
+   ]
+  },
+  {
+   "sym": "clearDeallocating",
+   "topic": "memory",
+   "files": [
+    "NSObject.mm",
+    "objc-object.h"
+   ],
+   "aliases": [
+    "clear deallocating",
+    "weak 清理"
+   ]
+  },
+  {
+   "sym": "extra_rc",
+   "topic": "memory",
+   "files": [
+    "objc-object.h",
+    "isa.h"
+   ],
+   "aliases": [
+    "extra rc",
+    "引用计数位域"
+   ]
+  },
+  {
+   "sym": "has_sidetable_rc",
+   "topic": "memory",
+   "files": [
+    "objc-object.h",
+    "isa.h"
+   ],
+   "aliases": [
+    "has sidetable rc",
+    "sidetable 计数标记"
+   ]
+  },
+  {
+   "sym": "_objc_isTaggedPointer",
+   "topic": "memory",
+   "files": [
+    "objc-object.h",
+    "objc-internal.h"
+   ],
+   "aliases": [
+    "isTaggedPointer",
+    "tagged pointer 判断"
+   ]
+  },
+  {
+   "sym": "objc_debug_taggedpointer_obfuscator",
+   "topic": "memory",
+   "files": [
+    "objc-runtime-new.mm",
+    "objc-object.h",
+    "objc-private.h"
+   ],
+   "aliases": [
+    "tagged pointer 混淆器",
+    "obfuscator"
+   ]
+  },
+  {
+   "sym": "objc_sync_enter",
+   "topic": "runloop-gcd",
+   "files": [
+    "objc-sync.mm"
+   ],
+   "aliases": [
+    "sync enter",
+    "synchronized 底层函数"
+   ]
+  },
+  {
+   "sym": "objc_sync_exit",
+   "topic": "runloop-gcd",
+   "files": [
+    "objc-sync.mm"
+   ],
+   "aliases": [
+    "sync exit"
+   ]
+  },
+  {
+   "sym": "objc_msgSend",
+   "topic": "source-symbol",
+   "files": [
+    "Messengers.subproj/objc-msg-arm64.s",
+    "message.h",
+    "objc-abi.h"
+   ],
+   "aliases": [
+    "objc msgSend",
+    "msgSend"
+   ]
+  },
+  {
+   "sym": "objc_msgSendSuper",
+   "topic": "source-symbol",
+   "files": [
+    "Messengers.subproj/objc-msg-arm64.s",
+    "message.h",
+    "objc-abi.h"
+   ],
+   "aliases": [
+    "msgSendSuper",
+    "super 消息发送"
+   ]
+  },
+  {
+   "sym": "objc_msgSend_stret",
+   "topic": "source-symbol",
+   "files": [
+    "Messengers.subproj/objc-msg-arm64.s",
+    "objc-abi.h"
+   ],
+   "aliases": [
+    "msgSend stret"
+   ]
+  },
+  {
+   "sym": "objc_msgLookup",
+   "topic": "source-symbol",
+   "files": [
+    "Messengers.subproj/objc-msg-arm64.s",
+    "objc-abi.h"
+   ],
+   "aliases": [
+    "msgLookup",
+    "cache lookup 入口"
+   ]
+  },
+  {
+   "sym": "lookUpImpOrForward",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "lookUpImp",
+    "imp 查找主流程"
+   ]
+  },
+  {
+   "sym": "cache_fill",
+   "topic": "source-symbol",
+   "files": [
+    "objc-cache.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "cache fill",
+    "缓存填充"
+   ]
+  },
+  {
+   "sym": "cache_getImp",
+   "topic": "source-symbol",
+   "files": [
+    "objc-cache.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "cache getImp"
+   ]
+  },
+  {
+   "sym": "_objc_msgForward",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm",
+    "objc-abi.h"
+   ],
+   "aliases": [
+    "msgForward",
+    "转发入口"
+   ]
+  },
+  {
+   "sym": "resolveMethod_locked",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "resolveMethod",
+    "动态解析入口"
+   ]
+  },
+  {
+   "sym": "_objc_init",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm",
+    "objc-os.mm"
+   ],
+   "aliases": [
+    "objc init 入口",
+    "runtime 初始化"
+   ]
+  },
+  {
+   "sym": "map_images",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm",
+    "objc-os.mm"
+   ],
+   "aliases": [
+    "map images 镜像"
+   ]
+  },
+  {
+   "sym": "_read_images",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "read images",
+    "镜像类读取"
+   ]
+  },
+  {
+   "sym": "readClass",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "read class",
+    "类读取"
+   ]
+  },
+  {
+   "sym": "realizeClassWithoutSwift",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "realize class",
+    "类实例化"
+   ]
+  },
+  {
+   "sym": "methodizeClass",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "methodize class",
+    "方法整理"
+   ]
+  },
+  {
+   "sym": "attachCategories",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "attach categories",
+    "分类挂载"
+   ]
+  },
+  {
+   "sym": "attachLists",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "attach lists",
+    "列表合并"
+   ]
+  },
+  {
+   "sym": "load_images",
+   "topic": "source-symbol",
+   "files": [
+    "objc-loadmethod.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "load images +load"
+   ]
+  },
+  {
+   "sym": "prepare_load_methods",
+   "topic": "source-symbol",
+   "files": [
+    "objc-loadmethod.mm"
+   ],
+   "aliases": [
+    "prepare load methods"
+   ]
+  },
+  {
+   "sym": "call_load_methods",
+   "topic": "source-symbol",
+   "files": [
+    "objc-loadmethod.mm"
+   ],
+   "aliases": [
+    "call load methods",
+    "+load 调用"
+   ]
+  },
+  {
+   "sym": "_object_set_associative_reference",
+   "topic": "source-symbol",
+   "files": [
+    "objc-references.mm"
+   ],
+   "aliases": [
+    "set associative reference",
+    "关联对象设置"
+   ]
+  },
+  {
+   "sym": "_object_get_associative_reference",
+   "topic": "source-symbol",
+   "files": [
+    "objc-references.mm"
+   ],
+   "aliases": [
+    "get associative reference"
+   ]
+  },
+  {
+   "sym": "objc_removeAssociatedObjects",
+   "topic": "source-symbol",
+   "files": [
+    "objc-references.mm"
+   ],
+   "aliases": [
+    "remove associated objects"
+   ]
+  },
+  {
+   "sym": "class_addMethod",
+   "topic": "source-symbol",
+   "files": [
+    "objc-class.mm",
+    "objc-runtime.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "add method",
+    "添加方法函数"
+   ]
+  },
+  {
+   "sym": "class_replaceMethod",
+   "topic": "source-symbol",
+   "files": [
+    "objc-class.mm",
+    "objc-runtime.mm"
+   ],
+   "aliases": [
+    "replace method"
+   ]
+  },
+  {
+   "sym": "class_getInstanceMethod",
+   "topic": "source-symbol",
+   "files": [
+    "objc-class.mm",
+    "objc-runtime.mm"
+   ],
+   "aliases": [
+    "get instance method"
+   ]
+  },
+  {
+   "sym": "method_exchangeImplementations",
+   "topic": "source-symbol",
+   "files": [
+    "objc-class.mm",
+    "objc-runtime.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "exchange implementations",
+    "方法交换函数"
+   ]
+  },
+  {
+   "sym": "method_setImplementation",
+   "topic": "source-symbol",
+   "files": [
+    "objc-class.mm",
+    "objc-runtime.mm"
+   ],
+   "aliases": [
+    "set implementation"
+   ]
+  },
+  {
+   "sym": "objc_getClass",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "get class 函数"
+   ]
+  },
+  {
+   "sym": "objc_getMetaClass",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime.mm",
+    "objc-runtime-new.mm"
+   ],
+   "aliases": [
+    "get meta class"
+   ]
+  },
+  {
+   "sym": "objc_allocateClassPair",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime.mm"
+   ],
+   "aliases": [
+    "allocate class pair",
+    "动态建类"
+   ]
+  },
+  {
+   "sym": "objc_registerClassPair",
+   "topic": "source-symbol",
+   "files": [
+    "objc-runtime.mm"
+   ],
+   "aliases": [
+    "register class pair"
+   ]
+  },
+  {
+   "sym": "sel_registerName",
+   "topic": "source-symbol",
+   "files": [
+    "objc-sel.mm"
+   ],
+   "aliases": [
+    "sel register name",
+    "selector 注册"
+   ]
+  },
+  {
+   "sym": "sel_getName",
+   "topic": "source-symbol",
+   "files": [
+    "objc-sel.mm"
+   ],
+   "aliases": [
+    "sel get name"
+   ]
+  },
+  {
+   "sym": "objc_sync_try_enter",
+   "topic": "source-symbol",
+   "files": [
+    "objc-sync.mm"
+   ],
+   "aliases": [
+    "sync try enter"
+   ]
+  },
+  {
+   "sym": "objc_opt_isa",
+   "topic": "source-symbol",
+   "files": [
+    "objc-opt.mm"
+   ],
+   "aliases": [
+    "opt isa",
+    "优化 isa 查找"
+   ]
+  },
+  {
+   "sym": "objc_opt_class",
+   "topic": "source-symbol",
+   "files": [
+    "objc-opt.mm"
+   ],
+   "aliases": [
+    "opt class"
+   ]
+  },
+  {
+   "sym": "objc_opt_respondsToSelector",
+   "topic": "source-symbol",
+   "files": [
+    "objc-opt.mm"
+   ],
+   "aliases": [
+    "opt responds to selector"
+   ]
+  },
+  {
+   "sym": "DispatchOnce",
+   "topic": "source-symbol",
+   "files": [
+    "objc-os.h"
+   ],
+   "aliases": [
+    "dispatch once runtime",
+    "runtime once"
+   ]
+  },
+  {
+   "sym": "objc4",
+   "topic": "source-symbol",
+   "files": [
+    "../ReleaseNotes.rtf"
+   ],
+   "aliases": [
+    "objc4 源码版本"
+   ]
+  },
+  {
+   "sym": "__block",
+   "topic": "block",
+   "files": [
+    "TIPS/Block的本质.md"
+   ],
+   "aliases": [
+    "block 修饰符",
+    "下划线 block"
+   ]
+  },
+  {
+   "sym": "Block_layout",
+   "topic": "block",
+   "files": [
+    "TIPS/Block的本质.md"
+   ],
+   "aliases": [
+    "block layout",
+    "block 结构"
+   ]
+  },
+  {
+   "sym": "invoke",
+   "topic": "block",
+   "files": [
+    "TIPS/Block的本质.md"
+   ],
+   "aliases": [
+    "block 函数指针"
+   ]
+  },
+  {
+   "sym": "class_getInstanceMethod",
+   "topic": "source-symbol",
+   "files": [
+    "TIPS/Runtime从入门到进阶二.md"
+   ],
+   "aliases": [
+    "获取实例方法 API"
+   ]
+  },
+  {
+   "sym": "method_exchangeImplementations",
+   "topic": "source-symbol",
+   "files": [
+    "TIPS/Runtime从入门到进阶二.md"
+   ],
+   "aliases": [
+    "交换实现 API"
+   ]
+  },
+  {
+   "sym": "objc_msgSend",
+   "topic": "source-symbol",
+   "files": [
+    "TIPS/Runtime从入门到进阶一.md"
+   ],
+   "aliases": [
+    "msgSend 讲解"
+   ]
+  },
+  {
+   "sym": "cache_t",
+   "topic": "source-symbol",
+   "files": [
+    "TIPS/分类category、load、initialize的本质和源码分析.md"
+   ],
+   "aliases": [
+    "缓存结构讲解"
+   ]
+  },
+  {
+   "sym": "objc_setAssociatedObject",
+   "topic": "source-symbol",
+   "files": [
+    "TIPS/关联对象 Associated Object 的本质.md"
+   ],
+   "aliases": [
+    "关联对象 API"
+   ]
+  },
+  {
+   "sym": "kCFRunLoopBeforeWaiting",
+   "topic": "runloop-gcd",
+   "files": [
+    "TIPS/RunLoop从入门到进阶.md"
+   ],
+   "aliases": [
+    "before waiting",
+    "休眠前状态"
+   ]
+  },
+  {
+   "sym": "mach_msg",
+   "topic": "runloop-gcd",
+   "files": [
+    "TIPS/RunLoop从入门到进阶.md"
+   ],
+   "aliases": [
+    "mach msg 休眠"
+   ]
+  },
+  {
+   "sym": "CFRunLoopSourceRef",
+   "topic": "runloop-gcd",
+   "files": [
+    "TIPS/RunLoop从入门到进阶.md"
+   ],
+   "aliases": [
+    "runloop source"
+   ]
+  },
+  {
+   "sym": "NSURLSession",
+   "topic": "network",
+   "files": [
+    "TIPS/URLSession详解.md"
+   ],
+   "aliases": [
+    "URL session",
+    "网络会话"
+   ]
+  },
+  {
+   "sym": "NSCache",
+   "topic": "foundation",
+   "files": [
+    "TIPS/NSCache的使用.md"
+   ],
+   "aliases": [
+    "缓存类用法"
+   ]
+  },
+  {
+   "sym": "os_unfair_lock",
+   "topic": "runloop-gcd",
+   "files": [
+    "TIPS/线程同步之os_unfair_lock.md"
+   ],
+   "aliases": [
+    "unfair lock 用法"
+   ]
+  },
+  {
+   "sym": "synchronized",
+   "topic": "runloop-gcd",
+   "files": [
+    "TIPS/线程同步之@synchronized.md"
+   ],
+   "aliases": [
+    "同步锁用法"
+   ]
+  },
+  {
+   "sym": "NSKeyedArchiver",
+   "topic": "persistence",
+   "files": [
+    "TIPS/数据存储之归档解档 NSKeyedArchiver NSKeyedUnarchiver.md"
+   ],
+   "aliases": [
+    "归档器用法"
+   ]
+  },
+  {
+   "sym": "CADisplayLink",
+   "topic": "uikit",
+   "files": [
+    "TIPS/计时器CADisplayLink.md"
+   ],
+   "aliases": [
+    "display link 用法"
+   ]
+  },
+  {
+   "sym": "shouldRasterize",
+   "topic": "uikit",
+   "files": [
+    "TIPS/图层性能之离屏渲染、栅格化、回收池.md"
+   ],
+   "aliases": [
+    "栅格化属性"
+   ]
+  },
+  {
+   "sym": "contentHuggingPriority",
+   "topic": "uikit",
+   "files": [
+    "TIPS/Auto Layout的使用.md"
+   ],
+   "aliases": [
+    "hugging 优先级"
+   ]
+  }
+ ],
+ "no_evidence": [
+  "SwiftUI 的布局系统和 UIScreenKit 内部实现是怎么工作的？",
+  "Swift Concurrency 里 actor 的重入隔离细节能帮我讲讲吗？",
+  "Combine 框架的 Publisher 订阅内部数据流原理是什么？",
+  "SwiftData 的持久化底层是怎么实现的？",
+  "WidgetKit 的时间线刷新策略官方推荐怎么配置？",
+  "App Intents 框架怎么把功能暴露给 Siri？",
+  "StoreKit 2 的订阅状态同步机制能详细说说吗？",
+  "Metal 着色器里怎么手写一个简单的光线步进？",
+  "Core ML 模型量化到 int8 的具体步骤是什么？",
+  "ARKit 的 Scene Reconstruction API 具体怎么用？",
+  "Vision 框架的人体姿态估计模型精度如何优化？",
+  "Xcode Cloud 的构建并发数怎么计费？",
+  "TestFlight 分发企业应用的合规边界是什么？",
+  "iOS 26 新增的 App API 我该从哪里学起？",
+  "Swift Charts 里怎么自定义坐标轴刻度？",
+  "Apple Intelligence 的本地模型调用接口有哪些？",
+  "visionOS 的空间音频要怎么在 app 里接入？",
+  "Flutter 的渲染管线和 Impeller 引擎能对比讲讲吗？",
+  "Android Handler 消息机制的底层实现是什么？",
+  "React Native 新架构 Fabric 的挂载流程是怎样的？",
+  "Kotlin 协程的调度器在 JVM 层是怎么实现的？",
+  "Spring Boot 的 Bean 生命周期能帮我梳理一下吗？",
+  "MySQL 的 B+ 树索引在什么情况下会失效？",
+  "Docker 的 overlay 网络驱动原理是什么？",
+  "Kubernetes 的滚动更新和金丝雀发布怎么配置？",
+  "Rust 的所有权机制和借用检查器是怎么回事？",
+  "C++20 协程的 await_suspend 返回类型有什么讲究？",
+  "Unity 的渲染管线 SRP Batcher 是怎么工作的？",
+  "Web3 钱包的助记词派生路径 BIP44 是什么？",
+  "Transformer 注意力机制的梯度是怎么回传的？",
+  "LLM 的 RLHF 训练流程里 reward model 起什么作用？",
+  "Vue 的响应式系统在 Vue 3 里改成 Proxy 后有什么变化？",
+  "gRPC 的 HTTP/2 流控是怎么实现的？",
+  "Nginx 的事件驱动模型和 epoll 的关系是什么？",
+  "PostgreSQL 的 MVCC 实现和 MySQL InnoDB 有什么区别？",
+  "Git 的 packfile 压缩算法细节能讲讲吗？",
+  "TLS 1.3 的握手为什么比 1.2 少一个往返？",
+  "QUIC 协议的拥塞控制算法是什么？",
+  "IPv6 的 SLAAC 地址自动配置流程是怎样的？",
+  "HTTP/3 相比 HTTP/2 在队头阻塞上解决了什么？",
+  "数据库连接池的 HikariCP 参数该怎么调？",
+  "Redis 的跳跃表实现为什么选它而不是红黑树？",
+  "消息队列 Kafka 的 ISR 机制是什么？",
+  "分布式一致性里 Paxos 和 Raft 的核心区别？",
+  "编译原理里 LL(1) 文法的 FIRST/FOLLOW 集怎么算？",
+  "计算机图形学里 Phong 光照模型和高光指数的关系？",
+  "算法题：请讲讲 Tarjan 算法求强连通分量的过程。",
+  "数值分析里牛顿迭代法的收敛条件是什么？",
+  "iOS 应用在国内上架需要准备哪些资质和备案材料？",
+  "App Store 审核条款 4.2 的最新解释是什么？",
+  "Xcode 26 的 AI 辅助编码功能怎么开启？",
+  "苹果开发者账号续费的 DUNS 编码怎么更新？",
+  "Vision Pro 的眼手交互延迟指标是多少毫秒？",
+  "Apple Silicon 模拟器上跑 Rosetta 的性能损耗怎么测？",
+  "TestFlight 内测包的加密合规报告怎么填？",
+  "iOS 隐私清单 PrivacyInfo.xcprivacy 的必填项有哪些？",
+  "App 隐私标签里的『用于追踪』判定标准最新口径是什么？"
+ ],
+ "general": [
+  "帮我写一首关于秋天的短诗。",
+  "今天上海天气怎么样？",
+  "推荐几部适合周末看的电影。",
+  "帮我算一下 37 乘以 46 等于多少。",
+  "红烧肉怎么做才软糯不腻？",
+  "拿破仑为什么会兵败滑铁卢？",
+  "把这句话翻译成英文：今天的会议改到下午三点。",
+  "最近总是失眠，有什么放松的建议吗？",
+  "帮我写一段给老师的感谢留言。",
+  "光合作用的化学反应式是什么？",
+  "牛顿第三定律的内容是什么？",
+  "英语六级和雅思的区别是什么？",
+  "股票里的市盈率是什么意思？",
+  "帮我起一个好听的猫咪名字。",
+  "宇宙大爆炸理论的大致内容是什么？",
+  "钢琴初学者应该先练什么？",
+  "为什么天空是蓝色的？",
+  "身份证丢失了补办流程是怎样的？",
+  "周末去杭州玩有什么路线推荐？",
+  "帮我总结一下《三体》第一部的主要情节。",
+  "日常怎么提高睡眠质量？",
+  "圆周率是怎么计算出来的？",
+  "信用卡和借记卡的区别是什么？",
+  "写一封请假条给领导，理由是家里有事。",
+  "马拉松新手训练计划怎么安排？"
+ ],
+ "cross_platform": [
+  {
+   "q": "Android 的 Handler 机制和 iOS RunLoop 各自是怎么实现的？",
+   "mode": "no_evidence",
+   "why": "Android 侧语料没有；iOS 侧虽有 RunLoop 资料但题目主体是两侧对比，预期整体判定证据不足"
+  },
+  {
+   "q": "Kotlin 协程和 GCD 在并发模型上的差异是什么？",
+   "mode": "no_evidence",
+   "why": "Kotlin 侧语料缺失，GCD 资料不足以支撑完整对比"
+  },
+  {
+   "q": "Flutter 的列表复用和 UITableView 的复用池机制有什么区别？",
+   "mode": "knowledge",
+   "why": "iOS 侧复用池资料充分，Flutter 侧应说明资料未覆盖",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/UIKit 与渲染/iOS UITableView：复用池的真实结构与代理调用顺序.md",
+   "phrase": "复用"
+  },
+  {
+   "q": "React Native 的虚拟 DOM diff 和 iOS 的视图 diff 有可比性吗？",
+   "mode": "no_evidence",
+   "why": "RN 语料缺失"
+  },
+  {
+   "q": "RecyclerView 的缓存层级和 UICollectionView 一样吗？",
+   "mode": "knowledge",
+   "why": "iOS 侧集合视图资料可用，Android 侧应明说缺资料",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/UIKit 与渲染/iOS UITableView：复用池的真实结构与代理调用顺序.md",
+   "phrase": "复用"
+  },
+  {
+   "q": "微信小程序和 iOS 原生页面栈管理有什么不同？",
+   "mode": "no_evidence",
+   "why": "小程序语料缺失"
+  },
+  {
+   "q": "跨平台框架里 Flutter 和原生 iOS 渲染管线的主要差异？",
+   "mode": "knowledge",
+   "why": "iOS 渲染资料可支撑原生侧对比",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/UIKit 与渲染/iOS UIView 与 CALayer：三棵树、绘制流水线与离屏渲染.md",
+   "phrase": "绘制"
+  },
+  {
+   "q": "安卓的 ART 虚拟机和 ObjC runtime 的方法派发有什么不同？",
+   "mode": "no_evidence",
+   "why": "ART 语料缺失，ObjC 侧资料不足以完成对比"
+  },
+  {
+   "q": "SwiftUI 能不能直接跑在 Android 上？",
+   "mode": "no_evidence",
+   "why": "跨端移植话题，语料无证据"
+  },
+  {
+   "q": "前端 WebSocket 和 iOS URLSessionWebSocketTask 的差异？",
+   "mode": "knowledge",
+   "why": "iOS 侧 WebSocket 资料可用",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/架构与网络/iOS 网络分层：URLSession 之上该有几层.md",
+   "phrase": "URLSession"
+  },
+  {
+   "q": "Node.js 的事件循环和 RunLoop 是一回事吗？",
+   "mode": "knowledge",
+   "why": "RunLoop 侧资料可说明差异，Node 侧资料缺失需声明",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/并发与运行循环/iOS RunLoop：mode、source 与那张流程图今天还对不对.md",
+   "phrase": "RunLoop"
+  },
+  {
+   "q": "Flutter 和原生 iOS 动画性能对比有什么实测结论？",
+   "mode": "no_evidence",
+   "why": "Flutter 语料缺失"
+  },
+  {
+   "q": "Java 的 synchronized 和 OC 的 @synchronized 底层一样吗？",
+   "mode": "knowledge",
+   "why": "OC 侧 objc_sync 资料可用，Java 侧缺失需声明",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/并发与运行循环/iOS 锁：从 OSSpinLock 的废弃说起.md",
+   "phrase": "锁"
+  },
+  {
+   "q": "Rust 的借用检查器和 ARC 内存模型能对比吗？",
+   "mode": "knowledge",
+   "why": "ARC 侧资料可用，Rust 侧需声明缺失",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/内存管理/iOS 内存：ARC 的两半.md",
+   "phrase": "ARC"
+  },
+  {
+   "q": "Chrome 的合成器渲染和 Core Animation 流水线差异？",
+   "mode": "knowledge",
+   "why": "Core Animation 资料可支撑 iOS 侧说明",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/UIKit 与渲染/iOS UIView 与 CALayer：三棵树、绘制流水线与离屏渲染.md",
+   "phrase": "绘制"
+  },
+  {
+   "q": "Android 的内存回收 OOM adj 和 iOS Jetsam 有什么不同？",
+   "mode": "no_evidence",
+   "why": "Android 侧语料缺失"
+  },
+  {
+   "q": "Python 的 GIL 和 iOS 主线程模型有什么区别？",
+   "mode": "knowledge",
+   "why": "iOS 线程模型资料可用，Python 侧需声明缺失",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/并发与运行循环/iOS GCD：队列不是线程，以及死锁的准确边界.md",
+   "phrase": "队列"
+  },
+  {
+   "q": "Compose Multiplatform 现在能替换 UIKit 吗？",
+   "mode": "no_evidence",
+   "why": "CMP 语料缺失"
+  },
+  {
+   "q": "后端的协程和 iOS 的 GCD 队列是一个概念吗？",
+   "mode": "knowledge",
+   "why": "GCD 资料可支撑 iOS 侧解释",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/并发与运行循环/iOS GCD：队列不是线程，以及死锁的准确边界.md",
+   "phrase": "队列"
+  },
+  {
+   "q": "Unity 的 MonoBehaviour 生命周期和 UIViewController 生命周期像吗？",
+   "mode": "knowledge",
+   "why": "UIViewController 生命周期资料可用，Unity 侧需声明缺失",
+   "path": "/Users/tommywu/Obsidian/iOS/20 专题笔记/UIKit 与渲染/iOS UIViewController：生命周期的真实顺序与容器控制器.md",
+   "phrase": "生命周期"
+  }
+ ],
+ "followups": [
+  {
+   "prev_q": "给我讲讲 objc_msgSend 的完整查找流程。",
+   "prev_mode": "knowledge",
+   "prev_sum": "objc_msgSend 先走 cache 汇编快速路径，未命中进入 lookUpImpOrForward 慢速查找，仍失败进入动态解析与消息转发。",
+   "q": "那缓存没命中的时候，慢速查找具体是在哪里进行的？",
+   "path": "Runtime/Part 2 - 消息发送与转发.md",
+   "phrase": "lookUpImpOrForward",
+   "aliases": [
+    "慢速查找在哪里",
+    "方法列表查找流程"
+   ]
+  },
+  {
+   "prev_q": "给我讲讲 objc_msgSend 的完整查找流程。",
+   "prev_mode": "knowledge",
+   "prev_sum": "objc_msgSend 先查缓存，未命中进入慢速查找，最终可能进入转发。",
+   "q": "为什么它的实现要用汇编？汇编和 C 语言部分是怎么分工的？",
+   "path": "Runtime/Part 2 - 消息发送与转发.md",
+   "phrase": "objc_msgSend",
+   "aliases": [
+    "为什么用汇编实现",
+    "汇编和 C 的分工"
+   ]
+  },
+  {
+   "prev_q": "什么是消息转发？",
+   "prev_mode": "knowledge",
+   "prev_sum": "消息转发包含 forwardingTargetForSelector、methodSignatureForSelector/forwardInvocation 等步骤，最终兜底 doesNotRecognizeSelector。",
+   "q": "为什么转发流程里需要方法签名？没有签名会发生什么？",
+   "path": "Runtime/Part 2 - 消息发送与转发.md",
+   "phrase": "methodSignatureForSelector",
+   "aliases": [
+    "方法签名的作用",
+    "没有签名会怎样"
+   ]
+  },
+  {
+   "prev_q": "Category 的加载流程是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "分类在运行期由 runtime 加载，方法通过 attachCategories 合并进类的方法列表前端。",
+   "q": "那分类方法为什么插在原方法前面，顺序是怎么决定的？",
+   "path": "Runtime/Part 3 - Category：加载、覆盖与关联对象.md",
+   "phrase": "attachCategories",
+   "aliases": [
+    "分类方法插入顺序",
+    "为什么分类优先"
+   ]
+  },
+  {
+   "prev_q": "Category 能添加属性吗？",
+   "prev_mode": "knowledge",
+   "prev_sum": "分类声明属性不会自动生成实现，需要用关联对象补齐 getter/setter。",
+   "q": "为什么分类不能直接加成员变量，关联对象又是怎么补上的？",
+   "path": "Runtime/Part 3 - Category：加载、覆盖与关联对象.md",
+   "phrase": "关联对象",
+   "aliases": [
+    "分类为什么没有ivar",
+    "关联对象怎么实现"
+   ]
+  },
+  {
+   "prev_q": "weak 指针是怎么实现的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "weak 引用通过 SideTable 的 weak 表注册，对象释放时统一置 nil。",
+   "q": "那对象释放时，weak 指针是在哪一步被置成 nil 的？",
+   "path": "内存管理/iOS weak 的实现：SideTable 与置 nil 的时机.md",
+   "phrase": "置 nil",
+   "aliases": [
+    "weak 什么时候置nil",
+    "释放时 weak 清理"
+   ]
+  },
+  {
+   "prev_q": "AutoreleasePool 是怎么工作的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "自动释放池由 AutoreleasePoolPage 页链表构成，push/pop 与哨兵对象配合管理释放时机。",
+   "q": "为什么需要哨兵对象？它和页链表是怎么配合的？",
+   "path": "内存管理/iOS AutoreleasePool：哨兵、页链表与 RunLoop 的关系.md",
+   "phrase": "哨兵",
+   "aliases": [
+    "哨兵对象作用",
+    "POOL_BOUNDARY 为什么需要"
+   ]
+  },
+  {
+   "prev_q": "AutoreleasePool 是怎么工作的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "自动释放池由页链表构成，与 RunLoop 有固定协作时机。",
+   "q": "那它和 RunLoop 是在什么时机配合的？一次页面刷新会释放几次？",
+   "path": "并发与运行循环/RunLoop 与 AutoReleasePool.md",
+   "phrase": "RunLoop",
+   "aliases": [
+    "runloop 什么时候释放池",
+    "一次循环释放几次"
+   ]
+  },
+  {
+   "prev_q": "RunLoop 是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "RunLoop 是事件循环，通过 mode 管理 source/timer/observer，空闲时休眠在 mach_msg。",
+   "q": "为什么它空闲时不占 CPU？休眠和唤醒的具体机制是什么？",
+   "path": "并发与运行循环/iOS RunLoop：mode、source 与那张流程图今天还对不对.md",
+   "phrase": "mach_msg",
+   "aliases": [
+    "runloop 为什么不耗cpu",
+    "休眠唤醒机制"
+   ]
+  },
+  {
+   "prev_q": "为什么滑动时 NSTimer 会停？",
+   "prev_mode": "knowledge",
+   "prev_sum": "滑动时 RunLoop 切到 tracking mode，默认 mode 的 timer 得不到调度。",
+   "q": "那 NSRunLoopCommonModes 为什么能解决这个问题？它的原理是什么？",
+   "path": "并发与运行循环/iOS RunLoop：mode、source 与那张流程图今天还对不对.md",
+   "phrase": "CommonModes",
+   "aliases": [
+    "common modes 原理",
+    "为什么加到commonmodes就行"
+   ]
+  },
+  {
+   "prev_q": "dispatch_sync 什么时候会死锁？",
+   "prev_mode": "knowledge",
+   "prev_sum": "向当前串行队列同步派发会死锁，因为队列在等待自身空闲。",
+   "q": "为什么并发队列就不会这样死锁？底层差别在哪里？",
+   "path": "并发与运行循环/iOS GCD：队列不是线程，以及死锁的准确边界.md",
+   "phrase": "死锁",
+   "aliases": [
+    "并发队列为什么不死锁",
+    "死锁边界"
+   ]
+  },
+  {
+   "prev_q": "GCD 的队列和线程是什么关系？",
+   "prev_mode": "knowledge",
+   "prev_sum": "队列是调度单位，线程是执行单位，GCD 用线程池执行队列任务。",
+   "q": "那线程爆炸是怎么发生的？该怎么避免？",
+   "path": "并发与运行循环/iOS GCD：队列不是线程，以及死锁的准确边界.md",
+   "phrase": "线程",
+   "aliases": [
+    "线程爆炸原因",
+    "怎么避免线程爆炸"
+   ]
+  },
+  {
+   "prev_q": "Block 循环引用是怎么回事？",
+   "prev_mode": "knowledge",
+   "prev_sum": "block 拷贝到堆时会强引用捕获的对象，self 持 block、block 持 self 形成环。",
+   "q": "为什么 weak-strong dance 里还要临时再把 self 变强？这样安全吗？",
+   "path": "Block/iOS Block 循环引用与 weak-strong dance.md",
+   "phrase": "weak-strong",
+   "aliases": [
+    "weak strong dance 原理",
+    "为什么还要再strong"
+   ]
+  },
+  {
+   "prev_q": "Block 捕获变量的规则是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "局部变量按值捕获，对象捕获会连带引用关系，__block 变量通过 byref 结构转发地址。",
+   "q": "那 __block 修饰的对象在 block 拷贝到堆时，引用计数会怎么变？",
+   "path": "Block/iOS Block 的变量捕获与 __block.md",
+   "phrase": "__block",
+   "aliases": [
+    "block 变量引用计数",
+    "byref 拷贝时计数"
+   ]
+  },
+  {
+   "prev_q": "KVO 的原理是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "KVO 通过 isa-swizzling 把对象 isa 指向派生类，重写 setter 通知观察者。",
+   "q": "那派生类的 setter 通知观察者这一步具体做了什么？",
+   "path": "Runtime 与对象通信/iOS KVC 与 KVO：搜索顺序、isa-swizzling 与手动触发.md",
+   "phrase": "isa-swizzling",
+   "aliases": [
+    "kvo setter 通知细节",
+    "派生类做了什么"
+   ]
+  },
+  {
+   "prev_q": "UIView 和 CALayer 是什么关系？",
+   "prev_mode": "knowledge",
+   "prev_sum": "UIView 负责事件与布局，CALayer 负责显示，view 持有 layer。",
+   "q": "为什么事件处理放在 UIView 而显示交给 CALayer？这个设计的理由是什么？",
+   "path": "UIKit 与渲染/iOS UIView 与 CALayer：三棵树、绘制流水线与离屏渲染.md",
+   "phrase": "CALayer",
+   "aliases": [
+    "为什么layer不管事件",
+    "职责划分理由"
+   ]
+  },
+  {
+   "prev_q": "离屏渲染是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "需要在 GPU 屏外缓冲合成后再上屏的渲染，常见于圆角+裁剪等组合。",
+   "q": "为什么圆角加 masksToBounds 就可能触发？条件边界是什么？",
+   "path": "UIKit 与渲染/iOS UIView 与 CALayer：三棵树、绘制流水线与离屏渲染.md",
+   "phrase": "离屏渲染",
+   "aliases": [
+    "圆角为什么离屏",
+    "触发条件边界"
+   ]
+  },
+  {
+   "prev_q": "事件是怎么从屏幕传到按钮的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "触摸事件由 UIApplication 派发，经 hitTest 递归查找合适的响应视图。",
+   "q": "那 hitTest 的遍历顺序是什么？为什么父视图先判断自己？",
+   "path": "UIKit 与渲染/iOS 事件传递与响应者链：hitTest、手势与那些点不动的按钮.md",
+   "phrase": "hitTest",
+   "aliases": [
+    "hitTest 遍历顺序",
+    "为什么先判断父视图"
+   ]
+  },
+  {
+   "prev_q": "frame 和 bounds 的区别是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "frame 是相对父视图的计算结果，bounds 是自身坐标系里的存储值。",
+   "q": "为什么说 frame 是算出来的？改 bounds.origin 会发生什么？",
+   "path": "UIKit 与渲染/iOS 坐标系：frame 是算出来的，bounds 和 transform 才是存的.md",
+   "phrase": "bounds",
+   "aliases": [
+    "为什么frame是算的",
+    "bounds origin 效果"
+   ]
+  },
+  {
+   "prev_q": "UITableViewCell 的复用是怎么工作的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "滚出屏幕的 cell 进入复用池，新出现的 cell 优先从池里取。",
+   "q": "那复用池的结构是什么？dequeue 拿不到时会走哪条路？",
+   "path": "UIKit 与渲染/iOS UITableView：复用池的真实结构与代理调用顺序.md",
+   "phrase": "复用",
+   "aliases": [
+    "复用池结构",
+    "dequeue 拿不到怎么办"
+   ]
+  },
+  {
+   "prev_q": "ARC 下属性该用 strong 还是 copy？",
+   "prev_mode": "knowledge",
+   "prev_sum": "不可变字符串/块等用 copy 防止可变子类篡改，普通对象 strong。",
+   "q": "那为什么 NSString 用 copy 传 NSMutableString 进来也不会被改？",
+   "path": "内存管理/iOS 属性关键字：从所有权推导，而不是从类型名猜.md",
+   "phrase": "copy",
+   "aliases": [
+    "NSString copy 原因",
+    "可变串传入会怎样"
+   ]
+  },
+  {
+   "prev_q": "Tagged Pointer 是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "小对象（如小整数/短字符串）直接把值存在指针位，不走引用计数。",
+   "q": "那 tagged pointer 为什么不能加引用计数？isa 也不是真指针，方法查找怎么办？",
+   "path": "对象模型/iOS 对象模型：类型判断、内存对齐与 Tagged Pointer.md",
+   "phrase": "Tagged Pointer",
+   "aliases": [
+    "tagged pointer 没有引用计数",
+    "tagged 怎么响应消息"
+   ]
+  },
+  {
+   "prev_q": "isa 是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "isa 指向类对象，arm64 下是 non-pointer isa，含计数与标志位域。",
+   "q": "那对象的引用计数存在 isa 里的哪几位？满了怎么办？",
+   "path": "Runtime/Part 1 - 对象与类的本质.md",
+   "phrase": "isa",
+   "aliases": [
+    "引用计数在isa哪几位",
+    "extra_rc 满了"
+   ]
+  },
+  {
+   "prev_q": "类对象和元类是什么关系？",
+   "prev_mode": "knowledge",
+   "prev_sum": "类对象存实例方法，元类存类方法，isa 链最终到根元类。",
+   "q": "那类方法调用的查找路径具体是怎么走到底的？",
+   "path": "Runtime/Part 1 - 对象与类的本质.md",
+   "phrase": "元类",
+   "aliases": [
+    "类方法查找路径",
+    "元类链怎么走"
+   ]
+  },
+  {
+   "prev_q": "+load 和 +initialize 有什么区别？",
+   "prev_mode": "knowledge",
+   "prev_sum": "+load 在镜像加载时主动调用一次，+initialize 在类首次收消息时懒调用。",
+   "q": "为什么 +initialize 可能被调用多次而 +load 只有一次？",
+   "path": "Runtime/_README.md",
+   "phrase": "initialize",
+   "aliases": [
+    "initialize 多次调用",
+    "load 只调一次原因"
+   ]
+  },
+  {
+   "prev_q": "Method Swizzling 为什么要在 +load 里做？",
+   "prev_mode": "knowledge",
+   "prev_sum": "+load 时机早且线程环境相对可控，swizzle 需要在使用前完成。",
+   "q": "那 swizzling 之后交换的是整个方法还是只是这一处调用？会影响子类吗？",
+   "path": "Runtime 与对象通信/iOS Method Swizzling：正确姿势、+load 时机与那些坑.md",
+   "phrase": "交换",
+   "aliases": [
+    "swizzle 影响范围",
+    "会影响子类吗"
+   ]
+  },
+  {
+   "prev_q": "KVC 的取值流程是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "按 getter、成员变量等顺序查找，找不到抛异常，可用未定义键方法兜底。",
+   "q": "那 accessInstanceVariablesDirectly 返回 NO 会怎样？流程会怎么变？",
+   "path": "Runtime 与对象通信/iOS KVC 与 KVO：搜索顺序、isa-swizzling 与手动触发.md",
+   "phrase": "搜索顺序",
+   "aliases": [
+    "直接访问成员变量为no",
+    "kvc 流程变化"
+   ]
+  },
+  {
+   "prev_q": "通知是怎么派发的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "NSNotificationCenter 同步把通知派发给注册的观察者。",
+   "q": "那通知是在哪个线程回调的？跨线程发通知要注意什么？",
+   "path": "Runtime 与对象通信/iOS 对象通信：delegate、通知、target-action 与 block 回调.md",
+   "phrase": "通知",
+   "aliases": [
+    "通知回调线程",
+    "跨线程发通知"
+   ]
+  },
+  {
+   "prev_q": "delegate 和通知该怎么选？",
+   "prev_mode": "knowledge",
+   "prev_sum": "delegate 一对一回调清晰，通知一对多解耦，代价是可读性与生命周期管理。",
+   "q": "那 block 回调相比两者又输在哪里？为什么 block 容易造成循环引用？",
+   "path": "Runtime 与对象通信/iOS 对象通信：delegate、通知、target-action 与 block 回调.md",
+   "phrase": "block",
+   "aliases": [
+    "block 回调缺点",
+    "为什么block容易循环引用"
+   ]
+  },
+  {
+   "prev_q": "iOS 内存分 Clean 和 Dirty 是什么意思？",
+   "prev_mode": "knowledge",
+   "prev_sum": "Clean 内存可回收重读，Dirty 内存占用物理内存需被压缩或杀进程。",
+   "q": "那系统是怎么决定压缩还是直接杀进程的？Jetsam 的依据是什么？",
+   "path": "内存管理/iOS 内存：Clean、Dirty、Compressed 与 Memory Footprint.md",
+   "phrase": "Dirty",
+   "aliases": [
+    "jetsam 判定依据",
+    "压缩还是杀进程"
+   ]
+  },
+  {
+   "prev_q": "虚拟内存是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "进程有独立虚拟地址空间，通过页表映射到物理内存。",
+   "q": "那为什么 iOS 没有交换分区还能撑住多任务？靠的是什么机制？",
+   "path": "内存管理/iOS 内存：从虚拟地址空间到堆与栈.md",
+   "phrase": "虚拟内存",
+   "aliases": [
+    "ios 没有swap怎么行",
+    "靠什么撑多任务"
+   ]
+  },
+  {
+   "prev_q": " autorelease 的对象什么时候释放？",
+   "prev_mode": "knowledge",
+   "prev_sum": "autorelease 对象在最近的池 pop 时释放，主线程由 RunLoop 驱动。",
+   "q": "那在子线程里不创建 pool 会怎样？编译器会怎么处理？",
+   "path": "内存管理/iOS AutoreleasePool：哨兵、页链表与 RunLoop 的关系.md",
+   "phrase": "子线程",
+   "aliases": [
+    "子线程没有pool会怎样",
+    "编译器怎么处理"
+   ]
+  },
+  {
+   "prev_q": "Mach-O 文件的结构是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "Mach-O 由 header、load commands 与 segment/section 组成，__TEXT/__DATA 是主要段。",
+   "q": "那启动时 dyld 是按 load commands 里什么顺序加载的？",
+   "path": "编译链接与启动/iOS Mach-O：结构、符号绑定与 chained fixups.md",
+   "phrase": "load commands",
+   "aliases": [
+    "dyld 加载顺序",
+    "load commands 顺序"
+   ]
+  },
+  {
+   "prev_q": "动态库和静态库的区别是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "静态库在链接期拷贝进可执行文件，动态库运行期由 dyld 加载共享。",
+   "q": "那启动耗时上两者的差别在哪一段？为什么动态库多了 pre-main 变长？",
+   "path": "编译链接与启动/iOS 静态库与动态库：加载时机、@rpath 与体积账.md",
+   "phrase": "加载时机",
+   "aliases": [
+    "动态库为什么拖慢启动",
+    "pre-main 变长原因"
+   ]
+  },
+  {
+   "prev_q": "App 启动流程是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "启动分为 dyld 加载、runtime 初始化、main 调用与首帧渲染等阶段。",
+   "q": "那 pre-main 里最耗时的是什么？怎么测量每一项？",
+   "path": "编译链接与启动/iOS App 启动：三代 dyld、pre-main 与可测量的优化项.md",
+   "phrase": "pre-main",
+   "aliases": [
+    "pre-main 耗时项",
+    "怎么测量启动"
+   ]
+  },
+  {
+   "prev_q": "HTTPS 的握手流程是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "TLS 握手交换密钥材料并校验证书链，之后对称加密通信。",
+   "q": "那中间人攻击是在哪一步插进来的？证书校验防住了什么？",
+   "path": "架构与网络/iOS 网络分层：URLSession 之上该有几层.md",
+   "phrase": "HTTPS",
+   "aliases": [
+    "中间人在哪一步",
+    "证书校验防什么"
+   ]
+  },
+  {
+   "prev_q": "图片从下载到显示要经过哪些步骤？",
+   "prev_mode": "knowledge",
+   "prev_sum": "下载、解码、缓存（内存/磁盘）、渲染多步完成，解码常是卡顿来源。",
+   "q": "那解码为什么费内存？下采样是怎么解决这个问题的？",
+   "path": "UIKit 与渲染/iOS UIView 与 CALayer：三棵树、绘制流水线与离屏渲染.md",
+   "phrase": "解码",
+   "aliases": [
+    "解码为什么费内存",
+    "下采样怎么省"
+   ]
+  },
+  {
+   "prev_q": "什么是 ASLR？",
+   "prev_mode": "knowledge",
+   "prev_sum": "地址空间布局随机化让每次加载的镜像基址随机，提高利用难度。",
+   "q": "那 ASLR 之后符号引用怎么修？rebase 和 bind 分别在做什么？",
+   "path": "编译链接与启动/iOS Mach-O：结构、符号绑定与 chained fixups.md",
+   "phrase": "ASLR",
+   "aliases": [
+    "rebase bind 做什么",
+    "aslr 后引用怎么修"
+   ]
+  },
+  {
+   "prev_q": "GCD 信号量是怎么用的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "dispatch_semaphore 通过 wait/signal 控制并发与同步等待。",
+   "q": "那用信号量把异步变同步为什么容易卡死线程？",
+   "path": "并发与运行循环/GCD.md",
+   "phrase": "semaphore",
+   "aliases": [
+    "信号量卡线程",
+    "异步变同步为什么危险"
+   ]
+  },
+  {
+   "prev_q": "OSSpinLock 为什么被废弃了？",
+   "prev_mode": "knowledge",
+   "prev_sum": "自旋锁存在优先级反转风险，官方推荐 os_unfair_lock 替代。",
+   "q": "那优先级反转具体是怎么发生的？os_unfair_lock 为什么能解决？",
+   "path": "并发与运行循环/iOS 锁：从 OSSpinLock 的废弃说起.md",
+   "phrase": "优先级",
+   "aliases": [
+    "优先级反转怎么发生",
+    "unfair lock 为什么安全"
+   ]
+  },
+  {
+   "prev_q": "NSOperation 和 GCD 怎么选？",
+   "prev_mode": "knowledge",
+   "prev_sum": "NSOperation 提供状态机、依赖与取消，是对 GCD 的高层封装。",
+   "q": "那自定义并发 Operation 时 isExecuting/isFinished 要怎么配合？不配会怎样？",
+   "path": "并发与运行循环/iOS NSOperation：状态机、依赖与自定义并发 Operation.md",
+   "phrase": "并发",
+   "aliases": [
+    "isExecuting isFinished",
+    "不配会怎样"
+   ]
+  },
+  {
+   "prev_q": "SDWebImage 的缓存链路是怎样的？",
+   "prev_mode": "knowledge",
+   "prev_sum": "先查内存缓存，再查磁盘，未命中下载后解码并按策略存储。",
+   "q": "那解码后的图片缓存的是解码前还是解码后的？为什么？",
+   "path": "架构与网络/iOS SDWebImage：下载、解码与两级缓存的完整链路.md",
+   "phrase": "解码",
+   "aliases": [
+    "缓存解码前后",
+    "为什么缓存解码结果"
+   ]
+  },
+  {
+   "prev_q": "HTTPS 证书校验的原理是什么？",
+   "prev_mode": "knowledge",
+   "prev_sum": "客户端按信任链逐级校验证书签名与域名，防伪造。",
+   "q": "那抓包工具为什么能看到明文？它利用了什么？",
+   "path": "架构与网络/iOS 网络分层：URLSession 之上该有几层.md",
+   "phrase": "证书",
+   "aliases": [
+    "抓包为什么能看到明文",
+    "利用了什么机制"
+   ]
+  },
+  {
+   "prev_q": "RunLoop 的 source0 和 source1 有什么区别？",
+   "prev_mode": "knowledge",
+   "prev_sum": "source0 需要手动标记并唤醒，source1 基于 mach port 由内核唤醒。",
+   "q": "那触摸事件走的是哪个 source？为什么这么设计？",
+   "path": "并发与运行循环/iOS RunLoop：mode、source 与那张流程图今天还对不对.md",
+   "phrase": "source",
+   "aliases": [
+    "触摸事件哪个source",
+    "为什么这么设计"
+   ]
+  },
+  {
+   "prev_q": "weak 对象释放后为什么指针变 nil 而不是野指针？",
+   "prev_mode": "knowledge",
+   "prev_sum": "释放流程里 clearDeallocating 遍历 weak 表把引用统一置 nil。",
+   "q": "那这一步是线程安全的吗？多线程同时释放会怎样？",
+   "path": "内存管理/iOS weak 的实现：SideTable 与置 nil 的时机.md",
+   "phrase": "SideTable",
+   "aliases": [
+    "weak置nil线程安全",
+    "并发释放会怎样"
+   ]
+  }
+ ],
+ "alias_concepts": [
+  {
+   "concept": "objc_msgSend 流程",
+   "file": "Runtime/Part 2 - 消息发送与转发.md",
+   "phrase": "objc_msgSend",
+   "qs": [
+    "oc 里方法调用到底是怎么找到实现的？",
+    "objc msgsend 具体走什么流程？",
+    "消息发送的完整链路能讲讲吗？"
+   ]
+  },
+  {
+   "concept": "消息转发",
+   "file": "Runtime/Part 2 - 消息发送与转发.md",
+   "phrase": "消息转发",
+   "qs": [
+    "unrecognized selector 之前系统还给了哪些机会？",
+    "方法找不到的时候会经历什么？",
+    "forward 那套流程是干嘛的？"
+   ]
+  },
+  {
+   "concept": "Category 加载",
+   "file": "Runtime/Part 3 - Category：加载、覆盖与关联对象.md",
+   "phrase": "加载",
+   "qs": [
+    "分类的方法是什么时候合并进类里的？",
+    "category 方法覆盖同名方法的规则？",
+    "类别和原类同名方法谁生效？"
+   ]
+  },
+  {
+   "concept": "关联对象",
+   "file": "Runtime/Part 3 - Category：加载、覆盖与关联对象.md",
+   "phrase": "关联对象",
+   "qs": [
+    "分类想加属性该怎么弄？",
+    "associated object 的存储在哪？",
+    "objc_setAssociatedObject 底层怎么存值？"
+   ]
+  },
+  {
+   "concept": "isa 与对象本质",
+   "file": "Runtime/Part 1 - 对象与类的本质.md",
+   "phrase": "isa",
+   "qs": [
+    "oc 对象的本质是什么？",
+    "对象在内存里长什么样？",
+    "为什么说万物皆对象，对象的『对象性』体现在哪？"
+   ]
+  },
+  {
+   "concept": "元类",
+   "file": "Runtime/Part 1 - 对象与类的本质.md",
+   "phrase": "元类",
+   "qs": [
+    "meta class 是干嘛的？",
+    "类方法存在哪里？",
+    "为什么要有元类这个设计？"
+   ]
+  },
+  {
+   "concept": "Tagged Pointer",
+   "file": "对象模型/iOS 对象模型：类型判断、内存对齐与 Tagged Pointer.md",
+   "phrase": "Tagged Pointer",
+   "qs": [
+    "小整数对象为什么不需要 alloc？",
+    "tagged pointer 是什么东西？",
+    "NSNumber @5 和 alloc 出来的对象一样吗？"
+   ]
+  },
+  {
+   "concept": "weak 实现",
+   "file": "内存管理/iOS weak 的实现：SideTable 与置 nil 的时机.md",
+   "phrase": "weak",
+   "qs": [
+    "weak 指针怎么做到自动置空的？",
+    "weak 底层数据结构是什么？",
+    "为什么 weak 不会野指针？"
+   ]
+  },
+  {
+   "concept": "AutoreleasePool",
+   "file": "内存管理/iOS AutoreleasePool：哨兵、页链表与 RunLoop 的关系.md",
+   "phrase": "AutoreleasePool",
+   "qs": [
+    "自动释放池原理是啥？",
+    "autorelease 的对象到底啥时候释放？",
+    "@autoreleasepool 展开是什么样子？"
+   ]
+  },
+  {
+   "concept": "ARC 两半",
+   "file": "内存管理/iOS 内存：ARC 的两半.md",
+   "phrase": "ARC",
+   "qs": [
+    "arc 是怎么实现的？",
+    "自动引用计数是谁在干活？",
+    "ARC 是编译器的事还是运行时的事？"
+   ]
+  },
+  {
+   "concept": "RunLoop 模式",
+   "file": "并发与运行循环/iOS RunLoop：mode、source 与那张流程图今天还对不对.md",
+   "phrase": "mode",
+   "qs": [
+    "runloop 的 mode 是干嘛的？",
+    "滚动的时候 timer 为什么会停？",
+    "runloop 有几种状态？"
+   ]
+  },
+  {
+   "concept": "GCD 死锁",
+   "file": "并发与运行循环/iOS GCD：队列不是线程，以及死锁的准确边界.md",
+   "phrase": "死锁",
+   "qs": [
+    "sync 自己等自己是怎么回事？",
+    "主线程 sync 主队列必死吗？",
+    "gcd 死锁发生的条件？"
+   ]
+  },
+  {
+   "concept": "事件响应链",
+   "file": "UIKit 与渲染/iOS 事件传递与响应者链：hitTest、手势与那些点不动的按钮.md",
+   "phrase": "响应者链",
+   "qs": [
+    "responder chain 是什么？",
+    "点不到按钮是怎么回事？",
+    "事件找不到响应者之后去哪了？"
+   ]
+  },
+  {
+   "concept": "cell 复用",
+   "file": "UIKit 与渲染/iOS UITableView：复用池的真实结构与代理调用顺序.md",
+   "phrase": "复用",
+   "qs": [
+    "tableview 的复用机制讲讲？",
+    "cell 复用池怎么工作的？",
+    "为什么要复用 cell？"
+   ]
+  },
+  {
+   "concept": "KVO 原理",
+   "file": "Runtime 与对象通信/iOS KVC 与 KVO：搜索顺序、isa-swizzling 与手动触发.md",
+   "phrase": "KVO",
+   "qs": [
+    "kvo 底层怎么实现的？",
+    "键值观察为什么能监听到值变化？",
+    "NSKVONotifying 是什么？"
+   ]
+  },
+  {
+   "concept": "Block 类型",
+   "file": "Block/iOS Block 的结构：ABI、descriptor 与三种类型.md",
+   "phrase": "三种类型",
+   "qs": [
+    "block 有哪几种？",
+    "全局块栈块堆块怎么区分？",
+    "block 什么时候从栈拷到堆？"
+   ]
+  },
+  {
+   "concept": "属性关键字",
+   "file": "内存管理/iOS 属性关键字：从所有权推导，而不是从类型名猜.md",
+   "phrase": "属性",
+   "qs": [
+    "atomic 和 nonatomic 区别？",
+    "strong copy assign 怎么选？",
+    "属性修饰符都有什么讲究？"
+   ]
+  },
+  {
+   "concept": "Mach-O",
+   "file": "编译链接与启动/iOS Mach-O：结构、符号绑定与 chained fixups.md",
+   "phrase": "Mach-O",
+   "qs": [
+    "macho 文件格式是怎样的？",
+    "可执行文件里都有什么？",
+    "__TEXT __DATA 是什么？"
+   ]
+  },
+  {
+   "concept": "dyld 启动",
+   "file": "编译链接与启动/iOS App 启动：三代 dyld、pre-main 与可测量的优化项.md",
+   "phrase": "启动",
+   "qs": [
+    "app 冷启动都干了什么？",
+    "启动优化从哪里入手？",
+    "pre-main 阶段包含什么？"
+   ]
+  },
+  {
+   "concept": "SDWebImage 链路",
+   "file": "架构与网络/iOS SDWebImage：下载、解码与两级缓存的完整链路.md",
+   "phrase": "SDWebImage",
+   "qs": [
+    "sdwebimage 缓存怎么做的？",
+    "图片加载框架的流程？",
+    "内存缓存和磁盘缓存的顺序？"
+   ]
+  },
+  {
+   "concept": "锁对比",
+   "file": "并发与运行循环/iOS 锁：从 OSSpinLock 的废弃说起.md",
+   "phrase": "锁",
+   "qs": [
+    "iOS 有哪些锁，怎么选？",
+    "自旋锁为什么被废弃？",
+    "什么场景用什么锁？"
+   ]
+  },
+  {
+   "concept": "NSOperation",
+   "file": "并发与运行循环/iOS NSOperation：状态机、依赖与自定义并发 Operation.md",
+   "phrase": "NSOperation",
+   "qs": [
+    "operation 和 gcd 区别？",
+    "operation 的状态机怎么转的？",
+    "怎么自定义并发 operation？"
+   ]
+  },
+  {
+   "concept": "JSONModel",
+   "file": "持久化与序列化/iOS JSONModel 源码：Runtime 驱动的属性映射.md",
+   "phrase": "JSONModel",
+   "qs": [
+    "json 转 model 的原理？",
+    "JSONModel 怎么做属性映射的？",
+    "字典转模型框架底层干了什么？"
+   ]
+  },
+  {
+   "concept": "YYModel 性能",
+   "file": "持久化与序列化/iOS YYModel 源码：为什么比 JSONModel 快.md",
+   "phrase": "YYModel",
+   "qs": [
+    "yymodel 为什么快？",
+    "模型转换性能优化手段？",
+    "yyMdoel 的缓存策略是什么？"
+   ]
+  },
+  {
+   "concept": "持久化选型",
+   "file": "持久化与序列化/iOS 持久化选型：沙盒、plist、NSUserDefaults 与 Keychain.md",
+   "phrase": "持久化",
+   "qs": [
+    "数据该存哪里怎么选？",
+    "userdefaults 适合存什么？",
+    "keychain 和沙盒文件的区别？"
+   ]
+  },
+  {
+   "concept": "SQLite 与 FMDB",
+   "file": "持久化与序列化/iOS 数据库：SQLite 事务与索引、FMDB 的并发模型、Core Data 的代价.md",
+   "phrase": "SQLite",
+   "qs": [
+    "fmdb 怎么保证线程安全？",
+    "sqlite 事务有什么用？",
+    "数据库索引什么时候失效？"
+   ]
+  },
+  {
+   "concept": "MVC 与 MVVM",
+   "file": "架构与网络/iOS 架构模式：MVC 到 MVVM，以及它们各自解决不了的问题.md",
+   "phrase": "MVVM",
+   "qs": [
+    "mvvm 和 mvc 区别？",
+    "瘦 view 胖 model 是什么？",
+    "架构模式各解决什么问题？"
+   ]
+  },
+  {
+   "concept": "静态动态库",
+   "file": "编译链接与启动/iOS 静态库与动态库：加载时机、@rpath 与体积账.md",
+   "phrase": "静态库",
+   "qs": [
+    "静态库动态库差别？",
+    "为什么 iOS 不让下发热更新动态库？",
+    "rpath 是什么？"
+   ]
+  },
+  {
+   "concept": "对象内存布局",
+   "file": "对象模型/iOS 对象模型：类型判断、内存对齐与 Tagged Pointer.md",
+   "phrase": "内存对齐",
+   "qs": [
+    "对象占多少字节？",
+    "内存对齐规则是什么？",
+    "sizeof 和 malloc_size 一样吗？"
+   ]
+  },
+  {
+   "concept": "虚拟内存与堆栈",
+   "file": "内存管理/iOS 内存：从虚拟地址空间到堆与栈.md",
+   "phrase": "堆",
+   "qs": [
+    "堆和栈有什么区别？",
+    "对象分配在哪里？",
+    "虚拟地址空间有多大？"
+   ]
+  },
+  {
+   "concept": "手势与控件事件",
+   "file": "UIKit 与渲染/iOS 事件传递与响应者链：hitTest、手势与那些点不动的按钮.md",
+   "phrase": "手势",
+   "qs": [
+    "手势和按钮点击冲突怎么办？",
+    "uigesturerecognizer 优先级？",
+    "手势是怎么识别的？"
+   ]
+  },
+  {
+   "concept": "离屏渲染",
+   "file": "TIPS/图层性能之离屏渲染、栅格化、回收池.md",
+   "phrase": "离屏渲染",
+   "qs": [
+    "圆角为什么会卡？",
+    "offscreen rendering 是什么？",
+    "怎么避免离屏渲染？"
+   ]
+  },
+  {
+   "concept": "URLSession",
+   "file": "TIPS/URLSession详解.md",
+   "phrase": "URLSession",
+   "qs": [
+    "nsurlsession 怎么发请求？",
+    "urlsession 的 delegate 回调机制？",
+    "dataTask 的生命周期？"
+   ]
+  },
+  {
+   "concept": "方法交换",
+   "file": "Runtime 与对象通信/iOS Method Swizzling：正确姿势、+load 时机与那些坑.md",
+   "phrase": "Swizzling",
+   "qs": [
+    "swizzle 怎么写才安全？",
+    "method swizzling 的坑？",
+    "为什么要在 load 里交换？"
+   ]
+  },
+  {
+   "concept": "对象通信方式",
+   "file": "Runtime 与对象通信/iOS 对象通信：delegate、通知、target-action 与 block 回调.md",
+   "phrase": "对象通信",
+   "qs": [
+    "页面之间怎么传值？",
+    "delegate 通知 block 怎么选？",
+    "target action 是什么？"
+   ]
+  },
+  {
+   "concept": "weak strong dance",
+   "file": "Block/iOS Block 循环引用与 weak-strong dance.md",
+   "phrase": "weak-strong",
+   "qs": [
+    "weakSelf strongSelf 是干嘛的？",
+    "block 里 self 会不会循环引用？",
+    "什么情况下 block 不需要 weak self？"
+   ]
+  },
+  {
+   "concept": "KVC 取值",
+   "file": "Runtime 与对象通信/iOS KVC 与 KVO：搜索顺序、isa-swizzling 与手动触发.md",
+   "phrase": "KVC",
+   "qs": [
+    "valueforkey 的查找顺序？",
+    "kvc 底层怎么找值的？",
+    "setValue for undefinedKey 什么时候触发？"
+   ]
+  },
+  {
+   "concept": "内存警告",
+   "file": "内存管理/iOS 内存：Clean、Dirty、Compressed 与 Memory Footprint.md",
+   "phrase": "Memory Footprint",
+   "qs": [
+    "内存占用怎么算的？",
+    "内存警告怎么处理？",
+    "clean 和 dirty memory 区别？"
+   ]
+  },
+  {
+   "concept": "RunLoop 应用",
+   "file": "并发与运行循环/RunLoop 延迟加载图片.md",
+   "phrase": "RunLoop",
+   "qs": [
+    "runloop 能用来做什么？",
+    "滑动时怎么用 runloop 优化图片加载？",
+    "performSelector afterDelay 原理？"
+   ]
+  },
+  {
+   "concept": "GCD 常用函数",
+   "file": "TIPS/Grand Central Dispatch的使用.md",
+   "phrase": "dispatch",
+   "qs": [
+    "gcd 常用 api 有哪些？",
+    "barrier 是干嘛的？",
+    "group 怎么等一组任务？"
+   ]
+  },
+  {
+   "concept": "Block 捕获",
+   "file": "TIPS/Block的本质.md",
+   "phrase": "捕获",
+   "qs": [
+    "block 捕获外部变量的规则？",
+    "为什么局部变量不能在 block 里改？",
+    "__block 解决了什么问题？"
+   ]
+  }
+ ]
+}
