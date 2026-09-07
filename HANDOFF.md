@@ -76,7 +76,7 @@ knowledge_cards/     # 生成的专题卡片
 
 **2026-09-07 源码学习工作区本地融合（未发布生产）**：`ios-source-learning` 根仓库已同步到 `215ba1a`，
 `bootstrap.sh --check` 确认 eleven source trees 与地图链接均就位。知识库以受控来源接入 2,031 个文件 / 17,586 块：
-`objc4-951.7`（975 块）和 28 份地图（173 块）为向量+FTS，其余 16,438 块源码为 FTS-only；源码地图、卡片均被程序排除出最终问答和 Cloudflare 导出。精确符号会给实际源码块加分，`CFRunLoopRunSpecific` 已实测首命中 `CFRunLoop.c`。同时从 `summer2026` 清理曾误入库的 154 个工作区 Markdown 文件。当前本地 `1,093,118` 块 / `52,511` 向量，`PRAGMA quick_check=ok`、受控来源 freshness clean、43 项测试通过。生产 Vectorize/D1/Pages **未变**；需先按稳定 ID 流程重新导出、审计容量、更新网站的类型展示和生产评测，不能把本地结果视为已上线。`check-updates.sh` 仍报告 Swift Foundation 有远端更新且 CF/corelibs 远端探测失败，本轮以已核对的本地 commit 为准。
+`objc4-951.7`（975 块）和 28 份地图（173 块）为向量+FTS，其余 16,438 块源码为 FTS-only；源码地图、卡片均被程序排除出最终问答和 Cloudflare 导出。精确符号会给实际源码块加分，`CFRunLoopRunSpecific` 已实测首命中 `CFRunLoop.c`。同时从 `summer2026` 清理曾误入库的 154 个工作区 Markdown 文件。当前本地 `1,092,820` 块 / `52,511` 向量，`PRAGMA quick_check=ok`、受控来源 freshness clean、43 项测试通过。生产 Vectorize/D1/Pages **未变**；需先按稳定 ID 流程重新导出、审计容量、更新网站的类型展示和生产评测，不能把本地结果视为已上线。`check-updates.sh` 仍报告 Swift Foundation 有远端更新且 CF/corelibs 远端探测失败，本轮以已核对的本地 commit 为准。
 
 **2026-09-06 维护状态（生产数据已发布，本地清理待下次生产发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
 `summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理
