@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-07（本地生产评测器与首批生产回归结论已记录，未发布生产）
+> 最后更新：2026-09-07（离线评测资产归档；网站路由修复已推送独立分支，未发布生产）
 
 ## 1. 这个项目是什么
 
@@ -109,6 +109,20 @@ Git 忽略的 `data/evaluation-results/`。P0 首测报告 `production-eval-2026
 阶段应先修复网站的领域路由与证据阈值、确保明确 iOS 但无可靠资料的问题退款返回 422，然后在**新版
 源码语料已发布后**重跑该 manifest；不能把当前失败归因给尚未上线的 `ios-source-learning`。
 
+**2026-09-07 网站路由与证据阈值修复（已推送，未合并/未部署）**：为避免污染用户正在调整首页的工作区，
+修复在隔离副本的 GitHub 分支 `codex/fix-ios-evidence-routing-live` 中完成，提交 `81ac3ce`
+`fix(retrieval): require grounded iOS evidence`。它将 WidgetKit、App Intents、Siri、Vision 等 Apple 专有
+框架识别为必检索的 iOS 问题；对 iOS 证据，reranker 高分不能再单独越过关键词/API 覆盖阈值；对跨平台
+比较，若资料没有覆盖问题所要求的另一平台，则不允许用单侧 iOS 资料拼接结论，返回 `422 no_evidence`
+并退款。用户明确要求“只从 iOS 侧”时保留单侧解释入口，且回答提示词要求声明边界。回归覆盖 Apple API
+路由、泛资料泄漏、跨平台范围、`422` 不调用 DeepSeek；本地 `23` 项 Retrieval、`14` 项 API、TypeScript
+和完整网站构建通过。远端 `main` 仍为 `2dee16f`，生产 Pages 未改；合并和部署之后，先重测 10 条 P0
+`no_evidence`，再跑完整 130 条 manifest，且不能将未部署分支写成线上结论。
+
+**2026-09-07 补充 GLM 离线资产（已归档，未接入生产）**：6 个结构化批次已放入 `data/glm/`：语义审查与
+黄金集、r2/r3 红队、薄弱主题种子、种子边界/130 条生产清单、证据账本/判分规范。共 3,479 条 JSONL
+记录；逐批校验器均通过。它们是可复跑、可审阅的评测和学习资产，不是原始事实证据，不修改资料、索引或云端。
+
 **历史基线（2026-08-04 增量同步）**：全部代码 + 当时资料实测全链路。以下数字仅用于追溯，当前实时统计以
 2026-09-05 维护状态和 `uv run ioskb stats` 为准：
 
@@ -184,8 +198,8 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 
 当前跨仓库同步点：
 
-- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；本地已清理 32 个陈旧 `summer2026` 文件的 1,521 块，但生产仍保留清理前快照，后续发布必须按稳定 ID 流程同步；GLM 离线候选批次已保留且未自动接入检索。新增生产评测器只读入审核资产，`--live` 仅写 Git 忽略的无正文报告；当前路由/证据阈值失败已如上记录，待网站修复。`mermaid-diagram.svg` 仍为用户未跟踪文件；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `d331ef3`；生产 Pages 已部署 `2ed9ad9f`，`IOS_DB` 指向新主库，预览环境仍保留旧主库绑定作回退；工作区用户未提交内容未处理；
+- 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；本地已清理 32 个陈旧 `summer2026` 文件的 1,521 块，但生产仍保留清理前快照，后续发布必须按稳定 ID 流程同步；6 个 GLM 离线候选批次已归档并逐批校验，未自动接入检索。新增生产评测器只读入审核资产，`--live` 仅写 Git 忽略的无正文报告；`mermaid-diagram.svg` 仍为用户未跟踪文件；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `2dee16f`，生产 Pages 仍是此前部署 `2ed9ad9f`；用户工作区的首页改动和未跟踪内容未处理。路由/证据阈值修复 `81ac3ce` 已推送 `codex/fix-ios-evidence-routing-live`，未合并、未部署，后续需合并后以 P0 `no_evidence` 定向复测验证；
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
 - 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；
 - 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token 未写入仓库。
