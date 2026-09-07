@@ -18,9 +18,22 @@ _APPLE_PLATFORM = re.compile(
     r"\bswift\b|objective-c|\bobjc\b|\buikit\b|\bappkit\b|\bxcode\b",
     re.I,
 )
+_SOURCE_SYMBOL = re.compile(
+    r"\b(?:[A-Z][A-Za-z0-9_]{2,}|[a-z][A-Za-z0-9]*_[A-Za-z0-9_]+)\b"
+)
+_SOURCE_EVIDENCE_TYPES = {
+    "source_code",
+    "third_party_source",
+    "reference_code",
+    "gnustep_reference",
+}
 _AUTHORITY_WEIGHTS = {
     "official": 1.08,
     "primary_source": 1.04,
+    "third_party_source": 0.96,
+    "open_source_reference": 0.9,
+    "reference_implementation": 0.82,
+    "learning_map": 0.72,
     "reviewed_note": 0.98,
     "community": 0.9,
     "unverified_note": 0.78,
@@ -49,11 +62,24 @@ def _explicitly_out_of_domain(query):
     return bool(_COMPETING_PLATFORM.search(query) and not _APPLE_PLATFORM.search(query))
 
 
+def _has_exact_source_symbol(query, row):
+    """Prefer implementation blocks when a query names a concrete code symbol."""
+    if row.get("type") not in _SOURCE_EVIDENCE_TYPES:
+        return False
+    symbols = _SOURCE_SYMBOL.findall(query)
+    if not symbols:
+        return False
+    searchable = _normalized(
+        f"{row.get('title_path', '')}\n{row.get('file_path', '')}\n{row.get('text', '')}"
+    )
+    return any(symbol.lower() in searchable for symbol in symbols)
+
+
 def search(con, cfg, query, embedder=None, *, exclude_types=None):
     """检索相关块。
 
-    ``exclude_types`` 用于证据边界：问答和卡片生成必须排除二次生成的
-    ``card``，从而保证最终证据始终回到原始资料。
+    ``exclude_types`` 用于证据边界：问答与卡片生成排除二次生成的
+    ``card`` 和仅作导航的 ``source_map``，从而保证最终证据回到原始资料。
     """
     r = cfg["retrieval"]
     if _explicitly_out_of_domain(query):
@@ -106,6 +132,8 @@ def search(con, cfg, query, embedder=None, *, exclude_types=None):
             * weights.get(row["type"], 1.0)
             * _AUTHORITY_WEIGHTS.get(row["authority"], 0.85)
         )
+        if _has_exact_source_symbol(query, row):
+            row["score"] *= 1.5
         scored.append(row)
     scored.sort(key=lambda x: -x["score"])
 

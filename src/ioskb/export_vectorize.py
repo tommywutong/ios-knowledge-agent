@@ -4,6 +4,8 @@ import struct
 
 from .metadata import export_metadata
 
+PUBLISH_EXCLUDED_TYPES = ("card", "source_map")
+
 
 def stable_vector_id(source, path, ordinal):
     key = f"{source}\0{path}\0{ordinal}".encode("utf-8")
@@ -18,7 +20,8 @@ def export(cfg, con, out_path):
         "c.text, v.embedding, ROW_NUMBER() OVER (PARTITION BY c.file_path "
         "ORDER BY c.start_line, c.end_line, c.id) AS chunk_ordinal "
         "FROM chunks c JOIN vec_chunks v ON v.rowid = c.id "
-        "WHERE c.vectorized = 1 AND c.type <> 'card' ORDER BY c.id"
+        "WHERE c.vectorized = 1 AND c.type NOT IN (?, ?) ORDER BY c.id",
+        PUBLISH_EXCLUDED_TYPES,
     )
     count = 0
     with open(out_path, "w", encoding="utf-8") as f:

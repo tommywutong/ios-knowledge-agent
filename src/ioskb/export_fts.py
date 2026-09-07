@@ -13,6 +13,8 @@ from datetime import datetime, timezone
 from .export_vectorize import stable_vector_id
 from .metadata import export_metadata
 
+PUBLISH_EXCLUDED_TYPES = ("card", "source_map")
+
 
 DEFAULT_TIER1_LIMIT = 80_000
 DEFAULT_PER_FILE_LIMIT = 24
@@ -190,8 +192,9 @@ def export(
     out_path.parent.mkdir(parents=True, exist_ok=True)
     rows = con.execute(
         "SELECT id, source, type, file_path, title_path, start_line, end_line, text, vectorized "
-        "FROM chunks WHERE type <> 'card' "
-        "ORDER BY file_path, start_line, end_line, id"
+        "FROM chunks WHERE type NOT IN (?, ?) "
+        "ORDER BY file_path, start_line, end_line, id",
+        PUBLISH_EXCLUDED_TYPES,
     )
     core_records = []
     tier1_heaps = {}

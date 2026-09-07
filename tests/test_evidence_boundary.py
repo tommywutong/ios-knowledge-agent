@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from ioskb.cards import _source_index, _validate_card
+from ioskb.qa import ANSWER_EXCLUDED_TYPES
 from ioskb.retrieve import search
 
 
@@ -56,6 +57,33 @@ class EvidenceBoundaryTests(unittest.TestCase):
         fts_search.assert_called_once_with(None, "问题", 40)
 
     @patch("ioskb.retrieve.db.get_chunks")
+    @patch("ioskb.retrieve.db.fts_search")
+    def test_answer_context_excludes_source_maps(self, fts_search, get_chunks):
+        fts_search.return_value = [(1, 0, -2.0), (2, 1, -1.0)]
+        get_chunks.return_value = {
+            1: {
+                "id": 1, "file_path": "/maps/CF/AGENTS.md", "source": "ios-source-maps",
+                "type": "source_map", "title_path": "CF map", "start_line": 1,
+                "end_line": 5, "text": "Read CFRunLoop.c:2675.",
+            },
+            2: {
+                "id": 2, "file_path": "/source/CFRunLoop.c", "source": "apple-cf-source",
+                "type": "source_code", "title_path": "CFRunLoopRun", "start_line": 2675,
+                "end_line": 2702, "text": "CFRunLoopRunSpecific implementation.",
+            },
+        }
+        cfg = {
+            "retrieval": {
+                "fts_top": 10, "vector_top": 10, "final_top": 8, "max_per_file": 2,
+                "min_keyword_coverage": 0, "type_weights": {},
+            }
+        }
+
+        results = search(None, cfg, "CFRunLoopRunSpecific", exclude_types=ANSWER_EXCLUDED_TYPES)
+
+        self.assertEqual([row["type"] for row in results], ["source_code"])
+
+    @patch("ioskb.retrieve.db.get_chunks")
     @patch("ioskb.retrieve.db.vec_search")
     @patch("ioskb.retrieve.db.fts_search")
     def test_search_rejects_weak_vector_and_partial_keyword_match(
@@ -101,6 +129,49 @@ class EvidenceBoundaryTests(unittest.TestCase):
         fts_search.assert_not_called()
         vec_search.assert_not_called()
         get_chunks.assert_not_called()
+
+    @patch("ioskb.retrieve.db.get_chunks")
+    @patch("ioskb.retrieve.db.fts_search")
+    def test_exact_symbol_prefers_implementation_over_higher_ranked_docs(
+        self, fts_search, get_chunks
+    ):
+        fts_search.return_value = [(1, 0, -2.0), (2, 12, -1.0)]
+        get_chunks.return_value = {
+            1: {
+                "id": 1,
+                "file_path": "/docs/RunLoop.md",
+                "source": "archive",
+                "type": "doc",
+                "title_path": "RunLoop overview",
+                "start_line": 1,
+                "end_line": 4,
+                "text": "CFRunLoopRunSpecific appears in a stack trace.",
+            },
+            2: {
+                "id": 2,
+                "file_path": "/source/CFRunLoop.c",
+                "source": "apple-cf-source",
+                "type": "source_code",
+                "title_path": "CFRunLoopRunSpecific",
+                "start_line": 2675,
+                "end_line": 2702,
+                "text": "SInt32 CFRunLoopRunSpecific(CFRunLoopRef rl) { return 0; }",
+            },
+        }
+        cfg = {
+            "retrieval": {
+                "fts_top": 20,
+                "vector_top": 20,
+                "final_top": 2,
+                "max_per_file": 2,
+                "min_keyword_coverage": 0,
+                "type_weights": {"doc": 1.12, "source_code": 1.16},
+            }
+        }
+
+        results = search(None, cfg, "CFRunLoopRunSpecific")
+
+        self.assertEqual(results[0]["source"], "apple-cf-source")
 
     def test_card_source_index_is_programmatically_grounded(self):
         chunks = [

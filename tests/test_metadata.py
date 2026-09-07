@@ -1,6 +1,6 @@
 import unittest
 
-from ioskb.metadata import export_metadata
+from ioskb.metadata import evidence_metadata, export_metadata
 
 
 class ExportMetadataTests(unittest.TestCase):
@@ -56,6 +56,21 @@ class ExportMetadataTests(unittest.TestCase):
 
         self.assertEqual(community["authority"], "community")
         self.assertEqual(open_source["authority"], "primary_source")
+
+    def test_keeps_source_learning_evidence_boundaries_explicit(self):
+        cases = {
+            "source_code": "primary_source",
+            "third_party_source": "third_party_source",
+            "reference_code": "open_source_reference",
+            "gnustep_reference": "reference_implementation",
+            "source_map": "learning_map",
+        }
+        for ctype, authority in cases.items():
+            with self.subTest(ctype=ctype):
+                self.assertEqual(
+                    evidence_metadata("ios-source-learning", ctype, "/tmp/example", "text"),
+                    {"authority": authority},
+                )
 
 
 if __name__ == "__main__":

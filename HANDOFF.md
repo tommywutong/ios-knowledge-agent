@@ -1,7 +1,7 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-06（生产认证自测恢复并全部通过）
+> 最后更新：2026-09-07（ios-source-learning 本地分层融合完成，未发布生产）
 
 ## 1. 这个项目是什么
 
@@ -19,9 +19,14 @@ TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯�
 | source 名 | 位置 | 内容 | 处理方式 |
 |---|---|---|---|
 | obsidian-ios | /Users/tommywu/Obsidian/iOS | 当前 57 篇高质量中文专题笔记（核心资产，会继续变化） | 全量向量+FTS |
-| summer2026 | /Users/tommywu/Desktop/26暑期内容 | iOS 基础/进阶文章、Tips、实验说明及 docx 笔记 | docx 经 pandoc 转 md，全量向量+FTS；排除 `articles/ai/` 下 17 篇纯 AI 文章 |
+| summer2026 | /Users/tommywu/Desktop/26暑期内容 | iOS 基础/进阶文章、Tips、实验说明及 docx 笔记 | docx 经 pandoc 转 md，全量向量+FTS；排除 `articles/ai/` 下 17 篇纯 AI 文章及整个 `ios-source-learning/**` 工作区 |
 | summer-labs | /Users/tommywu/Desktop/26暑期内容 | MemoryMapLab 等活跃实验源码 | Objective-C/C/C++/Swift/汇编按源码切块并向量+FTS；明确排除 `iOS底层源码探索/**` 和 `ios-source-learning/**` |
-| objc4-source | 同上 /iOS底层源码探索 | objc4 源码（含 Swift/汇编；排除两个旧版重复目录） | 按函数切块，type=source_code 降权 |
+| objc4-source | /Users/tommywu/Desktop/26暑期内容/ios-source-learning/new objc4 | objc4-951.7（Apple 公开源码） | 向量+FTS；替代旧探索目录的 objc4-951.1，避免跨版本 Runtime 证据混用 |
+| ios-source-maps | 同上 /maps | 28 份手写源码地图（版本、符号、文件、行号导航） | 向量+FTS 仅供本地 `search` 导航；排除问答上下文和云端导出 |
+| apple-cf-source / apple-libdispatch-source | 同上 /CF-1153.18-apple、/libdispatch-apple | CF-1153.18 与 Apple libdispatch drop | FTS-only 的 Apple 公开源码；精确符号检索优先源码块 |
+| swift-*-reference | 同上 /swift-corelibs-foundation、/swift-foundation、/libdispatch | Swift 开源/跨平台实现 | FTS-only 参照实现；不可表述为 iOS 私有实现 |
+| gnustep-reference | 同上 /gnustep-base | GNUstep base 1.31.1 | FTS-only、明确非 Apple；仅作未开源 Foundation ObjC 细节的参照 |
+| *-source（四个第三方库） | 同上 /third-party | AFNetworking 4.0.1、JSONModel 1.8.0、YYModel 1.0.4、SDWebImage 5.21.7 | FTS-only；只说明对应固定版本的库实现 |
 | apple-docs-core | data/repos/apple-docs-vault 的 wwdc/+blogs/ | WWDC 逐字稿+博客（含中文翻译） | 向量+FTS，子目录映射类型 |
 | apple-docs-bulk | 同仓库 apple-docs/+oss/+meta/ | 大体量文档与源码镜像 | **只进 FTS**（全量向量耗时和体积不划算） |
 | apple-archive | data/repos/apple-developer-archive-vault | 英文 Apple 历史官方文档归档 | **只进 FTS 关键词索引**（量太大，向量不划算） |
@@ -68,6 +73,10 @@ knowledge_cards/     # 生成的专题卡片
 桌面 `iOS知识库.command` 双击启动，端口 8787。博客版部署计划：`website-templates/DEPLOY_PLAN.md`。
 
 ## 4. 三个阶段
+
+**2026-09-07 源码学习工作区本地融合（未发布生产）**：`ios-source-learning` 根仓库已同步到 `215ba1a`，
+`bootstrap.sh --check` 确认 eleven source trees 与地图链接均就位。知识库以受控来源接入 2,031 个文件 / 17,586 块：
+`objc4-951.7`（975 块）和 28 份地图（173 块）为向量+FTS，其余 16,438 块源码为 FTS-only；源码地图、卡片均被程序排除出最终问答和 Cloudflare 导出。精确符号会给实际源码块加分，`CFRunLoopRunSpecific` 已实测首命中 `CFRunLoop.c`。同时从 `summer2026` 清理曾误入库的 154 个工作区 Markdown 文件。当前本地 `1,093,118` 块 / `52,511` 向量，`PRAGMA quick_check=ok`、受控来源 freshness clean、43 项测试通过。生产 Vectorize/D1/Pages **未变**；需先按稳定 ID 流程重新导出、审计容量、更新网站的类型展示和生产评测，不能把本地结果视为已上线。`check-updates.sh` 仍报告 Swift Foundation 有远端更新且 CF/corelibs 远端探测失败，本轮以已核对的本地 commit 为准。
 
 **2026-09-06 维护状态（生产数据已发布，本地清理待下次生产发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
 `summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理

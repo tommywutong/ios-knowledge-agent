@@ -39,7 +39,7 @@ class FtsExportTests(unittest.TestCase):
         _, reason = tier1_score("/repo/random.md", "misc", "generic server documentation " * 10)
         self.assertEqual(reason, "weak_ios_signal")
 
-    def test_export_preserves_tier0_and_excludes_cards(self):
+    def test_export_preserves_tier0_and_excludes_non_evidence_types(self):
         con = sqlite3.connect(":memory:")
         con.execute(
             "CREATE TABLE chunks(id INTEGER PRIMARY KEY, source, type, file_path, title_path, "
@@ -51,6 +51,7 @@ class FtsExportTests(unittest.TestCase):
                 (1, "core", "doc", "/core.md", "UIKit", 1, 3, "UIKit iOS evidence " * 10, 1),
                 (2, "core", "card", "/card.md", "Card", 1, 3, "UIKit iOS card " * 10, 1),
                 (3, "bulk", "doc", "/documentation/uikit/api.md", "UIView API", 1, 3, "UIView UIKit iOS API " * 10, 0),
+                (4, "maps", "source_map", "/maps/UIView.md", "UIView map", 1, 3, "UIKit iOS navigation map " * 10, 1),
             ],
         )
         with tempfile.TemporaryDirectory() as tmp:
@@ -62,6 +63,7 @@ class FtsExportTests(unittest.TestCase):
         self.assertEqual(manifest["counts"]["tier1"], 1)
         self.assertEqual([record["tier"] for record in records], [0, 1])
         self.assertNotIn("card", [record["metadata"]["type"] for record in records])
+        self.assertNotIn("source_map", [record["metadata"]["type"] for record in records])
 
     def test_unicode_separators_and_sql_atomic_table(self):
         line = safe_json_line({"text": "a\u2028b\u2029c"})

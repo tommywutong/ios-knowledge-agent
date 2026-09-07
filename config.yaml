@@ -13,14 +13,18 @@ retrieval:
   max_per_file: 2     # 同一文件最多入选几块，避免单文件霸屏
   max_vector_distance: 0.80  # bge-m3/L2；超过此距离的语义结果不作为证据
   min_keyword_coverage: 0.55 # FTS 至少覆盖过半有效查询词，避免 OR 查询误召回
-  # 类型权重：乘在融合得分上。source_code 降权；card 只在显式浏览卡片时参与。
+  # 类型权重：乘在融合得分上。源码地图只做导航；开源/参照实现必须低于 Apple 一手源码。
   type_weights:
     card: 0.85          # 卡片仅辅助浏览；ask/web 会强制排除 card，最终证据只来自原始资料
     note: 0.9
     doc: 1.12
     wwdc: 1.12
     blog: 0.82
-    source_code: 0.78
+    source_code: 1.16       # 与官方文档同级；精确符号查询另有源码命中加分
+    third_party_source: 0.76
+    reference_code: 0.7
+    gnustep_reference: 0.64
+    source_map: 0.5
 
 llm:
   provider: deepseek            # ask 默认用的后端
@@ -58,6 +62,7 @@ sources:
       - "awesome-ios-interview-main/articles/ai/**"  # 纯 AI 专题不进入 iOS 知识库
       - "iOS底层源码探索/_弃用-objc4-818-debug/**"
       - "iOS底层源码探索/objc4-756.2-参照旧版/**"
+      - "ios-source-learning/**"  # 源码、地图和教学脚本由下方专用来源分层接入
     vectorize: true
 
   - name: summer-labs
@@ -78,7 +83,9 @@ sources:
     vectorize: true
 
   - name: objc4-source
-    path: /Users/tommywu/Desktop/26暑期内容/iOS底层源码探索
+    # 使用 ios-source-learning 钉定的 objc4-951.7；替换旧探索目录中的 objc4-951.1，
+    # 避免同一 Runtime 源码的跨版本重复证据。
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/new objc4
     type: source_code
     include:
       - "**/*.h"
@@ -89,8 +96,89 @@ sources:
       - "**/*.swift"
       - "**/*.s"
       - "**/*.S"
-    exclude: ["_弃用-objc4-818-debug/**", "objc4-756.2-参照旧版/**"]  # 旧版重复源码不入库
+    exclude:
+      - "test/**"
+      - "ObjectiveCTests/**"
+      - "objc-vfs-overlay/**"
     vectorize: true
+
+  # XiyouMobile3G-iOS/ios-source-learning：地图是人写的源码导航，不是 Apple 行为证据。
+  # 它保留版本、关键符号和跨仓库阅读路径，方便学习型问题直接定位到源码。
+  - name: ios-source-maps
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/maps
+    type: source_map
+    include: ["**/AGENTS.md"]
+    exclude: ["test/**", "tests/**", "Test/**", "Tests/**", "**/test/**", "**/tests/**", "**/Test/**", "**/Tests/**"]
+    vectorize: true
+
+  # Apple 的公开源码：用于 Runtime 以外的 RunLoop、GCD 和 Foundation/CF 证据。
+  # 源码优先靠 FTS 精确命中符号，避免本机为长代码块耗费数小时做低收益向量化。
+  - name: apple-cf-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/CF-1153.18-apple
+    type: source_code
+    include: ["**/*.h", "**/*.m", "**/*.mm", "**/*.c", "**/*.cpp", "**/*.swift", "**/*.s", "**/*.S"]
+    exclude: ["test/**", "tests/**", "Test/**", "Tests/**", "Examples/**", "**/test/**", "**/tests/**", "**/Test/**", "**/Tests/**", "**/Examples/**"]
+    vectorize: false
+
+  - name: apple-libdispatch-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/libdispatch-apple
+    type: source_code
+    include: ["**/*.h", "**/*.m", "**/*.mm", "**/*.c", "**/*.cpp", "**/*.swift", "**/*.s", "**/*.S"]
+    exclude: ["test/**", "tests/**", "Test/**", "Tests/**", "benchmarks/**", "**/test/**", "**/tests/**", "**/Test/**", "**/Tests/**", "**/benchmarks/**"]
+    vectorize: false
+
+  # 下面两份是 Swift 的开源/跨平台实现，可用于版本演进与实现对照，不能表述为 iOS 私有实现。
+  - name: swift-corelibs-foundation-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/swift-corelibs-foundation
+    type: reference_code
+    include: ["Sources/**/*.h", "Sources/**/*.m", "Sources/**/*.c", "Sources/**/*.cpp", "Sources/**/*.swift"]
+    exclude: ["Sources/Testing/**", "Sources/XCTest/**", "Sources/xdgTestHelper/**"]
+    vectorize: false
+
+  - name: swift-foundation-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/swift-foundation
+    type: reference_code
+    include: ["Sources/**/*.h", "Sources/**/*.m", "Sources/**/*.c", "Sources/**/*.cpp", "Sources/**/*.swift"]
+    vectorize: false
+
+  - name: swift-libdispatch-reference
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/libdispatch
+    type: reference_code
+    include: ["**/*.h", "**/*.m", "**/*.mm", "**/*.c", "**/*.cpp", "**/*.swift", "**/*.s", "**/*.S"]
+    exclude: ["test/**", "tests/**", "Test/**", "Tests/**", "benchmarks/**", "**/test/**", "**/tests/**", "**/Test/**", "**/Tests/**", "**/benchmarks/**"]
+    vectorize: false
+
+  # GNUstep 是 Cocoa/Foundation 的社区独立实现。只作 KVO、NotificationCenter 等未开源 Apple 细节的参照。
+  - name: gnustep-reference
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/gnustep-base
+    type: gnustep_reference
+    include: ["Source/**/*.h", "Source/**/*.m", "Source/**/*.mm", "Source/**/*.c", "Headers/**/*.h"]
+    vectorize: false
+
+  # 第三方库源码用于理解真实工程里的底层机制用法，版本由 ios-source-learning 固定。
+  - name: afnetworking-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/third-party/AFNetworking
+    type: third_party_source
+    include: ["AFNetworking/**/*.h", "AFNetworking/**/*.m", "UIKit+AFNetworking/**/*.h", "UIKit+AFNetworking/**/*.m"]
+    vectorize: false
+
+  - name: jsonmodel-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/third-party/JSONModel
+    type: third_party_source
+    include: ["JSONModel/**/*.h", "JSONModel/**/*.m"]
+    vectorize: false
+
+  - name: yymodel-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/third-party/YYModel
+    type: third_party_source
+    include: ["YYModel/**/*.h", "YYModel/**/*.m"]
+    vectorize: false
+
+  - name: sdwebimage-source
+    path: /Users/tommywu/Desktop/26暑期内容/ios-source-learning/third-party/SDWebImage
+    type: third_party_source
+    include: ["SDWebImage/Core/**/*.h", "SDWebImage/Core/**/*.m", "SDWebImage/Private/**/*.h", "SDWebImage/Private/**/*.m", "SDWebImageMapKit/**/*.h", "SDWebImageMapKit/**/*.m"]
+    vectorize: false
 
   - name: apple-docs-core     # 精华部分（WWDC 逐字稿 + 博客）：向量+FTS
     path: data/repos/apple-docs-vault

@@ -169,7 +169,7 @@
 </footer>
 
 <script>
-const TYPE_NAME = {note:"个人笔记", doc:"官方文档", wwdc:"WWDC", blog:"博客", source_code:"源码", card:"知识卡片"};
+const TYPE_NAME = {note:"个人笔记", doc:"官方文档", wwdc:"WWDC", blog:"博客", source_code:"Apple 公开源码", third_party_source:"第三方库源码", reference_code:"开源/跨平台参照实现", gnustep_reference:"GNUstep 参照实现（非 Apple）", source_map:"源码学习地图（导航）", card:"知识卡片"};
 const $ = s => document.querySelector(s);
 const thread = $("#thread"), input = $("#input"), send = $("#send");
 let history = [], busy = false, followOutput = true, scrollFrame = 0;

@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from ioskb.export_vectorize import stable_vector_id
+from ioskb.export_vectorize import PUBLISH_EXCLUDED_TYPES, stable_vector_id
 
 
 class VectorizeExportTests(unittest.TestCase):
@@ -20,6 +20,9 @@ class VectorizeExportTests(unittest.TestCase):
         self.assertNotIn("\u2028", safe)
         self.assertNotIn("\u2029", safe)
         self.assertEqual(json.loads(safe)["text"], "标题\u2028下一行\u2029")
+
+    def test_publish_excludes_navigation_maps(self):
+        self.assertEqual(set(PUBLISH_EXCLUDED_TYPES), {"card", "source_map"})
 
 
 if __name__ == "__main__":

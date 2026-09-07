@@ -46,6 +46,14 @@ def evidence_metadata(source, ctype, path, text):
         return {"authority": "official"}
     if ctype == "source_code":
         return {"authority": "primary_source"}
+    if ctype == "third_party_source":
+        return {"authority": "third_party_source"}
+    if ctype == "reference_code":
+        return {"authority": "open_source_reference"}
+    if ctype == "gnustep_reference":
+        return {"authority": "reference_implementation"}
+    if ctype == "source_map":
+        return {"authority": "learning_map"}
     if ctype == "blog":
         return {"authority": "community"}
 

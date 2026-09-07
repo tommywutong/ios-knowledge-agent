@@ -6,8 +6,8 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-截至 2026-09-05，本地库包含 1,080,698 个文本块；56,827 个块有
-bge-m3 语义向量，另外 1,023,871 个大型官方镜像块使用 FTS5 关键词检索。生产 Vectorize
+截至 2026-09-07，本地库包含 1,093,118 个文本块；52,511 个块有
+bge-m3 语义向量，另外 1,040,607 个块使用 FTS5 关键词检索。生产 Vectorize
 现为 55,635 条；FTS v2 已按容量拆为 iOS 主库 84,818 条和扩展库 40,000 条，合计覆盖
 124,818 条证据。登录、额度和指标仍留在独立业务 D1；旧 FTS 已移除，业务库现约 0.35 MB，
 检索数据不再挤占业务库容量。
@@ -15,6 +15,15 @@ bge-m3 语义向量，另外 1,023,871 个大型官方镜像块使用 FTS5 关�
 26 暑期目录当前已纳入 iOS 基础/进阶文档、Tips、MemoryMapLab 实验源码以及
 Swift/Objective-C/C/C++/汇编源码；`articles/ai/` 下 17 篇纯 AI 文章、旧版重复 objc4 目录和构建/媒体产物按约定排除。
 两个 GitHub 文档仓库也已更新到远端最新 `main` 并完成增量灌库。
+
+2026-09-07 已本地融合 `XiyouMobile3G-iOS/ios-source-learning`：`objc4-source` 使用其钉定的
+`objc4-951.7`，另有 CoreFoundation、Apple libdispatch、Swift Foundation、GNUstep 与
+AFNetworking/JSONModel/YYModel/SDWebImage 共 2,031 个受控源码/地图文件、17,586 个块。源码地图和
+objc4 走向量+FTS；其余源码走 FTS，以精确符号检索为主。Apple 公开源码、开源参照实现、GNUstep
+参照实现和第三方库源码在引用中会明确区分，避免把非 Apple 实现说成 Apple 私有行为。
+
+`ios-source-learning` 的地图只用于本地 `search` 导航（版本、文件、符号、行号）；不会进入最终问答，
+也不会导出到 Cloudflare。当前接入只在本地索引完成，尚未按稳定 ID 流程发布到生产网站。
 
 ## 首次安装（一次性）
 
@@ -63,8 +72,9 @@ uv run ioskb ask "objc_msgSend 的查找流程" --provider deepseek-reasoner   #
 uv run ioskb search "AutoreleasePool 哨兵"   # 只检索不生成（免费，不调 API）
 ```
 
-问答、网页版、默认 `search` 和 Vectorize 导出都只使用原始资料作为证据，模型生成的知识卡片
-不会进入最终回答的引用。回答中的来源可定位到原文件、标题和行号。
+问答、网页版和两种 Cloudflare 导出都只使用事实证据，模型生成的知识卡片与源码学习地图不会进入
+最终回答的引用。默认 `search` 仍会显示标为“源码学习地图（导航）”的结果，方便你定位到应读的源码
+文件和行号；回答中的来源可定位到原文件、标题和行号。
 
 ## 细粒度专题知识卡片
 

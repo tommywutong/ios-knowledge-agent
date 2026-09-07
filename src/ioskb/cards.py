@@ -5,7 +5,7 @@ from datetime import datetime
 
 from .config import resolve_path
 from .llm import chat_with_usage, get_client
-from .qa import build_context
+from .qa import ANSWER_EXCLUDED_TYPES, build_context
 from .retrieve import search
 
 CARD_SYSTEM_PROMPT = """你是一名 iOS 底层知识的总结者，为学习者 TommyWu 生成"专题知识卡片"。
@@ -131,7 +131,9 @@ def generate_cards(cfg, con, embedder, topics=None, provider=None, overwrite=Fal
 
         seen, chunks = set(), []
         for q in queries:
-            for c in search(con, q_cfg, q, embedder, exclude_types={"card"}):
+            for c in search(
+                con, q_cfg, q, embedder, exclude_types=ANSWER_EXCLUDED_TYPES
+            ):
                 key = c.get("id") or (c["file_path"], c["start_line"])
                 if key not in seen:
                     seen.add(key)

@@ -102,8 +102,11 @@ def api_ask(body: AskBody):
         con = db.open_db(cfg)
         try:
             with _encode_lock:
-                # 最终回答只引用原始资料；模型生成的知识卡片不进入证据上下文。
-                chunks = search(con, cfg, question, embedder, exclude_types={"card"})
+                # 最终回答只引用事实证据；卡片和源码地图均不进入证据上下文。
+                chunks = search(
+                    con, cfg, question, embedder,
+                    exclude_types=qa.ANSWER_EXCLUDED_TYPES,
+                )
         finally:
             con.close()
         sources = [
