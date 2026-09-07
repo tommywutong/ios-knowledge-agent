@@ -6,4 +6,5 @@ db/
 data/repos/
 data/converted/
 data/export/
+data/evaluation-results/
 .DS_Store

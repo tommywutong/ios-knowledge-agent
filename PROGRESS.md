@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-09-07（源码学习资料本地融合复验完成，待生产发布）
+> 本文件随工作实时更新。最后更新：2026-09-07（生产评测器与旧生产快照首批回归完成，待修复和发布）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -48,6 +48,7 @@
 | 40 | 资料源边界清理与生产同步 | ✅ 完成 | 两个 Git 镜像已更新；`summer-labs` 排除 `ios-source-learning/**` 并清理误收录的 3,469 文件。本地 1,080,698 块 / 56,827 向量；生产 Vectorize 55,635 条，新主 D1 84,818 行、归档 D1 40,000 行，Pages 部署 `2ed9ad9f` 已切换绑定。Cloudflare D1 额度恢复后，2026-09-06 00:13（Asia/Shanghai）生产认证问答 11/11 全部通过。 |
 | 48 | GLM 离线评测与本地索引卫生 | ✅ 本地完成 | 生成 `data/glm/overnight-rag-evaluation-20260906/` 的 3,143 行候选资产并加入可复跑校验器；发现并清理 `summer2026` 中 32 个已删除 `ios-basics/` 文件的 1,521 个本地块。当前本地为 1,079,177 块 / 55,306 向量，目标来源 freshness clean；候选尚未接入生产，Cloudflare 数据仍是清理前批次。 |
 | 49 | ios-source-learning 分层融合 | ✅ 本地完成，未发布 | 接入 `XiyouMobile3G-iOS/ios-source-learning` 根仓库 `215ba1a`：objc4 改用钉定的 `objc4-951.7`，新增 CF、Apple libdispatch、Swift Foundation、GNUstep、四个第三方库和源码地图，共 2,031 文件 / 17,586 块。Apple/开源参照/GNUstep/第三方/地图具有独立证据类型；地图仅本地导航，程序排除地图和卡片的最终问答与云端导出。源码主体 FTS-only，objc4+地图向量+FTS；精确 `CFRunLoopRunSpecific` 实测首命中 Apple `CFRunLoop.c`。清理 `summer2026` 中误入库的 154 个工作区文档；当前 1,092,820 块 / 52,511 向量、quick_check/freshness/43 项测试通过。生产 Vectorize、D1、Pages 未动。 |
+| 50 | 生产评测器与回归基线 | ✅ 工具完成；❌ 生产发现路由缺陷 | 新增 `scripts/run_production_eval.py`，默认预检 130 条审核 manifest/账本/契约/夹具，`--live` 需专用管理员 token 且先验证状态，输出无回答正文的 Git 忽略报告。旧生产 P0 首测为 6 passed / 23 failed / 2 skipped；10 条 P0 no-evidence 定向复测仅 1 条正确 422，5 条误进 knowledge、4 条误进 general。`pem-000001` 的同场 WWDC 中英译文锚点已显式映射；50 项本地单测通过。生产、索引、资料均未改。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
@@ -90,6 +91,7 @@
 ## 最终验证快照
 
 - 2026-09-06 当前本地同步结果：GLM 离线批次发现并清理 32 个已删除 `summer2026` 文件（1,521 块）；`uv run ioskb stats` 为 1,079,177 块 / 55,306 向量，`freshness --source summer2026 --skip-upstreams --check` clean。`data/glm/overnight-rag-evaluation-20260906/` 的 3,143 行候选可由 `scripts/validate_glm_batch.py` 复核，但 1,381 条模板题仍待人工语义抽查。生产仍为清理前 Vectorize 55,635 条/D1 快照，未经稳定 ID 流程重新发布；此前认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过。
+- 2026-09-07 生产评测器的 P0 输入预检通过；完整单测 50/50。旧生产 P0 初测 `6 passed / 23 failed / 2 skipped`，其中旧 objc4 快照和中英译文锚点差异不能直接视为召回失败。10 条 no-evidence 定向复测为 `1 passed / 9 failed`：5 条 `knowledge`、4 条 `general`，报告不保存模型回答正文。首要生产修复是“明确 iOS 但无可靠资料”必须返回 `422 no_evidence`，而不是以泛资料进入 knowledge 或降级为 general；修复后再评测并再发布本地源码融合。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
 - Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测于 2026-09-06 00:13（Asia/Shanghai）11/11 全部通过。
 

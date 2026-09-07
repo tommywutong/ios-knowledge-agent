@@ -25,6 +25,19 @@ objc4 走向量+FTS；其余源码走 FTS，以精确符号检索为主。Apple 
 `ios-source-learning` 的地图只用于本地 `search` 导航（版本、文件、符号、行号）；不会进入最终问答，
 也不会导出到 Cloudflare。当前接入只在本地索引完成，尚未按稳定 ID 流程发布到生产网站。
 
+## 生产回归评测
+
+审核后的生产评测清单与原始资料保持分离。以下命令默认只做本地输入预检，不读取令牌、不请求网站：
+
+```bash
+uv run python scripts/run_production_eval.py --priority P0
+```
+
+只有显式 `--live` 才使用现有生产自测令牌；运行前会确认管理员免配额状态，报告仅保存模式、引用编号、
+来源元数据和长度，不保存模型回答正文，且写入 Git 忽略的 `data/evaluation-results/`。应先用少量
+`--case pem-...` 定向复测；完整发布前的基线和当前已知路由缺陷见 `HANDOFF.md`，不要把 GLM 生成的
+候选直接导入资料、索引或 Cloudflare。
+
 ## 首次安装（一次性）
 
 ```bash
