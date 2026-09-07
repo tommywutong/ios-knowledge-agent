@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-09-07（离线评测资产归档；网站修复已推送独立分支，待合并和生产复测）
+> 本文件随工作实时更新。最后更新：2026-09-07（网站修复已合并部署；P0 定向复测仍有残余问题）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -51,6 +51,7 @@
 | 50 | 生产评测器与回归基线 | ✅ 工具完成；❌ 生产发现路由缺陷 | 新增 `scripts/run_production_eval.py`，默认预检 130 条审核 manifest/账本/契约/夹具，`--live` 需专用管理员 token 且先验证状态，输出无回答正文的 Git 忽略报告。旧生产 P0 首测为 6 passed / 23 failed / 2 skipped；10 条 P0 no-evidence 定向复测仅 1 条正确 422，5 条误进 knowledge、4 条误进 general。`pem-000001` 的同场 WWDC 中英译文锚点已显式映射；50 项本地单测通过。生产、索引、资料均未改。 |
 | 51 | GLM 审核资产归档 | ✅ 完成，未接入生产 | 归档 6 个候选批次：语义审查/黄金集、r2/r3 红队、四个薄弱主题种子、种子边界与 130 条 manifest、证据账本与 98 条判分契约；共 3,479 条 JSONL，6 个校验器全部通过。资产用于学习、评测和人工审阅，未写入原始资料、索引或云端。 |
 | 52 | 网站路由与证据边界修复 | 🟡 已推送，待合并/生产复测 | 隔离副本分支 `codex/fix-ios-evidence-routing-live` 的 `81ac3ce` 修复 Apple 专有 API 路由、reranker 绕过覆盖阈值和跨平台单侧证据误答；23 项 Retrieval、14 项 API、TypeScript、完整构建通过。远端 `main`/生产未改，合并部署后须定向复测 P0 no-evidence。 |
+| 53 | 网站路由修复合并部署与线上复测 | 🟡 部署成功，仍有残余缺陷 | `81ac3ce` 已与 v1 兼容路径补丁 `9ce55d7` 快进合并到网站远端 `main`；Actions `34125568913` 全部通过，Pages `280999a7` 与自定义域名均 HTTP 200 / `configured: true`。关键 P0 复测 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 出现无 `done` 异常流，Kotlin vs GCD 仍误进 `knowledge`。原网站用户工作区未改。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |

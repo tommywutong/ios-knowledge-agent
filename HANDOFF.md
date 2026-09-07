@@ -1,9 +1,13 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-07（离线评测资产归档；网站路由修复已推送独立分支，未发布生产）
+> 最后更新：2026-09-07（网站路由修复已合并部署；P0 定向复测仍有残余问题）
 
 ## 1. 这个项目是什么
+
+**最新生产状态（2026-09-07）**：网站仓库 `tommywu-lab` 的 `main` 已合并到 `9ce55d7`，GitHub Actions `34125568913` 全部通过，Cloudflare Pages production 为 `https://280999a7.tommywu-lab.pages.dev`，自定义域名 `https://www.tommywutong.cn` 指向同一生产配置。两处首页/API 均 HTTP 200，公开 GET `configured: true`。原网站工作区仍在 `fix/chat-input-initial-height`，用户未提交首页和素材保持原样；所有网站改动均在隔离副本完成。
+
+本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
 
 TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯源的 RAG 问答系统：
 问"给我讲讲 RunLoop"，得到基于**他自己的资料**的回答，并标注每个结论出自哪个文件哪一段（精确到行号）。
@@ -109,15 +113,14 @@ Git 忽略的 `data/evaluation-results/`。P0 首测报告 `production-eval-2026
 阶段应先修复网站的领域路由与证据阈值、确保明确 iOS 但无可靠资料的问题退款返回 422，然后在**新版
 源码语料已发布后**重跑该 manifest；不能把当前失败归因给尚未上线的 `ios-source-learning`。
 
-**2026-09-07 网站路由与证据阈值修复（已推送，未合并/未部署）**：为避免污染用户正在调整首页的工作区，
+**2026-09-07 网站路由与证据阈值修复（历史记录，现已合并部署）**：为避免污染用户正在调整首页的工作区，
 修复在隔离副本的 GitHub 分支 `codex/fix-ios-evidence-routing-live` 中完成，提交 `81ac3ce`
 `fix(retrieval): require grounded iOS evidence`。它将 WidgetKit、App Intents、Siri、Vision 等 Apple 专有
 框架识别为必检索的 iOS 问题；对 iOS 证据，reranker 高分不能再单独越过关键词/API 覆盖阈值；对跨平台
 比较，若资料没有覆盖问题所要求的另一平台，则不允许用单侧 iOS 资料拼接结论，返回 `422 no_evidence`
 并退款。用户明确要求“只从 iOS 侧”时保留单侧解释入口，且回答提示词要求声明边界。回归覆盖 Apple API
 路由、泛资料泄漏、跨平台范围、`422` 不调用 DeepSeek；本地 `23` 项 Retrieval、`14` 项 API、TypeScript
-和完整网站构建通过。远端 `main` 仍为 `2dee16f`，生产 Pages 未改；合并和部署之后，先重测 10 条 P0
-`no_evidence`，再跑完整 130 条 manifest，且不能将未部署分支写成线上结论。
+和完整网站构建通过。该提交已由 `9ce55d7` 补强 v1 路径并快进到远端 `main`；CI `34125568913` 与 Pages `280999a7` 已成功。生产 P0 定向复测仍有 WidgetKit 异常流和 Kotlin/GCD 误进 knowledge 两个残余问题，不能写成全部 no-evidence 已修复。
 
 **2026-09-07 补充 GLM 离线资产（已归档，未接入生产）**：6 个结构化批次已放入 `data/glm/`：语义审查与
 黄金集、r2/r3 红队、薄弱主题种子、种子边界/130 条生产清单、证据账本/判分规范。共 3,479 条 JSONL
