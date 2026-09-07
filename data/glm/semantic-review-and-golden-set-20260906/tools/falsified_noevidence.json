@@ -1,0 +1,53 @@
+[
+ {
+  "topic_kw": "swiftui",
+  "topic": "SwiftUI",
+  "paths": [
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2020/10040-data-essentials-in-swiftui.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10017-bring-core-data-concurrency-to-swift-and-swiftui.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10019-discover-concurrency-in-swiftui.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10021-add-rich-graphics-to-your-swiftui-app.md"
+  ],
+  "n": 19
+ },
+ {
+  "topic_kw": "combine",
+  "topic": "Combine",
+  "paths": [
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2019/721-combine-in-practice.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2019/722-introducing-combine.md"
+  ],
+  "n": 2
+ },
+ {
+  "topic_kw": "concurren|actor|async-await|structured",
+  "topic": "Swift Concurrency/actor",
+  "paths": [
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2016/720-concurrent-programming-with-gcd-in-swift-3.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10017-bring-core-data-concurrency-to-swift-and-swiftui.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10019-discover-concurrency-in-swiftui.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10132-meet-async-await-in-swift.md"
+  ],
+  "n": 30
+ },
+ {
+  "topic_kw": "swiftdata",
+  "topic": "SwiftData",
+  "paths": [
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2023/10187-meet-swiftdata.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2023/10196-dive-deeper-into-swiftdata.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2024/10075-track-model-changes-with-swiftdata-history.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2024/10137-what-s-new-in-swiftdata.md"
+  ],
+  "n": 11
+ },
+ {
+  "topic_kw": "testflight",
+  "topic": "TestFlight",
+  "paths": [
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/en/wwdc2021/10203-triage-testflight-crashes-in-xcode-organizer.md",
+   "/Users/tommywu/Desktop/iOS知识agentt/data/repos/apple-docs-vault/wwdc/zh/wwdc2021/10203-triage-testflight-crashes-in-xcode-organizer.md"
+  ],
+  "n": 2
+ }
+]

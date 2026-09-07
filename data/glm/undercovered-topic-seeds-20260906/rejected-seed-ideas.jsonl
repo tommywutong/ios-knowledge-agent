@@ -1,0 +1,12 @@
+{"idea": "URLSessionDownloadDelegate 必须实现哪些方法？下载文件在回调里处于什么位置？", "kind": "thin_section", "detail": "小节『7. URLSessionDownloadDelegate』正文过薄（正文行 1），不足以支撑问题", "topic": "network", "id": "rej-001"}
+{"idea": "有了 TCP/IP 和 OSI 分层模型，排查网络故障时实际怎么用？", "kind": "thin_section", "detail": "小节『5. TCP/IP 和 OSI 对故障排除的意义』正文过薄（正文行 1），不足以支撑问题", "topic": "network", "id": "rej-002"}
+{"idea": "『两种格式，四点六倍』小节出对比题", "kind": "document_structure", "topic": "persistence", "detail": "r2 红队确认的反例模式：标题为行文碎片（对比对象不成立）；同小节改出『归档产物也是一个 plist』这条自然题", "id": "rej-003"}
+{"idea": "WWDC 10254『Swift concurrency: Behind the scenes』出题", "kind": "insufficient_evidence", "topic": "swift-interop", "detail": "该文件仅 57 行且逐字稿压在超长单行里（行号风险）；swift-interop 改用 tips 专题与 10133 场次（已用于 r3 提升题，不重复）", "id": "rej-004"}
+{"idea": "tips《静态库和动态库对比》《Mach-O可执行文件》出题", "kind": "concept_duplicate", "topic": "build-startup", "detail": "与 Obsidian《iOS 静态库与动态库》《iOS Mach-O》同主题，后者正文更完整", "id": "rej-005"}
+{"idea": "tips《使用偏好设置、属性列表、归档解档保存数据、恢复数据》出题", "kind": "concept_duplicate", "topic": "persistence", "detail": "与 per2/per3 两个 Obsidian 专题重复覆盖", "id": "rej-006"}
+{"idea": "《CocoaPods的安装与使用》《使用CocoaPods创建公开、私有pod》出题", "kind": "unnatural_question", "topic": "build-startup", "detail": "安装操作步骤类内容，难以形成不看笔记也会自然提出的技术问题", "id": "rej-007"}
+{"idea": "《LLDB的使用》出题", "kind": "unnatural_question", "topic": "build-startup", "detail": "命令清单型内容，问题会退化为工具手册查询", "id": "rej-008"}
+{"idea": "meta/ 工作文档（PROJECT_STATUS.md 等）出题", "kind": "document_structure", "topic": "build-startup", "detail": "仓库维护文档非技术资料；r2 巡检已标记其入库风险", "id": "rej-009"}
+{"idea": "知识卡片（knowledge_cards/）出题", "kind": "document_structure", "topic": "全部", "detail": "任务禁止从知识卡片出题；本轮未打开该目录", "id": "rej-010"}
+{"idea": "《NSURLSession的使用（一）》4.x 小节出题", "kind": "unnatural_question", "topic": "network", "detail": "新建工程/逐步截图类教程内容，技术意图由 net2 的 API 小节覆盖", "id": "rej-011"}
+{"idea": "『今天还有输出的』『iOS 侧没有这张表』『Xcode 自己怎么填』等小节", "kind": "unnatural_question", "topic": "build-startup", "detail": "行文碎片标题，无法在不编造的前提下改写为自然独立问题", "id": "rej-012"}

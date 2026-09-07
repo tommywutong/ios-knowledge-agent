@@ -1,0 +1,122 @@
+[
+ {
+  "id": "pem-000001",
+  "q": "Swift Concurrency 里 actor 的重入隔离细节能帮我讲讲吗？",
+  "why": "P0：actor reentrancy 是 r3 唯一从 no_eviden",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000028",
+  "q": "SQLite 里两条等价 SQL 的耗时差 900 倍，一般会花在哪？",
+  "why": "P0：SQLite/WAL 薄弱主题（个人实验题，答案必须带局限）",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000029",
+  "q": "SQLite 开启 WAL 后并发行为到底改了什么？",
+  "why": "P0：SQLite/WAL 薄弱主题（个人实验题，答案必须带局限）",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000030",
+  "q": "dyld 三代（dyld2/dyld3/dyld4）的分界线在哪个系统版本？和社区流传的说法有什么出入？",
+  "why": "P0：dyld 平台边界（macOS 观察 vs iOS 未验证，必须带局限",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000031",
+  "q": "dyld 的调试环境变量（比如 DYLD_PRINT 系）现在的可用情况怎么样？怎么验证一个变量还在不在？",
+  "why": "P0：dyld 平台边界（macOS 观察 vs iOS 未验证，必须带局限",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000002",
+  "q": "objc4 源码（或对应资料）里的「objc_msgSend」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（objc_msgSend）→ query_planning ",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000010",
+  "q": "WidgetKit 的时间线刷新策略官方推荐怎么配置？",
+  "why": "P0：no_evidence 判定（无证据退款、不调用模型、不用同主题泛资料",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000018",
+  "q": "那你刚才讲的RunLoop 模式，里面最关键的一步是什么？为什么是它？",
+  "why": "P0：追问上下文继承与路由状态机",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000003",
+  "q": "objc4 源码（或对应资料）里的「objc_msgSendSuper」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（objc_msgSendSuper）→ query_plan",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000004",
+  "q": "objc4 源码（或对应资料）里的「objc_msgLookup」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（objc_msgLookup）→ query_plannin",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000005",
+  "q": "objc4 源码（或对应资料）里的「lookUpImpOrForward」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（lookUpImpOrForward）→ query_pla",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000006",
+  "q": "objc4 源码（或对应资料）里的「cache_fill」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（cache_fill）→ query_planning 层验",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000007",
+  "q": "objc4 源码（或对应资料）里的「objc_sync_enter」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（objc_sync_enter）→ query_planni",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000008",
+  "q": "objc4 源码（或对应资料）里的「resolveMethod_locked」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（resolveMethod_locked）→ query_p",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000009",
+  "q": "objc4 源码（或对应资料）里的「_objc_init」是在哪里定义的？它的大致作用是什么？",
+  "why": "P0：精确符号（_objc_init）→ query_planning 层验",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000011",
+  "q": "App Intents 框架怎么把功能暴露给 Siri？",
+  "why": "P0：no_evidence 判定（无证据退款、不调用模型、不用同主题泛资料",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000012",
+  "q": "StoreKit 2 的订阅状态同步机制能详细说说吗？",
+  "why": "P0：no_evidence 判定（无证据退款、不调用模型、不用同主题泛资料",
+  "pri": "P0"
+ },
+ {
+  "id": "pem-000032",
+  "q": "URLSession 的重定向回调是怎么工作的？不实现会有什么默认行为？",
+  "why": "P1：带平台/实验局限说明的题",
+  "pri": "P1"
+ },
+ {
+  "id": "pem-000034",
+  "q": "NSUserDefaults 的 setObject: 之后，数据立刻存在哪里？进程被杀会丢吗？",
+  "why": "P1：带平台/实验局限说明的题",
+  "pri": "P1"
+ },
+ {
+  "id": "pem-000035",
+  "q": "NSUserDefaults 落盘时为什么说是原子替换？这保证了什么、不保证什么？",
+  "why": "P1：带平台/实验局限说明的题",
+  "pri": "P1"
+ }
+]
