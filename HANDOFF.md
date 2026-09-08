@@ -1,13 +1,15 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-07（网站路由修复已合并部署；P0 定向复测仍有残余问题）
+> 最后更新：2026-09-08（P0 门禁锚点/夹具已补齐；网站残余修复待发布）
 
 ## 1. 这个项目是什么
 
 **最新生产状态（2026-09-07）**：网站仓库 `tommywu-lab` 的 `main` 已合并到 `9ce55d7`，GitHub Actions `34125568913` 全部通过，Cloudflare Pages production 为 `https://280999a7.tommywu-lab.pages.dev`，自定义域名 `https://www.tommywutong.cn` 指向同一生产配置。两处首页/API 均 HTTP 200，公开 GET `configured: true`。原网站工作区仍在 `fix/chat-input-initial-height`，用户未提交首页和素材保持原样；所有网站改动均在隔离副本完成。
 
-本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
+**本地评测门禁（2026-09-08）**：`scripts/run_production_eval.py` 支持显式 `--gate`。预检门禁要求知识题的预期锚点存在于当前本地索引、所有追问有已审核的前置夹具，且不遗留标记为人工复核的用例；`--live --gate` 还要求每个已运行用例均为 `passed`，失败或跳过都会返回非零。普通运行仍只报告诊断。8 条 P0 objc4 锚点已迁移至 `objc4-951.7`，2 条追问夹具已补齐；当前门禁仅阻断 10 条人工复核用例：`pem-000018` 至 `pem-000023` 需要审核追问语境，`pem-000028` 至 `pem-000031` 需要审核平台/实验局限。55 项知识库测试和两批候选校验器通过；未触碰生产数据或原始资料。
+
+本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。后续修复位于隔离分支 `codex/fix-ios-stream-and-cross-platform`：终结事件由幂等 `finish` 统一发送/关闭，跨平台比较要求双方证据；25 项检索测试、15 项 API 测试、TypeScript、完整构建通过。该补丁尚未推送或部署，因此生产结论不变。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
 
 TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯源的 RAG 问答系统：
 问"给我讲讲 RunLoop"，得到基于**他自己的资料**的回答，并标注每个结论出自哪个文件哪一段（精确到行号）。
@@ -80,7 +82,7 @@ knowledge_cards/     # 生成的专题卡片
 
 **2026-09-07 源码学习工作区本地融合（未发布生产）**：`ios-source-learning` 根仓库已同步到 `215ba1a`，
 `bootstrap.sh --check` 确认 eleven source trees 与地图链接均就位。知识库以受控来源接入 2,031 个文件 / 17,586 块：
-`objc4-951.7`（975 块）和 28 份地图（173 块）为向量+FTS，其余 16,438 块源码为 FTS-only；源码地图、卡片均被程序排除出最终问答和 Cloudflare 导出。精确符号会给实际源码块加分，`CFRunLoopRunSpecific` 已实测首命中 `CFRunLoop.c`。同时从 `summer2026` 清理曾误入库的 154 个工作区 Markdown 文件。当前本地 `1,092,820` 块 / `52,511` 向量，`PRAGMA quick_check=ok`、受控来源 freshness clean、43 项测试通过。生产 Vectorize/D1/Pages **未变**；需先按稳定 ID 流程重新导出、审计容量、更新网站的类型展示和生产评测，不能把本地结果视为已上线。`check-updates.sh` 仍报告 Swift Foundation 有远端更新且 CF/corelibs 远端探测失败，本轮以已核对的本地 commit 为准。
+`objc4-951.7`（975 块）和 28 份地图（173 块）为向量+FTS，其余 16,438 块源码为 FTS-only；源码地图、卡片均被程序排除出最终问答和 Cloudflare 导出。精确符号会给实际源码块加分，`CFRunLoopRunSpecific` 已实测首命中 `CFRunLoop.c`。同时从 `summer2026` 清理曾误入库的 154 个工作区 Markdown 文件。当前本地 `1,092,820` 块 / `52,511` 向量，`PRAGMA quick_check=ok`、受控来源 freshness clean、55 项测试通过。生产 Vectorize/D1/Pages **未变**；需先按稳定 ID 流程重新导出、审计容量、更新网站的类型展示和生产评测，不能把本地结果视为已上线。`check-updates.sh` 仍报告 Swift Foundation 有远端更新且 CF/corelibs 远端探测失败，本轮以已核对的本地 commit 为准。
 
 **2026-09-06 维护状态（生产数据已发布，本地清理待下次生产发布）**：两个 Git 镜像已更新，本地文件/FTS 增量索引已完成；
 `summer-labs` 曾误扫入 `ios-source-learning` 的依赖与源码树，现已通过配置排除并清理

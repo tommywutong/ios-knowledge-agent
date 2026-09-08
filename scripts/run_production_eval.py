@@ -343,6 +343,76 @@ def preflight_item(item: dict[str, Any], follow_up_seeds: dict[str, str]) -> dic
     }
 
 
+def gate_blockers(
+    selected: list[dict[str, Any]],
+    reviewed: dict[str, dict[str, Any]],
+    results: list[dict[str, Any]] | None,
+) -> list[dict[str, str]]:
+    """Return deterministic reasons a release evaluation cannot pass.
+
+    A normal preflight is informational because its manifest may intentionally
+    contain anchors for an older production snapshot. ``--gate`` is the
+    explicit post-index-release check, so it requires current local anchors and
+    complete follow-up fixtures, and no outstanding manual review before a live
+    result can be trusted.
+    """
+
+    blockers: list[dict[str, str]] = []
+    preflight_by_id = {
+        row["id"]: row
+        for row in (
+            preflight_item(item, reviewed["follow_up_seeds"]) for item in selected
+        )
+    }
+    for item in selected:
+        item_id = str(item["id"])
+        preflight = preflight_by_id[item_id]
+        if not preflight["runnable"]:
+            blockers.append(
+                {"id": item_id, "reason": preflight["skip_reason"]}
+            )
+        if (
+            item.get("expected_mode") == "knowledge"
+            and item.get("expected_source_path")
+            and preflight["anchor_indexed_locally"] is not True
+        ):
+            blockers.append(
+                {
+                    "id": item_id,
+                    "reason": (
+                        "expected knowledge anchor is not present in the current "
+                        "local index; refresh the manifest for this source version"
+                    ),
+                }
+            )
+        contract = reviewed.get("contracts", {}).get(item_id, {})
+        if contract.get("manual_review_required"):
+            blockers.append(
+                {
+                    "id": item_id,
+                    "reason": (
+                        "manual review remains required: "
+                        f"{contract.get('manual_review_reason', 'no approval recorded')}"
+                    ),
+                }
+            )
+
+    if results is not None:
+        for result in results:
+            if result.get("outcome") != "passed":
+                blockers.append(
+                    {
+                        "id": str(result.get("id", "unknown")),
+                        "reason": str(
+                            result.get("reason")
+                            or result.get("grade", {}).get("reason")
+                            or "evaluation did not pass"
+                        ),
+                    }
+                )
+    return blockers
+
+
 def stream_observations(
     status: int, content_type: str, body: str
 ) -> tuple[dict[str, Any] | None, dict[str, Any] | None, str, list[dict[str, Any]], str]:
@@ -538,6 +608,10 @@ def make_report(
     base_url: str,
     live: bool,
     results: list[dict[str, Any]] | None = None,
+    *,
+    gate_enabled: bool = False,
+    gate_blockers_list: list[dict[str, str]] | None = None,
+    live_attempted: bool = False,
 ) -> dict[str, Any]:
     preflight = [preflight_item(item, reviewed["follow_up_seeds"]) for item in selected]
     output = results if results is not None else [{"id": row["id"], "preflight": row} for row in preflight]
@@ -546,10 +620,16 @@ def make_report(
         "schema_version": 1,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "mode": "live" if live else "preflight",
+        "live_attempted": live_attempted,
         "base_url": base_url,
         "selected_count": len(selected),
         "selected_ids": [item["id"] for item in selected],
         "summary": dict(sorted(counts.items())),
+        "gate": {
+            "enabled": gate_enabled,
+            "passed": not gate_blockers_list if gate_enabled else None,
+            "blockers": gate_blockers_list or [],
+        },
         "anchor_version_warning": (
             "An anchor absent from the current local index may still be valid for the "
             "2026-09-06 production snapshot. It must be refreshed before evaluating a "
@@ -567,6 +647,11 @@ def default_report_path() -> Path:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--live", action="store_true", help="send requests to production")
+    parser.add_argument(
+        "--gate",
+        action="store_true",
+        help="fail unless anchors, fixtures, manual reviews, and live cases pass",
+    )
     parser.add_argument("--priority", choices=["P0", "P1", "P2", "all"], default="P0")
     parser.add_argument("--case", action="append", default=[], help="manifest id; repeat as needed")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
@@ -592,12 +677,24 @@ def main() -> int:
             raise ValueError("No evaluation cases selected")
         base_url = args.base_url.rstrip("/")
         results = None
-        if args.live:
+        blockers = gate_blockers(selected, reviewed, None) if args.gate else []
+        if args.live and not blockers:
             token = read_self_test_token()
             status, body = request_status(base_url, token)
             verify_live_status(status, body)
             results = run_live(selected, reviewed, base_url, token)
-        report = make_report(selected, reviewed, base_url, args.live, results)
+            if args.gate:
+                blockers = gate_blockers(selected, reviewed, results)
+        report = make_report(
+            selected,
+            reviewed,
+            base_url,
+            args.live,
+            results,
+            gate_enabled=args.gate,
+            gate_blockers_list=blockers,
+            live_attempted=results is not None,
+        )
     except (RuntimeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
@@ -610,6 +707,19 @@ def main() -> int:
         print(f"Report: {report_path}")
     else:
         print(encoded, end="")
+    if args.gate and blockers:
+        print(
+            f"GATE BLOCKED: {len(blockers)} blocker(s); see the report for details.",
+            file=sys.stderr,
+        )
+        return 1
+    if args.gate:
+        if args.live:
+            print("GATE PASSED: live evaluation is release-ready.")
+        else:
+            print(
+                "PREFLIGHT GATE PASSED: anchors, fixtures, and manual reviews are ready."
+            )
     return 0
 
 

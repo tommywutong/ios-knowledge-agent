@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
+import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -90,3 +93,93 @@ class ProductionEvalTests(unittest.TestCase):
             production_eval.verify_live_status(
                 200, '{"configured":true,"authenticated":true,"unlimited":false}'
             )
+
+    def test_gate_blocks_stale_anchor_and_missing_follow_up_fixture(self):
+        selected = [
+            {
+                "id": "pem-stale",
+                "expected_mode": "knowledge",
+                "expected_source_path": "/does/not/exist.m",
+                "category": "answerable",
+            },
+            {
+                "id": "pem-follow-up",
+                "expected_mode": "knowledge",
+                "expected_source_path": None,
+                "category": "follow_up",
+            },
+        ]
+        reviewed = {"follow_up_seeds": {}}
+        blockers = production_eval.gate_blockers(selected, reviewed, None)
+        self.assertEqual(
+            {blocker["id"] for blocker in blockers},
+            {"pem-stale", "pem-follow-up"},
+        )
+        self.assertTrue(any("local index" in blocker["reason"] for blocker in blockers))
+
+    def test_gate_blocks_any_live_case_that_did_not_pass(self):
+        selected = [{"id": "pem-ok", "expected_mode": "no_evidence"}]
+        reviewed = {"follow_up_seeds": {}}
+        blockers = production_eval.gate_blockers(
+            selected,
+            reviewed,
+            [{"id": "pem-ok", "outcome": "failed", "reason": "wrong mode"}],
+        )
+        self.assertEqual(blockers, [{"id": "pem-ok", "reason": "wrong mode"}])
+
+    def test_gate_blocks_cases_that_still_require_manual_review(self):
+        selected = [{"id": "pem-manual", "expected_mode": "no_evidence"}]
+        reviewed = {
+            "follow_up_seeds": {},
+            "contracts": {
+                "pem-manual": {
+                    "manual_review_required": True,
+                    "manual_review_reason": "platform boundary requires review",
+                }
+            },
+        }
+        blockers = production_eval.gate_blockers(selected, reviewed, None)
+        self.assertEqual(
+            blockers,
+            [
+                {
+                    "id": "pem-manual",
+                    "reason": "manual review remains required: platform boundary requires review",
+                }
+            ],
+        )
+
+    def test_report_exposes_gate_status_without_answer_text(self):
+        selected = [{"id": "pem-ok"}]
+        reviewed = {"follow_up_seeds": {}}
+        report = production_eval.make_report(
+            selected,
+            reviewed,
+            "https://example.test",
+            False,
+            gate_enabled=True,
+            gate_blockers_list=[],
+        )
+        self.assertEqual(report["gate"], {"enabled": True, "passed": True, "blockers": []})
+
+    def test_live_gate_skips_network_when_preflight_is_blocked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            report_path = Path(directory) / "report.json"
+            argv = [
+                "run_production_eval.py",
+                "--live",
+                "--gate",
+                "--case",
+                "pem-000028",
+                "--report",
+                str(report_path),
+            ]
+            with patch.object(sys, "argv", argv), patch.object(
+                production_eval,
+                "read_self_test_token",
+                side_effect=AssertionError("network must not be reached"),
+            ):
+                self.assertEqual(production_eval.main(), 1)
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            self.assertFalse(report["live_attempted"])
+            self.assertFalse(report["gate"]["passed"])

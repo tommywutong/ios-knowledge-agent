@@ -33,6 +33,16 @@ objc4 走向量+FTS；其余源码走 FTS，以精确符号检索为主。Apple 
 uv run python scripts/run_production_eval.py --priority P0
 ```
 
+发布新索引前使用严格门禁；它会把过期源码锚点、缺少复核夹具、待人工复核及线上失败/跳过用例变成非零退出：
+
+```bash
+uv run python scripts/run_production_eval.py --priority P0 --gate
+uv run python scripts/run_production_eval.py --priority P0 --live --gate
+```
+
+普通预检和 `--live` 评测仍只生成诊断报告，不会因为失败自动阻断；`--gate` 才是发布流程的阻断开关。
+被标记为人工复核的候选必须先补真实追问夹具或完成证据审阅并更新其判分契约，不能用门禁参数绕过。
+
 只有显式 `--live` 才使用现有生产自测令牌；运行前会确认管理员免配额状态，报告仅保存模式、引用编号、
 来源元数据和长度，不保存模型回答正文，且写入 Git 忽略的 `data/evaluation-results/`。应先用少量
 `--case pem-...` 定向复测；完整发布前的基线和当前已知路由缺陷见 `HANDOFF.md`，不要把 GLM 生成的
