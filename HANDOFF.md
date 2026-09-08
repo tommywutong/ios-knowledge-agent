@@ -9,7 +9,7 @@
 
 **本地评测门禁（2026-09-08）**：`scripts/run_production_eval.py` 支持显式 `--gate`。预检门禁要求知识题的预期锚点存在于当前本地索引、所有追问有已审核的前置夹具，且不遗留标记为人工复核的用例；`--live --gate` 还要求每个已运行用例均为 `passed`，失败或跳过都会返回非零。普通运行仍只报告诊断。8 条 P0 objc4 锚点已迁移至 `objc4-951.7`，2 条追问夹具已补齐；当前门禁仅阻断 10 条人工复核用例：`pem-000018` 至 `pem-000023` 需要审核追问语境，`pem-000028` 至 `pem-000031` 需要审核平台/实验局限。55 项知识库测试和两批候选校验器通过；未触碰生产数据或原始资料。
 
-本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。后续修复位于隔离分支 `codex/fix-ios-stream-and-cross-platform`：终结事件由幂等 `finish` 统一发送/关闭，跨平台比较要求双方证据；25 项检索测试、15 项 API 测试、TypeScript、完整构建通过。该补丁尚未推送或部署，因此生产结论不变。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
+本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。后续修复位于隔离分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617`：终结事件由幂等 `finish` 统一发送/关闭，跨平台比较要求双方证据；25 项检索测试、15 项 API 测试、TypeScript、完整构建通过。该补丁尚未推送或部署，因此生产结论不变。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
 
 TommyWu（iOS 学习者，大二）要把自己的 iOS 资料建成带引用溯源的 RAG 问答系统：
 问"给我讲讲 RunLoop"，得到基于**他自己的资料**的回答，并标注每个结论出自哪个文件哪一段（精确到行号）。

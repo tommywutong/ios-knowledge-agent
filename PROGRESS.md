@@ -53,7 +53,7 @@
 | 52 | 网站路由与证据边界修复 | 🟡 已推送，待合并/生产复测 | 隔离副本分支 `codex/fix-ios-evidence-routing-live` 的 `81ac3ce` 修复 Apple 专有 API 路由、reranker 绕过覆盖阈值和跨平台单侧证据误答；23 项 Retrieval、14 项 API、TypeScript、完整构建通过。远端 `main`/生产未改，合并部署后须定向复测 P0 no-evidence。 |
 | 53 | 网站路由修复合并部署与线上复测 | 🟡 部署成功，仍有残余缺陷 | `81ac3ce` 已与 v1 兼容路径补丁 `9ce55d7` 快进合并到网站远端 `main`；Actions `34125568913` 全部通过，Pages `280999a7` 与自定义域名均 HTTP 200 / `configured: true`。关键 P0 复测 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 出现无 `done` 异常流，Kotlin vs GCD 仍误进 `knowledge`。原网站用户工作区未改。 |
 | 54 | 生产评测发布门禁 | ✅ 本地完成 | `scripts/run_production_eval.py` 新增显式 `--gate`：预检阻断当前本地索引缺失的知识锚点、缺少复核夹具的追问和待人工复核用例，线上门禁阻断任一失败/跳过，并将阻断原因写入报告；默认行为保持兼容。8 条 P0 objc4 锚点已迁移至 `objc4-951.7`，2 条缺失夹具已补齐；当前 P0 预检仅有 10 条人工复核阻断。新增 4 项测试，知识库 55/55 项通过；未修改生产数据或原始资料。 |
-| 55 | WidgetKit 流与 Kotlin/GCD 双侧证据 | 🟡 本地完成，待发布 | 隔离网站分支 `codex/fix-ios-stream-and-cross-platform` 将 NDJSON 终结事件收敛为幂等 `finish`，确保成功或失败路径各有且仅有一个 `done`/`error`；Kotlin/GCD 等跨平台对比在含强 iOS 信号和对比语义时强制进入 iOS 证据链，并要求竞争平台侧证据。新增 WidgetKit 成功/上游失败流和 Kotlin/GCD 路由回归测试；25 项检索测试、15 项 API 测试、Prettier、TypeScript 和完整构建均通过。尚未推送、合并或部署。 |
+| 55 | WidgetKit 流与 Kotlin/GCD 双侧证据 | 🟡 本地完成，待发布 | 隔离网站分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617` 将 NDJSON 终结事件收敛为幂等 `finish`，确保成功或失败路径各有且仅有一个 `done`/`error`；Kotlin/GCD 等跨平台对比在含强 iOS 信号和对比语义时强制进入 iOS 证据链，并要求竞争平台侧证据。新增 WidgetKit 成功/上游失败流和 Kotlin/GCD 路由回归测试；25 项检索测试、15 项 API 测试、Prettier、TypeScript 和完整构建均通过。尚未推送、合并或部署。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
@@ -100,7 +100,7 @@
 - 2026-09-07 六批 GLM 离线候选资产的自带校验器全部通过（3,479 条 JSONL）：它们保存语义审查、红队结果、薄弱主题种子、manifest、证据账本和判分契约，均维持候选边界，未接入生产。
 - 2026-09-07 网站修复 `81ac3ce` 已推送到 `codex/fix-ios-evidence-routing-live`，未合并到远端 `main`（`2dee16f`）、未部署。它要求 Apple 专有 API 进入检索、拒绝低覆盖的 reranker 泛资料、拒绝跨平台比较中的单侧证据；23 项 Retrieval、14 项 API、TypeScript 与完整构建通过。合并后以 P0 no-evidence 定向生产评测确认，不把本地结果表述为线上修复。
 - 2026-09-08 严格 P0 门禁预检在 31 条用例中仅阻断 10 条人工复核：`pem-000018` 至 `pem-000023` 的追问语境，及 `pem-000028` 至 `pem-000031` 的平台/实验局限。`pem-000002` 至 `pem-000009` 已改为当前 `objc4-951.7` 的真实锚点，`pem-000020`、`pem-000021` 已补审核夹具；没有发起线上请求。
-- 2026-09-08 网站隔离分支 `codex/fix-ios-stream-and-cross-platform` 已通过 25 项检索、15 项 API、Prettier、Astro 类型同步后的 TypeScript、269 页完整构建、277 页链接检查和体积检查。修复尚未推送或部署，线上 WidgetKit/Kotlin-GCD 残余结果仍是 2026-09-07 的快照。
+- 2026-09-08 网站隔离分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617` 已通过 25 项检索、15 项 API、Prettier、Astro 类型同步后的 TypeScript、269 页完整构建、277 页链接检查和体积检查。修复尚未推送或部署，线上 WidgetKit/Kotlin-GCD 残余结果仍是 2026-09-07 的快照。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。
 - Pages 生产部署 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）与 `https://www.tommywutong.cn` 均返回首页/API HTTP 200，未登录 GET 显示 `configured: true`；认证 POST 自测于 2026-09-06 00:13（Asia/Shanghai）11/11 全部通过。
 
