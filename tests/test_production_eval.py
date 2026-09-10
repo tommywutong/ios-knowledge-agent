@@ -162,6 +162,103 @@ class ProductionEvalTests(unittest.TestCase):
         )
         self.assertEqual(report["gate"], {"enabled": True, "passed": True, "blockers": []})
 
+    def test_aggregate_metrics_reports_no_evidence_and_citation_rates(self):
+        selected = [
+            {"id": "pem-ne", "expected_mode": "no_evidence"},
+            {"id": "pem-knowledge", "expected_mode": "knowledge"},
+            {"id": "pem-general", "expected_mode": "general"},
+        ]
+        results = [
+            {
+                "id": "pem-ne",
+                "outcome": "passed",
+                "grade": {
+                    "response_status": 422,
+                    "mode": None,
+                    "response_classification": "no_evidence",
+                    "valid_citation_count": 0,
+                    "anchor_citation_pass": None,
+                },
+            },
+            {
+                "id": "pem-knowledge",
+                "outcome": "passed",
+                "grade": {
+                    "response_status": 200,
+                    "mode": "knowledge",
+                    "valid_citation_count": 2,
+                    "anchor_citation_pass": False,
+                },
+            },
+            {
+                "id": "pem-general",
+                "outcome": "failed",
+                "grade": {
+                    "response_status": 422,
+                    "mode": None,
+                    "response_classification": "no_evidence",
+                    "valid_citation_count": 0,
+                    "anchor_citation_pass": None,
+                },
+            },
+        ]
+        metrics = production_eval.aggregate_metrics(selected, results)
+        self.assertEqual(metrics["evaluated_count"], 3)
+        self.assertEqual(
+            metrics["no_evidence"],
+            {
+                "true_positive": 1,
+                "false_positive": 1,
+                "true_negative": 1,
+                "false_negative": 0,
+                "precision": 0.5,
+                "recall": 1.0,
+                "accuracy": 0.6667,
+            },
+        )
+        self.assertEqual(metrics["valid_citation_coverage"], 1.0)
+        self.assertEqual(metrics["expected_anchor_coverage"], 0.0)
+        self.assertEqual(
+            metrics["failure_causes"], {"general_expected_but_no_evidence": 1}
+        )
+
+    def test_evaluation_grade_records_valid_and_invalid_citations(self):
+        item = {
+            "expected_mode": "knowledge",
+            "expected_source_path": "/Users/tommywu/Obsidian/iOS/topic.md",
+            "expected_start_line": 10,
+            "expected_end_line": 20,
+        }
+        body = (
+            '{"type":"done","mode":"knowledge","answer":"A [1] [9]",'
+            '"sources":[{"n":1,"sourceType":"note",'
+            '"path":"Obsidian/iOS/topic.md","lines":"10-20"}]}'
+        )
+        grade = production_eval.evaluate_response(
+            item, 200, "application/x-ndjson", body
+        )
+        self.assertEqual(grade["valid_citation_count"], 1)
+        self.assertEqual(grade["invalid_citation_count"], 1)
+        self.assertEqual(grade["response_classification"], "knowledge")
+
+    def test_historical_report_citation_counts_are_recomputed_from_redacted_fields(self):
+        self.assertEqual(
+            production_eval.valid_citation_count(
+                {"citations": [1, 3, 9], "sources": [{}, {}, {}]}
+            ),
+            2,
+        )
+
+    def test_offline_summary_rejects_release_gate(self):
+        argv = [
+            "run_production_eval.py",
+            "--gate",
+            "--summarize-report",
+            "data/evaluation-results/production-eval-key-cases-20260907.json",
+        ]
+        with patch.object(sys, "argv", argv):
+            self.assertEqual(production_eval.main(), 1)
+
     def test_live_gate_skips_network_when_preflight_is_blocked(self):
         with tempfile.TemporaryDirectory() as directory:
             report_path = Path(directory) / "report.json"

@@ -21,7 +21,9 @@ git -C /Users/tommywu/tommywu-lab rev-list --left-right --count HEAD...origin/ma
 
 ## Current Checkpoint
 
-最后核对时间：2026-09-08（Asia/Shanghai）。
+最后核对时间：2026-09-10（Asia/Shanghai）。
+
+- 2026-09-10 已补齐评测器的无网络报告汇总：`scripts/run_production_eval.py --summarize-report <report>` 从已脱敏报告重算模式准确率、no-evidence precision/recall/accuracy、有效引用覆盖率、预期锚点覆盖率及单一失败归因，不读取令牌、不请求生产也不保存回答正文；新报告直接写入同一指标字段。全库 59 项 Python 测试通过。正式说明位于 `docs/PROJECT_OVERVIEW.md`、`docs/RESUME_PROJECT_BRIEF.md` 与 `docs/RELEASE_CHECKLIST.md`，严格区分已发布验证、仅本地验证、人工复核和不可写入简历的结论。当前 P0 `--gate` 仍只阻断 10 条人工复核项：`pem-000018` 至 `pem-000023` 的追问语境，以及 `pem-000028` 至 `pem-000031` 的平台/实验局限；不得为通过门禁而删除 `manual_review_required`。本轮 `fetch` 后网站 `origin/main` 为 `096d9ae`，隔离补丁 `3dd5617` 以共同基线 `c75e57d` 分出，仍领先 1、落后 3，未推送、合并或部署；25 项检索测试、15 项 API 测试、Prettier、Astro Check 和完整构建均已本地复跑。自定义域名 API 的公开 GET 为 HTTP 200；历史 Pages 预览地址在本机 TLS 握手失败，不能据此更新生产部署结论。
 
 - 2026-09-08 生产评测器新增显式 `--gate` 门禁：预检会阻断当前本地索引中不存在的知识锚点、缺少复核夹具的追问和仍标记人工复核的用例；`--live --gate` 会在任一用例失败或跳过时返回非零。默认预检/线上评测行为保持兼容。已将 8 条 P0 objc4 锚点迁移到 `objc4-951.7`，并补齐 2 条追问夹具；当前 P0 预检仅阻断 10 条待人工复核用例（`pem-000018` 至 `pem-000023` 的追问语境、`pem-000028` 至 `pem-000031` 的平台/实验局限）。完整知识库测试 55/55 通过；未修改生产数据、原始资料或线上部署。
 

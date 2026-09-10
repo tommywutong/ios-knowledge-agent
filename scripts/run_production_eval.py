@@ -9,6 +9,7 @@ Keychain and writes a local, ignored report without storing model answers.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
@@ -136,6 +137,134 @@ def citation_numbers(answer: str) -> list[int]:
     import re
 
     return [int(match.group(1)) for match in re.finditer(r"\[(\d+)\]", answer)]
+
+
+def response_classification(grade: dict[str, Any]) -> str:
+    """Classify a completed response without retaining its answer text."""
+
+    explicit = grade.get("response_classification")
+    if isinstance(explicit, str) and explicit:
+        return explicit
+    if grade.get("response_status") == 422 and grade.get("response_reason") == "no_evidence":
+        return "no_evidence"
+    # Legacy reports only certified this combination for a passed no-evidence case.
+    if grade.get("response_status") == 422 and grade.get("automated_pass") is True:
+        return "no_evidence"
+    mode = grade.get("mode")
+    if isinstance(mode, str) and mode:
+        return mode
+    return "inconclusive"
+
+
+def ratio(numerator: int, denominator: int) -> float | None:
+    return round(numerator / denominator, 4) if denominator else None
+
+
+def valid_citation_count(grade: dict[str, Any]) -> int:
+    """Support reports produced before the explicit count fields existed."""
+
+    stored = grade.get("valid_citation_count")
+    if isinstance(stored, int):
+        return stored
+    citations = grade.get("citations")
+    sources = grade.get("sources")
+    if not isinstance(citations, list) or not isinstance(sources, list):
+        return 0
+    return sum(
+        isinstance(number, int) and 1 <= number <= len(sources)
+        for number in citations
+    )
+
+
+def failure_cause(item: dict[str, Any], grade: dict[str, Any]) -> str:
+    """Return one deterministic, non-overlapping diagnostic bucket."""
+
+    expected = str(item.get("expected_mode", "unknown"))
+    actual = response_classification(grade)
+    if grade.get("response_status") is None:
+        return "request_or_transport_failure"
+    if "stream" in str(grade.get("reason", "")) and actual == "inconclusive":
+        return "stream_protocol_failure"
+    if expected == "no_evidence":
+        if actual in {"knowledge", "general"}:
+            return f"no_evidence_expected_but_{actual}"
+        if "no done event" in str(grade.get("reason", "")):
+            return "stream_protocol_failure"
+        return "no_evidence_contract_failure"
+    if actual == "no_evidence":
+        return f"{expected}_expected_but_no_evidence"
+    if actual != expected:
+        return "mode_mismatch"
+    if not valid_citation_count(grade):
+        return "missing_or_invalid_citations"
+    if grade.get("anchor_citation_pass") is False:
+        return "expected_anchor_not_cited"
+    return "grading_contract_failure"
+
+
+def aggregate_metrics(
+    selected: list[dict[str, Any]], results: list[dict[str, Any]]
+) -> dict[str, Any]:
+    """Aggregate only fields retained in the redacted evaluation report."""
+
+    items = {str(item["id"]): item for item in selected}
+    evaluated = [
+        row
+        for row in results
+        if row.get("outcome") in {"passed", "failed"}
+        and isinstance(row.get("grade"), dict)
+    ]
+    expected_actual: list[tuple[str, str]] = []
+    failure_counts: Counter[str] = Counter()
+    knowledge_responses = 0
+    expected_knowledge_responses = 0
+    valid_citation_cases = 0
+    anchor_citation_cases = 0
+    for row in evaluated:
+        item = items.get(str(row.get("id")), {})
+        grade = row["grade"]
+        expected = str(item.get("expected_mode", "unknown"))
+        actual = response_classification(grade)
+        expected_actual.append((expected, actual))
+        if row.get("outcome") == "failed":
+            failure_counts[failure_cause(item, grade)] += 1
+        if actual == "knowledge":
+            knowledge_responses += 1
+            if valid_citation_count(grade) > 0:
+                valid_citation_cases += 1
+        if expected == "knowledge":
+            expected_knowledge_responses += 1
+            if actual == "knowledge" and grade.get("anchor_citation_pass") is True:
+                anchor_citation_cases += 1
+
+    mode_correct = sum(expected == actual for expected, actual in expected_actual)
+    ne_tp = sum(expected == actual == "no_evidence" for expected, actual in expected_actual)
+    ne_fp = sum(expected != "no_evidence" and actual == "no_evidence" for expected, actual in expected_actual)
+    ne_fn = sum(expected == "no_evidence" and actual != "no_evidence" for expected, actual in expected_actual)
+    ne_tn = sum(expected != "no_evidence" and actual in {"knowledge", "general"} for expected, actual in expected_actual)
+    inconclusive = sum(actual == "inconclusive" for _, actual in expected_actual)
+    return {
+        "available": bool(evaluated),
+        "metrics_version": 2,
+        "inconclusive_count": inconclusive,
+        "evaluated_count": len(evaluated),
+        "skipped_count": sum(row.get("outcome") == "skipped" for row in results),
+        "mode_accuracy": ratio(mode_correct, len(expected_actual)),
+        "no_evidence": {
+            "true_positive": ne_tp,
+            "false_positive": ne_fp,
+            "true_negative": ne_tn,
+            "false_negative": ne_fn,
+            "precision": ratio(ne_tp, ne_tp + ne_fp),
+            "recall": ratio(ne_tp, ne_tp + ne_fn),
+            "accuracy": ratio(ne_tp + ne_tn, len(expected_actual)),
+        },
+        "knowledge_responses": knowledge_responses,
+        "valid_citation_coverage": ratio(valid_citation_cases, knowledge_responses),
+        "expected_knowledge_responses": expected_knowledge_responses,
+        "expected_anchor_coverage": ratio(anchor_citation_cases, expected_knowledge_responses),
+        "failure_causes": dict(sorted(failure_counts.items())),
+    }
 
 
 def parse_ndjson(body: str) -> list[dict[str, Any]]:
@@ -308,6 +437,8 @@ def validate_inputs(paths: BatchPaths) -> dict[str, dict[str, Any]]:
         "contracts": contracts,
         "boundaries": boundaries,
         "follow_up_seeds": follow_up_seeds,
+        "input_hashes": {name: hashlib.sha256(path.read_bytes()).hexdigest()
+                         for name, path in vars(paths).items()},
     }
 
 
@@ -337,7 +468,7 @@ def preflight_item(item: dict[str, Any], follow_up_seeds: dict[str, str]) -> dic
         "category": item.get("category"),
         "anchor_exists": None if expected_path is None else Path(expected_path).is_file(),
         "anchor_indexed_locally": source_is_indexed_locally(expected_path),
-        "follow_up_fixture": follow_up_seeds.get(item["id"]),
+        "follow_up_fixture_present": item["id"] in follow_up_seeds,
         "runnable": not missing_fixture,
         "skip_reason": "missing reviewed follow-up fixture" if missing_fixture else "",
     }
@@ -422,6 +553,10 @@ def stream_observations(
         events = parse_ndjson(body)
     except ValueError as exc:
         return None, None, "", [], str(exc)
+    terminals = [event for event in events if event.get("type") in {"done", "error"}]
+    if len(terminals) != 1 or (events and events[-1] is not terminals[0]):
+        reason = "stream has no done event" if not terminals else "stream has invalid terminal event sequence"
+        return None, None, "", [], reason
     done = next((event for event in reversed(events) if event.get("type") == "done"), None)
     error = next((event for event in events if event.get("type") == "error"), None)
     if not isinstance(done, dict):
@@ -449,12 +584,15 @@ def evaluate_response(
     item: dict[str, Any], status: int, content_type: str, body: str
 ) -> dict[str, Any]:
     expected_mode = item["expected_mode"]
-    if expected_mode == "no_evidence":
-        try:
-            payload = json.loads(body)
-        except json.JSONDecodeError:
-            payload = {}
-        passed = status == 422 and payload.get("reason") == "no_evidence"
+    try:
+        payload = json.loads(body)
+    except json.JSONDecodeError:
+        payload = {}
+    if not isinstance(payload, dict):
+        payload = {}
+    is_no_evidence = status == 422 and payload.get("reason") == "no_evidence"
+    if expected_mode == "no_evidence" or is_no_evidence:
+        passed = expected_mode == "no_evidence" and is_no_evidence
         done, error, answer, sources, stream_error = stream_observations(
             status, content_type, body
         )
@@ -462,6 +600,8 @@ def evaluate_response(
         actual_mode = done.get("mode") if isinstance(done, dict) else None
         if passed:
             reason = ""
+        elif is_no_evidence:
+            reason = f"expected {expected_mode}, got 422 no_evidence"
         elif actual_mode:
             reason = f"expected 422 no_evidence, got {actual_mode} stream"
         elif stream_error:
@@ -475,10 +615,16 @@ def evaluate_response(
             "reason": reason,
             "response_status": status,
             "mode": actual_mode,
+            "response_classification": (
+                "no_evidence" if is_no_evidence else (actual_mode or "inconclusive")
+            ),
             "answer_chars": len(answer),
             "citations": citations,
             "sources": public_sources(sources),
             "anchor_citation_pass": None,
+            "valid_citation_count": len(
+                [number for number in citations if 1 <= number <= len(sources)]
+            ),
         }
 
     done, error, answer, sources, stream_error = stream_observations(status, content_type, body)
@@ -488,10 +634,13 @@ def evaluate_response(
             "reason": stream_error,
             "response_status": status,
             "mode": None,
+            "response_classification": "inconclusive",
             "answer_chars": 0,
             "citations": [],
             "sources": [],
             "anchor_citation_pass": False,
+            "valid_citation_count": 0,
+            "invalid_citation_count": 0,
         }
     citations = citation_numbers(answer)
     valid_citations = [number for number in citations if 1 <= number <= len(sources)]
@@ -503,17 +652,27 @@ def evaluate_response(
     matching_kinds = [kind for kind in matching_kinds if kind is not None]
     mode_matches = isinstance(done, dict) and done.get("mode") == expected_mode
     anchor_pass = bool(matching_kinds)
-    passed = bool(done and not error and answer and mode_matches and anchor_pass)
+    passed = bool(done and not error and answer and mode_matches and (
+        expected_mode == "general" or (anchor_pass and len(valid_citations) == len(citations))
+    ))
     return {
         "automated_pass": passed,
         "reason": "" if passed else "mode, citation, or expected anchor check failed",
         "response_status": status,
         "mode": done.get("mode") if isinstance(done, dict) else None,
+        "response_classification": response_classification(
+            {
+                "mode": done.get("mode") if isinstance(done, dict) else None,
+                "response_status": status,
+            }
+        ),
         "answer_chars": len(answer),
         "citations": citations,
         "sources": public_sources(sources),
-        "anchor_citation_pass": anchor_pass,
+        "anchor_citation_pass": anchor_pass if expected_mode == "knowledge" else None,
         "anchor_citation_match": matching_kinds[0] if matching_kinds else None,
+        "valid_citation_count": len(valid_citations),
+        "invalid_citation_count": len(citations) - len(valid_citations),
     }
 
 
@@ -562,7 +721,7 @@ def run_live(
                 result.update({"outcome": "skipped", "reason": seed_error})
                 results.append(result)
                 continue
-            result["follow_up_seed"] = {"question": seed_question, "status": "ok"}
+            result["follow_up_seed"] = {"status": "ok"}
         try:
             response_status, content_type, body = request_json(
                 base_url, token, item["question"], history
@@ -614,10 +773,20 @@ def make_report(
     live_attempted: bool = False,
 ) -> dict[str, Any]:
     preflight = [preflight_item(item, reviewed["follow_up_seeds"]) for item in selected]
-    output = results if results is not None else [{"id": row["id"], "preflight": row} for row in preflight]
+    output = (
+        results
+        if results is not None
+        else [{"id": row["id"], "preflight": row} for row in preflight]
+    )
     counts = Counter(row.get("outcome", "preflight") for row in output)
     return {
-        "schema_version": 1,
+        "schema_version": 2,
+        "benchmark": {
+            "cases": [{"id": item["id"], "expected_mode": item.get("expected_mode", "unknown")}
+                      for item in selected],
+            "input_sha256": reviewed.get("input_hashes", {}),
+            "evaluator_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        },
         "created_at": datetime.now(timezone.utc).isoformat(),
         "mode": "live" if live else "preflight",
         "live_attempted": live_attempted,
@@ -630,12 +799,62 @@ def make_report(
             "passed": not gate_blockers_list if gate_enabled else None,
             "blockers": gate_blockers_list or [],
         },
+        "metrics": (
+            aggregate_metrics(selected, results)
+            if results is not None
+            else {
+                "available": False,
+                "reason": "live evaluation was not attempted",
+            }
+        ),
         "anchor_version_warning": (
             "An anchor absent from the current local index may still be valid for the "
             "2026-09-06 production snapshot. It must be refreshed before evaluating a "
             "post-ios-source-learning release."
         ),
         "results": output,
+    }
+
+
+def summarize_report(historical: dict[str, Any], name: str) -> dict[str, Any]:
+    """Recompute metrics from the run's own labels, never today's manifest."""
+    if not isinstance(historical, dict):
+        raise ValueError("Existing report must be an object")
+    selected_ids = historical.get("selected_ids")
+    results = historical.get("results")
+    if not isinstance(selected_ids, list) or not selected_ids or not all(isinstance(i, str) for i in selected_ids):
+        raise ValueError("Existing report has no valid selected_ids")
+    if len(set(selected_ids)) != len(selected_ids):
+        raise ValueError("Existing report repeats selected_ids")
+    if not isinstance(results, list) or not all(isinstance(row, dict) for row in results):
+        raise ValueError("Existing report has no valid results array")
+    ids = [row.get("id") for row in results]
+    if len(ids) != len(selected_ids) or set(ids) != set(selected_ids):
+        raise ValueError("Existing report results must cover selected_ids exactly once")
+    benchmark = historical.get("benchmark", {})
+    cases = benchmark.get("cases") if isinstance(benchmark, dict) else None
+    label_source = "benchmark.cases"
+    if cases is None:
+        # Older reports already stored the expected mode in their preflight.
+        cases = [{"id": row["id"], "expected_mode": row.get("preflight", {}).get("expected_mode")} for row in results]
+        label_source = "legacy preflight"
+    if (not isinstance(cases, list) or not all(isinstance(c, dict) for c in cases)
+            or len(cases) != len(selected_ids)
+            or {c.get("id") for c in cases} != set(selected_ids)
+            or any(c.get("expected_mode") not in {"knowledge", "general", "no_evidence"} for c in cases)):
+        raise ValueError("Existing report lacks a complete frozen expected-mode snapshot")
+    return {
+        "schema_version": 2,
+        "mode": "offline_summary",
+        "source_report": name,
+        "source_created_at": historical.get("created_at"),
+        "source_sha256": hashlib.sha256(json.dumps(historical, sort_keys=True).encode()).hexdigest(),
+        "summarizer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+        "expected_mode_source": label_source,
+        "selected_count": len(cases),
+        "selected_ids": selected_ids,
+        "original_summary": historical.get("summary", {}),
+        "metrics": aggregate_metrics(cases, results),
     }
 
 
@@ -656,6 +875,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--case", action="append", default=[], help="manifest id; repeat as needed")
     parser.add_argument("--base-url", default=DEFAULT_BASE_URL)
     parser.add_argument("--report", type=Path, help="local JSON report path")
+    parser.add_argument(
+        "--summarize-report",
+        type=Path,
+        help="recompute redacted metrics from an existing live report without network access",
+    )
     parser.add_argument("--manifest-dir", type=Path, default=DEFAULT_MANIFEST_DIR)
     parser.add_argument("--ledger-dir", type=Path, default=DEFAULT_LEDGER_DIR)
     return parser.parse_args()
@@ -671,6 +895,28 @@ def main() -> int:
         pairs=args.ledger_dir / "adversarial-pairs.jsonl",
     )
     try:
+        if args.summarize_report:
+            if args.live or args.gate:
+                raise ValueError(
+                    "--summarize-report cannot be combined with --live or --gate"
+                )
+            try:
+                historical = json.loads(
+                    args.summarize_report.read_text(encoding="utf-8")
+                )
+            except (OSError, json.JSONDecodeError) as exc:
+                raise ValueError(
+                    f"Cannot read existing evaluation report: {args.summarize_report}"
+                ) from exc
+            summary = summarize_report(historical, args.summarize_report.name)
+            encoded = json.dumps(summary, ensure_ascii=False, indent=2) + "\n"
+            if args.report:
+                args.report.parent.mkdir(parents=True, exist_ok=True)
+                args.report.write_text(encoded, encoding="utf-8")
+                print(f"Report: {args.report}")
+            else:
+                print(encoded, end="")
+            return 0
         reviewed = validate_inputs(paths)
         selected = select_items(reviewed["manifest"], args.priority, set(args.case))
         if not selected:

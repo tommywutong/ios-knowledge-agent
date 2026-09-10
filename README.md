@@ -6,7 +6,7 @@
 
 详细架构与决策见 `HANDOFF.md`，当前进度见 `PROGRESS.md`。
 
-截至 2026-09-07，本地库包含 1,092,820 个文本块；52,511 个块有
+截至 2026-09-10，本地库包含 1,092,820 个文本块；52,511 个块有
 bge-m3 语义向量，另外 1,040,309 个块使用 FTS5 关键词检索。生产 Vectorize
 现为 55,635 条；FTS v2 已按容量拆为 iOS 主库 84,818 条和扩展库 40,000 条，合计覆盖
 124,818 条证据。登录、额度和指标仍留在独立业务 D1；旧 FTS 已移除，业务库现约 0.35 MB，
@@ -42,6 +42,18 @@ uv run python scripts/run_production_eval.py --priority P0 --live --gate
 
 普通预检和 `--live` 评测仍只生成诊断报告，不会因为失败自动阻断；`--gate` 才是发布流程的阻断开关。
 被标记为人工复核的候选必须先补真实追问夹具或完成证据审阅并更新其判分契约，不能用门禁参数绕过。
+
+已有的无正文报告可以在不读取令牌、不访问网络的前提下重算模式准确率、no-evidence 分类指标、引用覆盖率、
+锚点覆盖率与失败归因，适合将历史生产观察与当前代码能力分开审查：
+
+```bash
+uv run python scripts/run_production_eval.py \
+  --summarize-report data/evaluation-results/production-eval-key-cases-20260907.json
+```
+
+指标只衡量报告中可验证的路由和引用契约，不衡量答案的事实正确性或用户满意度。完整定义、当前生产限制、
+简历可用表述及发布检查清单见 `docs/PROJECT_OVERVIEW.md`、`docs/RESUME_PROJECT_BRIEF.md` 和
+`docs/RELEASE_CHECKLIST.md`。
 
 只有显式 `--live` 才使用现有生产自测令牌；运行前会确认管理员免配额状态，报告仅保存模式、引用编号、
 来源元数据和长度，不保存模型回答正文，且写入 Git 忽略的 `data/evaluation-results/`。应先用少量

@@ -1,6 +1,6 @@
 # 进度报告
 
-> 本文件随工作实时更新。最后更新：2026-09-08（P0 门禁锚点/夹具已补齐；网站残余修复待发布）
+> 本文件随工作实时更新。最后更新：2026-09-10（评测指标可离线重算；网站残余修复待发布）
 
 ## 总体状态：✅ 原始资料建库、证据链改造及细粒度知识卡片完成
 
@@ -50,10 +50,11 @@
 | 49 | ios-source-learning 分层融合 | ✅ 本地完成，未发布 | 接入 `XiyouMobile3G-iOS/ios-source-learning` 根仓库 `215ba1a`：objc4 改用钉定的 `objc4-951.7`，新增 CF、Apple libdispatch、Swift Foundation、GNUstep、四个第三方库和源码地图，共 2,031 文件 / 17,586 块。Apple/开源参照/GNUstep/第三方/地图具有独立证据类型；地图仅本地导航，程序排除地图和卡片的最终问答与云端导出。源码主体 FTS-only，objc4+地图向量+FTS；精确 `CFRunLoopRunSpecific` 实测首命中 Apple `CFRunLoop.c`。清理 `summer2026` 中误入库的 154 个工作区文档；当前 1,092,820 块 / 52,511 向量、quick_check/freshness/55 项测试通过。生产 Vectorize、D1、Pages 未动。 |
 | 50 | 生产评测器与回归基线 | ✅ 工具完成；❌ 生产发现路由缺陷 | 新增 `scripts/run_production_eval.py`，默认预检 130 条审核 manifest/账本/契约/夹具，`--live` 需专用管理员 token 且先验证状态，输出无回答正文的 Git 忽略报告。旧生产 P0 首测为 6 passed / 23 failed / 2 skipped；10 条 P0 no-evidence 定向复测仅 1 条正确 422，5 条误进 knowledge、4 条误进 general。`pem-000001` 的同场 WWDC 中英译文锚点已显式映射；55 项本地单测通过。生产、索引、资料均未改。 |
 | 51 | GLM 审核资产归档 | ✅ 完成，未接入生产 | 归档 6 个候选批次：语义审查/黄金集、r2/r3 红队、四个薄弱主题种子、种子边界与 130 条 manifest、证据账本与 98 条判分契约；共 3,479 条 JSONL，6 个校验器全部通过。资产用于学习、评测和人工审阅，未写入原始资料、索引或云端。 |
-| 52 | 网站路由与证据边界修复 | 🟡 已推送，待合并/生产复测 | 隔离副本分支 `codex/fix-ios-evidence-routing-live` 的 `81ac3ce` 修复 Apple 专有 API 路由、reranker 绕过覆盖阈值和跨平台单侧证据误答；23 项 Retrieval、14 项 API、TypeScript、完整构建通过。远端 `main`/生产未改，合并部署后须定向复测 P0 no-evidence。 |
-| 53 | 网站路由修复合并部署与线上复测 | 🟡 部署成功，仍有残余缺陷 | `81ac3ce` 已与 v1 兼容路径补丁 `9ce55d7` 快进合并到网站远端 `main`；Actions `34125568913` 全部通过，Pages `280999a7` 与自定义域名均 HTTP 200 / `configured: true`。关键 P0 复测 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 出现无 `done` 异常流，Kotlin vs GCD 仍误进 `knowledge`。原网站用户工作区未改。 |
+| 52 | 网站路由与证据边界修复 | 🟡 已推送，待合并/生产复测 | 2026-09-07，隔离副本分支 `codex/fix-ios-evidence-routing-live` 的 `81ac3ce` 修复 Apple 专有 API 路由、reranker 绕过覆盖阈值和跨平台单侧证据误答；23 项 Retrieval、14 项 API、TypeScript、完整构建通过。当时远端 `main`/生产未改，后续由第 53 项记录合并部署；当前远端状态以 2026-09-10 快照为准。 |
+| 53 | 网站路由修复合并部署与线上复测 | 🟡 部署成功，仍有残余缺陷 | 2026-09-07，`81ac3ce` 与 v1 兼容路径补丁 `9ce55d7` 曾合并并部署；Actions `34125568913` 全部通过，Pages `280999a7` 与自定义域名当时均 HTTP 200 / `configured: true`。关键 P0 复测 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 出现无 `done` 异常流，Kotlin vs GCD 仍误进 `knowledge`。2026-09-10 fetch 显示远端主线已前进至 `096d9ae`；不将旧部署记录写成当前主线已部署。原网站用户工作区未改。 |
 | 54 | 生产评测发布门禁 | ✅ 本地完成 | `scripts/run_production_eval.py` 新增显式 `--gate`：预检阻断当前本地索引缺失的知识锚点、缺少复核夹具的追问和待人工复核用例，线上门禁阻断任一失败/跳过，并将阻断原因写入报告；默认行为保持兼容。8 条 P0 objc4 锚点已迁移至 `objc4-951.7`，2 条缺失夹具已补齐；当前 P0 预检仅有 10 条人工复核阻断。新增 4 项测试，知识库 55/55 项通过；未修改生产数据或原始资料。 |
 | 55 | WidgetKit 流与 Kotlin/GCD 双侧证据 | 🟡 本地完成，待发布 | 隔离网站分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617` 将 NDJSON 终结事件收敛为幂等 `finish`，确保成功或失败路径各有且仅有一个 `done`/`error`；Kotlin/GCD 等跨平台对比在含强 iOS 信号和对比语义时强制进入 iOS 证据链，并要求竞争平台侧证据。新增 WidgetKit 成功/上游失败流和 Kotlin/GCD 路由回归测试；25 项检索测试、15 项 API 测试、Prettier、TypeScript 和完整构建均通过。尚未推送、合并或部署。 |
+| 56 | 无正文评测指标、项目说明与发布清单 | ✅ 本地完成 | `run_production_eval.py --summarize-report` 可离线重算已有报告的模式准确率、no-evidence precision/recall/accuracy、有效引用覆盖率、预期锚点覆盖率与互斥失败归因；新 live 报告自动带同口径 `metrics`，不保存问题或回答正文。新增项目总览、简历简报、发布清单；全库 59 项 Python 测试通过。P0 预检仍阻断 10 条人工复核项，未改生产、资料或门禁语义。 |
 
 | 41 | 自动回复重启消息策略 | ✅ 完成 | `/Users/tommywu/wechat-auto-reply` 的 PR #2、#3 已合并至 `main`（`a1de282`）。默认启动只建立历史游标并跳过停机期间消息；控制 App 开关或 `--replay-offline` 才追补，批次认领状态在模型调用前持久化。Python 193 项、Swift 7 项测试通过 |
 | 42 | Android/macOS 安装与差异文档 | ✅ 完成 | 自动回复仓库 PR #4 已合并至 `main`（`cef5812`），README 增加两端能力对比、macOS 13+ 依赖、Keychain 配置、控制 App 构建、权限、安全试跑和服务停止步骤；同时修正 `安装到Mac.command` 的自更新源。Python 193 项、Swift 7 项通过；Android 本机因缺少 SDK 未运行 |
@@ -98,7 +99,7 @@
 - 2026-09-06 当前本地同步结果：GLM 离线批次发现并清理 32 个已删除 `summer2026` 文件（1,521 块）；`uv run ioskb stats` 为 1,079,177 块 / 55,306 向量，`freshness --source summer2026 --skip-upstreams --check` clean。`data/glm/overnight-rag-evaluation-20260906/` 的 3,143 行候选可由 `scripts/validate_glm_batch.py` 复核，但 1,381 条模板题仍待人工语义抽查。生产仍为清理前 Vectorize 55,635 条/D1 快照，未经稳定 ID 流程重新发布；此前认证问答自测于 00:13（Asia/Shanghai）11/11 全部通过。
 - 2026-09-07 生产评测器的 P0 输入预检通过；完整单测 55/55。旧生产 P0 初测 `6 passed / 23 failed / 2 skipped`，其中旧 objc4 快照和中英译文锚点差异不能直接视为召回失败。10 条 no-evidence 定向复测为 `1 passed / 9 failed`：5 条 `knowledge`、4 条 `general`，报告不保存模型回答正文。首要生产修复是“明确 iOS 但无可靠资料”必须返回 `422 no_evidence`，而不是以泛资料进入 knowledge 或降级为 general；修复后再评测并再发布本地源码融合。
 - 2026-09-07 六批 GLM 离线候选资产的自带校验器全部通过（3,479 条 JSONL）：它们保存语义审查、红队结果、薄弱主题种子、manifest、证据账本和判分契约，均维持候选边界，未接入生产。
-- 2026-09-07 网站修复 `81ac3ce` 已推送到 `codex/fix-ios-evidence-routing-live`，未合并到远端 `main`（`2dee16f`）、未部署。它要求 Apple 专有 API 进入检索、拒绝低覆盖的 reranker 泛资料、拒绝跨平台比较中的单侧证据；23 项 Retrieval、14 项 API、TypeScript 与完整构建通过。合并后以 P0 no-evidence 定向生产评测确认，不把本地结果表述为线上修复。
+- 2026-09-07 网站修复 `81ac3ce` 曾推送到 `codex/fix-ios-evidence-routing-live`，当时未合并到远端 `main`（`2dee16f`）、未部署。它要求 Apple 专有 API 进入检索、拒绝低覆盖的 reranker 泛资料、拒绝跨平台比较中的单侧证据；23 项 Retrieval、14 项 API、TypeScript 与完整构建通过。后续合并部署及残余缺陷见第 53 项；当前远端状态以 2026-09-10 `096d9ae` 快照为准。
 - 2026-09-08 严格 P0 门禁预检在 31 条用例中仅阻断 10 条人工复核：`pem-000018` 至 `pem-000023` 的追问语境，及 `pem-000028` 至 `pem-000031` 的平台/实验局限。`pem-000002` 至 `pem-000009` 已改为当前 `objc4-951.7` 的真实锚点，`pem-000020`、`pem-000021` 已补审核夹具；没有发起线上请求。
 - 2026-09-08 网站隔离分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617` 已通过 25 项检索、15 项 API、Prettier、Astro 类型同步后的 TypeScript、269 页完整构建、277 页链接检查和体积检查。修复尚未推送或部署，线上 WidgetKit/Kotlin-GCD 残余结果仍是 2026-09-07 的快照。
 - 生产数据发布完成：Vectorize `ios-kb` 55,635 条；新主库 `tommywu-ios-kb-primary-20260905` 正式 FTS/邻接表各 84,818 行，归档库各 40,000 行；两库 `MATCH 'uikit'` 均有命中。

@@ -1,13 +1,17 @@
 # HANDOFF —— 交接文档（给任何接手的 AI 或人）
 
 > 新会话先读 `AGENTS.md`，再读本文件 + `SPEC.md` + `PROGRESS.md`。
-> 最后更新：2026-09-08（P0 门禁锚点/夹具已补齐；网站残余修复待发布）
+> 最后更新：2026-09-10（评测指标可离线重算；网站残余修复待发布）
 
 ## 1. 这个项目是什么
 
-**最新生产状态（2026-09-07）**：网站仓库 `tommywu-lab` 的 `main` 已合并到 `9ce55d7`，GitHub Actions `34125568913` 全部通过，Cloudflare Pages production 为 `https://280999a7.tommywu-lab.pages.dev`，自定义域名 `https://www.tommywutong.cn` 指向同一生产配置。两处首页/API 均 HTTP 200，公开 GET `configured: true`。原网站工作区仍在 `fix/chat-input-initial-height`，用户未提交首页和素材保持原样；所有网站改动均在隔离副本完成。
+**最后已验证的生产状态（2026-09-07）**：网站仓库当时的 `main` 已合并到 `9ce55d7`，GitHub Actions `34125568913` 全部通过，Cloudflare Pages production 为 `https://280999a7.tommywu-lab.pages.dev`，自定义域名 `https://www.tommywutong.cn` 指向同一生产配置。两处首页/API 当时均 HTTP 200，公开 GET `configured: true`。原网站工作区仍在 `fix/chat-input-initial-height`，用户未提交首页和素材保持原样；所有网站改动均在隔离副本完成。
+
+**当前 Git 与公开健康观察（2026-09-10）**：本轮 `fetch` 后网站 `origin/main` 为 `096d9ae`（由用户工作分支整合产生），而待发布修复 `3dd5617` 从共同基线 `c75e57d` 分出，故隔离分支为领先 1、落后 3；发布前必须先与当前主线重新整合，不可直接部署。自定义域名 `/api/ios-ask` 的公开 GET 为 HTTP 200；历史 Pages 预览地址在本机 TLS 握手失败，不能将这一次失败写成服务故障，也不能把 2026-09-07 的部署验证视为当前提交已部署。本轮没有推送、合并、部署或调用认证生产接口。
 
 **本地评测门禁（2026-09-08）**：`scripts/run_production_eval.py` 支持显式 `--gate`。预检门禁要求知识题的预期锚点存在于当前本地索引、所有追问有已审核的前置夹具，且不遗留标记为人工复核的用例；`--live --gate` 还要求每个已运行用例均为 `passed`，失败或跳过都会返回非零。普通运行仍只报告诊断。8 条 P0 objc4 锚点已迁移至 `objc4-951.7`，2 条追问夹具已补齐；当前门禁仅阻断 10 条人工复核用例：`pem-000018` 至 `pem-000023` 需要审核追问语境，`pem-000028` 至 `pem-000031` 需要审核平台/实验局限。55 项知识库测试和两批候选校验器通过；未触碰生产数据或原始资料。
+
+**评测可观测性（2026-09-10，本地完成）**：评测器新增 `--summarize-report <report>`，可在不读取令牌、不访问网络的情况下，从脱敏历史报告重算模式准确率、no-evidence precision/recall/accuracy、有效引用覆盖率、预期锚点覆盖率和互斥失败归因。新报告也自动写入同一 `metrics` 字段，仍不保存问题或回答正文。当前全库 59 项 Python 单测通过；`docs/PROJECT_OVERVIEW.md`、`docs/RESUME_PROJECT_BRIEF.md`、`docs/RELEASE_CHECKLIST.md` 记录指标口径、简历边界和未授权的发布步骤。2026-09-07 的 5 条定向生产报告离线重算为 no-evidence 准确率 60.00%（3 条正确 `422`、1 条 knowledge 误路由、1 条无 `done`），用于定位缺陷，绝不能写成生产 P0 已完成。
 
 本次网站修复包含 `81ac3ce`（Apple 专有 API 路由、证据覆盖阈值、跨平台双侧证据）和 `9ce55d7`（v1 兼容检索路径复用命名 Apple API 证据闸门）。部署后关键 P0 复测为 3/5 通过：ARKit、Core ML、Android Handler vs iOS RunLoop 正确 `422 no_evidence`；WidgetKit 一次返回无 `done` 的异常流，Kotlin vs GCD 仍误进 `knowledge`。后续修复位于隔离分支 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617`：终结事件由幂等 `finish` 统一发送/关闭，跨平台比较要求双方证据；25 项检索测试、15 项 API 测试、TypeScript、完整构建通过。该补丁尚未推送或部署，因此生产结论不变。详见 `data/evaluation-results/production-eval-key-cases-20260907.json`，报告不含回答正文。
 
@@ -204,10 +208,9 @@ uv run ioskb index --source knowledge-cards     # 卡片回灌
 当前跨仓库同步点：
 
 - 本仓库 `/Users/tommywu/Desktop/iOS知识agentt`：本轮资料边界、元数据权威等级、FTS source/总容量保护和生产导出已完成；本地已清理 32 个陈旧 `summer2026` 文件的 1,521 块，但生产仍保留清理前快照，后续发布必须按稳定 ID 流程同步；6 个 GLM 离线候选批次已归档并逐批校验，未自动接入检索。新增生产评测器只读入审核资产，`--live` 仅写 Git 忽略的无正文报告；`mermaid-diagram.svg` 仍为用户未跟踪文件；
-- 网站仓库 `/Users/tommywu/tommywu-lab`：远端 `main` 为 `2dee16f`，生产 Pages 仍是此前部署 `2ed9ad9f`；用户工作区的首页改动和未跟踪内容未处理。路由/证据阈值修复 `81ac3ce` 已推送 `codex/fix-ios-evidence-routing-live`，未合并、未部署，后续需合并后以 P0 `no_evidence` 定向复测验证；
+- 网站仓库 `/Users/tommywu/tommywu-lab`：2026-09-10 `fetch` 后远端 `main` 为 `096d9ae`；用户工作区的首页改动和未跟踪内容未处理。最后已验证的 Pages 部署仍是 2026-09-07 的 `280999a7`，不是当前远端提交的部署证明。待发布修复为隔离副本 `codex/fix-ios-stream-and-cross-platform` 的 `3dd5617`，从共同基线 `c75e57d` 分出，需先整合当前主线并以 P0 `no_evidence` 定向复测；
 - 自动回复仓库 `/Users/tommywu/wechat-auto-reply`：PR #8 已合并至 `main`（`0c087b3`），PR #9 已合并至 `main`（`b1da74b`）。除按联系人独立画像、相关历史示例检索和机械拖延防护外，控制 App 现在启动或 Dock 重新打开时会在工作区干净且可快进的条件下自动拉取 `main` 并按提交号重建；关闭窗口后点击 Dock 会恢复主窗口。自动更新不会覆盖本地修改，也不会强制重启后台服务。TraceMemo 原始历史仍只在本机读取，画像写入 Git 忽略且 0600 的 `var/style-profiles.json`，不做整库微调或上传；本轮 Python 205 项、Swift 11 项测试通过，Android 本机因缺少 SDK 未运行；功能分支已删除。
-- 生产站点：`https://www.tommywutong.cn`；本轮 Pages production 部署为 `https://2ed9ad9f.tommywu-lab.pages.dev`（source `d331ef3`）；
-- 两个地址的公开 API 健康检查均显示 HTTP 200、`configured: true`；macOS 钥匙串中的生产自测 token 未写入仓库。
+- 生产站点：`https://www.tommywutong.cn`；2026-09-10 自定义域名的公开 API GET 为 HTTP 200。历史 Pages 预览地址 `https://280999a7.tommywu-lab.pages.dev` 本轮 TLS 握手失败，未将其作为服务故障或当前部署结论；macOS 钥匙串中的生产自测 token 未写入仓库。
  认证问答于 2026-09-06 00:13（Asia/Shanghai）重跑，11/11 全部通过。
 
 问候语固定回复全文：`Hi`、`hi`、你好等纯问候只回复
