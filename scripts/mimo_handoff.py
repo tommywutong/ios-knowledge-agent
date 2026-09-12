@@ -32,6 +32,18 @@ SAFE_REMOTE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,40}$")
 SAFE_REF = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._/@-]{0,200}$")
 SENSITIVE_NAME = re.compile(r"(?:^|/)(?:\.env(?:\.|$)|.*(?:token|secret|credential|cookie|private[-_.]?key).*)$", re.I)
 ALLOWED_SUFFIXES = {".json", ".jsonl", ".md", ".txt"}
+# A new MiMo branch may carry its deterministic runner before it lands on the
+# receiver's default branch. These files are accepted only when their remote
+# blobs exactly match the receiver's already-loaded local copies.
+BOOTSTRAP_PATHS = frozenset(
+    {
+        "scripts/mimo_handoff.py",
+        "scripts/prepare_mimo_batch.py",
+        "scripts/validate_mimo_batch.py",
+        "tests/test_mimo_handoff.py",
+        "tests/test_validate_mimo_batch.py",
+    }
+)
 MANIFEST_FIELDS = {
     "schema_version",
     "batch_id",
@@ -518,6 +530,7 @@ def _verify_git_scope(
     *,
     allowed_paths: set[str] | None = None,
     forbidden_paths: set[str] | None = None,
+    bootstrap_paths: set[str] | None = None,
     root: Path = ROOT,
 ) -> None:
     # Resolving refs through git avoids treating user-provided text as a shell command.
@@ -540,7 +553,11 @@ def _verify_git_scope(
         if status[:1] in {"D", "R", "C"}:
             violations.append(line)
             continue
-        if any(not path.startswith(prefix) for path in paths):
+        if any(
+            not path.startswith(prefix)
+            and (bootstrap_paths is None or path not in bootstrap_paths)
+            for path in paths
+        ):
             violations.append(line)
             continue
         if forbidden_paths is not None and any(path in forbidden_paths for path in paths):
@@ -563,6 +580,16 @@ def _verify_git_scope(
 def _git_blob(root: Path, ref: str, path: str) -> bytes:
     _relative_path(path, field="git blob path", root=root)
     return _run_git_bytes("show", f"{ref}:{path}", cwd=root)
+
+
+def _verify_bootstrap_blobs(root: Path, head: str, paths: set[str]) -> None:
+    """Accept initial helper files only when the remote cannot alter them."""
+    for relative in sorted(paths):
+        local = root / relative
+        if not local.is_file():
+            raise HandoffError(f"trusted bootstrap file is missing locally: {relative}")
+        if _git_blob(root, head, relative) != local.read_bytes():
+            raise HandoffError(f"remote bootstrap file differs from trusted local copy: {relative}")
 
 
 def _verify_manifest_digest_payload(manifest_payload: bytes, digest_payload: bytes) -> str:
@@ -635,12 +662,18 @@ def _remote_preflight(
     frozen_inputs = {
         item["path"] for task in trusted["tasks"] for item in task.get("inputs", [])
     }
+    changed_paths = set(
+        _run_git("diff", "--name-only", f"{trusted_base}...{head}", cwd=root).splitlines()
+    )
+    changed_bootstrap = changed_paths & set(BOOTSTRAP_PATHS)
+    _verify_bootstrap_blobs(root, head, changed_bootstrap)
     _verify_git_scope(
         trusted_base,
         head,
         pilot,
-        allowed_paths=allowed_paths,
+        allowed_paths=allowed_paths | changed_bootstrap,
         forbidden_paths=frozen_inputs,
+        bootstrap_paths=changed_bootstrap,
         root=root,
     )
 
@@ -880,12 +913,10 @@ def fetch_branch(
         trusted_queue=trusted_queue,
         candidate_queue=candidate_queue,
     )
-    verify_run(
-        manifest_path,
-        root=destination,
-        base_ref=trusted_base,
-        head_ref="HEAD",
-    )
+    # `_remote_preflight` above performed the scope check using the receiver's
+    # trusted copies. Repeating it in the remote worktree would self-trust the
+    # bootstrap files that were just fetched.
+    verify_run(manifest_path, root=destination)
     summary.update({"branch": branch, "remote": remote, "head": head, "checkout_dir": str(destination)})
     return summary
 

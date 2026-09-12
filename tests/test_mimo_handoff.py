@@ -138,6 +138,25 @@ class MimoHandoffTests(unittest.TestCase):
                 trusted, candidate, trusted_queue=queue, candidate_queue=queue
             )
 
+    def test_bootstrap_blob_must_match_the_local_trusted_copy(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _git(root, "init", "-b", "main")
+            _git(root, "config", "user.name", "Test")
+            _git(root, "config", "user.email", "test@example.invalid")
+            helper = root / "scripts/mimo_handoff.py"
+            helper.parent.mkdir(parents=True)
+            helper.write_text("trusted helper\n", encoding="utf-8")
+            _git(root, "add", ".")
+            _git(root, "commit", "-m", "base")
+            _git(root, "switch", "-c", "mimo/bootstrap")
+            _git(root, "commit", "--allow-empty", "-m", "branch")
+            head = _git(root, "rev-parse", "HEAD")
+            mimo_handoff._verify_bootstrap_blobs(root, head, {"scripts/mimo_handoff.py"})
+            helper.write_text("untrusted helper\n", encoding="utf-8")
+            with self.assertRaisesRegex(mimo_handoff.HandoffError, "differs"):
+                mimo_handoff._verify_bootstrap_blobs(root, head, {"scripts/mimo_handoff.py"})
+
     def _git_handoff(self) -> tuple[Path, Path, Path, Path, str]:
         temporary = tempfile.TemporaryDirectory()
         sandbox = Path(temporary.name)
