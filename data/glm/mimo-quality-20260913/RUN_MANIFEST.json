@@ -1,0 +1,361 @@
+{
+  "schema_version": "mimo-handoff/v1",
+  "batch_id": "mimo-quality-20260913",
+  "branch": "mimo/mimo-quality-20260913",
+  "base_ref": "23f417ea29baaa7119b5ed8dc47fecb96a984ca6",
+  "base_ref_name": "HEAD",
+  "pilot_dir": "data/glm/mimo-quality-20260913",
+  "queue_file": "TASK_QUEUE.md",
+  "state": "RUNNING",
+  "attempt": 1,
+  "prompt_version": "mimo-quality-v1",
+  "input_manifest_required": true,
+  "started_at": "2026-09-12T16:20:39Z",
+  "updated_at": "2026-09-12T16:20:39Z",
+  "queue_sha256": "b2262e00c7bd711ca99b17a348b6d44db2a7cf580f03c8d1926120ef78bcd38b",
+  "tasks": [
+    {
+      "task_id": "task-001",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-001.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-001.jsonl",
+          "sha256": "e37dd04936538f63d154f7f25a8047a934c004ef289e1ab9a73261e8b82776d2"
+        }
+      ]
+    },
+    {
+      "task_id": "task-002",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-002.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-002.jsonl",
+          "sha256": "c4041c5ca0035460c9cd99c232d799c9a184e22c1d34ccdc5c59f2fc2a7bc783"
+        }
+      ]
+    },
+    {
+      "task_id": "task-003",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-003.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-003.jsonl",
+          "sha256": "9ee48cf158b09a71cd0df2e9bb25fb85888ecab694a02a9b3d60a13c28a74978"
+        }
+      ]
+    },
+    {
+      "task_id": "task-004",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-004.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-004.jsonl",
+          "sha256": "5a6a3911a8a9c456a0533346682bb277762f79f434cb0642f284c4dd98d1b09f"
+        }
+      ]
+    },
+    {
+      "task_id": "task-005",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-005.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-005.jsonl",
+          "sha256": "c9bee81e131f7b41972caade1e7c5c51f844d3b964581162d070d8bf66b6438f"
+        }
+      ]
+    },
+    {
+      "task_id": "task-006",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-006.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-006.jsonl",
+          "sha256": "363cd47f1d79f5603c12c359e56d7603384384098777b1e86563ccc8a608956d"
+        }
+      ]
+    },
+    {
+      "task_id": "task-007",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-007.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-007.jsonl",
+          "sha256": "6b30c8cdf4f5d8fcdaeb88f6b06fda537017a191b36ef1975149591d82fcc04f"
+        }
+      ]
+    },
+    {
+      "task_id": "task-008",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-008.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-008.jsonl",
+          "sha256": "09cd397685702c9a4f6b59f792068906bc40008ca1ec0a36f099b531a3f1098f"
+        }
+      ]
+    },
+    {
+      "task_id": "task-009",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-009.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-009.jsonl",
+          "sha256": "560cc836d2e3eac0ebcb8dd5cc381f7ed40253648fbdb3ff8ec7add6e6a3e868"
+        }
+      ]
+    },
+    {
+      "task_id": "task-010",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-010.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-010.jsonl",
+          "sha256": "36a7e40713049e73ce5d3aea9f8e856eb0036f06e5db10cd06b086d608fbc11e"
+        }
+      ]
+    },
+    {
+      "task_id": "task-011",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-011.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-011.jsonl",
+          "sha256": "2c030252852e63da560d0bb1a175bae8dfe6f86950b8d70ab85a452dbab16a38"
+        }
+      ]
+    },
+    {
+      "task_id": "task-012",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-012.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-012.jsonl",
+          "sha256": "d91828ed72e6c0d5a28c3030b52dfc97901aebeb9657f49abfbfa14c5411dbc3"
+        }
+      ]
+    },
+    {
+      "task_id": "task-013",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-013.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-013.jsonl",
+          "sha256": "1e3ab307d677dfecb17406830e31f8db9db38a3a01f008aaa8af9eba245fd1dc"
+        }
+      ]
+    },
+    {
+      "task_id": "task-014",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-014.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-014.jsonl",
+          "sha256": "214241ecb266e2740bb9101965621aa09f11034efd47e503f96de581f7bb61ca"
+        }
+      ]
+    },
+    {
+      "task_id": "task-015",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-015.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-015.jsonl",
+          "sha256": "f9756b1532e37cd916fc7be1ee1049f469e34d78bd796c0a42f2920767f391e4"
+        }
+      ]
+    },
+    {
+      "task_id": "task-016",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-016.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-016.jsonl",
+          "sha256": "f506faae0f6a4efbb78866fbe8098f0529f1a30b196d06ee8557779b5df8a363"
+        }
+      ]
+    },
+    {
+      "task_id": "task-017",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-017.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-017.jsonl",
+          "sha256": "a135bfe9493486d0f4e28bdac1079fc498040489f45bb0ed7da42e6540325d51"
+        }
+      ]
+    },
+    {
+      "task_id": "task-018",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-018.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-018.jsonl",
+          "sha256": "8b057f3e8aa919f2db268c4dc4280a8f04457ed4fd7586f2f25a36bf2513bf3f"
+        }
+      ]
+    },
+    {
+      "task_id": "task-019",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-019.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-019.jsonl",
+          "sha256": "efa91e1849d3742b7fdc7ffea72ad18dd1dd8c9903c7954aa790c22098a873f2"
+        }
+      ]
+    },
+    {
+      "task_id": "task-020",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-020.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-020.jsonl",
+          "sha256": "cf1ef483a695a9242f3def8e79e366ac3dc5fe534674683eb46438a88741da92"
+        }
+      ]
+    },
+    {
+      "task_id": "task-021",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-021.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-021.jsonl",
+          "sha256": "e45bc1b0409d811f96e57a2a488e8cab3746a16adc80940abf31cdef4b5b08f0"
+        }
+      ]
+    },
+    {
+      "task_id": "task-022",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-022.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-022.jsonl",
+          "sha256": "5aa94981b885b71ec1c5f3c5eb395debf34b24cddfd6411f034500cdad6873bb"
+        }
+      ]
+    },
+    {
+      "task_id": "task-023",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-023.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-023.jsonl",
+          "sha256": "48578754bec8643d150555d0b92d57a35fdf7e9b25638911710249da232ec265"
+        }
+      ]
+    },
+    {
+      "task_id": "task-024",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-024.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-024.jsonl",
+          "sha256": "be51978586c380f606d87db620a17ef6f2da261c9d0d3d93d288d4fb4b201cce"
+        }
+      ]
+    },
+    {
+      "task_id": "task-025",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-025.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-025.jsonl",
+          "sha256": "2945046335364cd28899a003051172e464356608a586bfbd035fa981e421192b"
+        }
+      ]
+    },
+    {
+      "task_id": "task-026",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-026.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-026.jsonl",
+          "sha256": "61cd6cf2fa0256b101f36cdd5b801b150e6cd57d1c84439d8d310341400dadd5"
+        }
+      ]
+    },
+    {
+      "task_id": "task-027",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-027.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-027.jsonl",
+          "sha256": "4d6db7d2983961cc976e327cc59d8693511d9125ec381fa9b148a67370e57bc2"
+        }
+      ]
+    },
+    {
+      "task_id": "task-028",
+      "status": "READY_FOR_MIMO",
+      "output": "outputs/task-028.jsonl",
+      "output_sha256": null,
+      "inputs": [
+        {
+          "path": "data/glm/mimo-quality-20260913/inputs/task-028.jsonl",
+          "sha256": "5472f6b0fe62431c3256305fe671e9be26bad1b5371405c0da6ece795d298a7e"
+        }
+      ]
+    }
+  ],
+  "allowed_mutations": [
+    "RUN_MANIFEST.json",
+    "RUN_MANIFEST.sha256",
+    "TASK_QUEUE.md",
+    "*.jsonl",
+    "codex-feedback-*.md"
+  ]
+}

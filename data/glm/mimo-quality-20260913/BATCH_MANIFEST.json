@@ -1,0 +1,287 @@
+{
+  "admission": "hold",
+  "batch_id": "mimo-quality-20260913",
+  "candidate_filter": "模板生成",
+  "chunk_size": 50,
+  "excluded_input_count": 21,
+  "excluded_inputs_file": "EXCLUDED_INPUTS.jsonl",
+  "excluded_inputs_sha256": "404a9f151cbf86a1cb6d2328bf5ce6ca23c4833b2c09b1665371bb1d965e061b",
+  "input_count": 1360,
+  "offline_only": true,
+  "review_reference_assets": [
+    {
+      "path": "data/glm/semantic-review-and-golden-set-20260906/semantic-review.jsonl",
+      "sha256": "60bc386f47909627965a2a4bb208a500d702ae1cd5eefe47716462ef08e487da"
+    },
+    {
+      "path": "data/glm/golden-set-audit-r2-20260906/gold-audit.jsonl",
+      "sha256": "d82f2376006e38c7a20a64d09e263fcd1e4a5de0e4581ba99fae29eb89fd9dda"
+    },
+    {
+      "path": "data/glm/golden-set-red-team-r3-20260906/r3-audit.jsonl",
+      "sha256": "34544d7f4cbdafad954c8d8b4818e77265c0845abdb33ada1ef1368dcf92de11"
+    }
+  ],
+  "schema_version": "mimo-quality-batch/v1",
+  "source_assets": [
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-001-runtime.jsonl",
+      "sha256": "a0cd6a8a8470c55882a93b6f07effa095535bffaf1dc8b4cf43d7edf6850b5b0"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-002-memory.jsonl",
+      "sha256": "3c1694724938abd22f4bddb0dffbca8208f2d43e9d5cd669700eab9e76d5b8b4"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-003-runloop-gcd.jsonl",
+      "sha256": "c4a0118f3ac6b649a9be736977120dc8df0e51c7da9eccdf757aed7ec949504b"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-004-uikit-network.jsonl",
+      "sha256": "bccb11022fa6c07ff7dda3f752151cf31f0ea24e3fb69d18953ecba9fea9865f"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-005-source-symbols.jsonl",
+      "sha256": "160c0139fbd26a3014ecda7f0174cdf7f5c5baf9bb1e0352e99f626497dfad61"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-006-routing-no-evidence.jsonl",
+      "sha256": "e534849e267b819ed33bfd455add669e82691750f16336db993b5d433fc23558"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-007-alias-typo.jsonl",
+      "sha256": "1f76cc261503f45a21f649051e72c9bf698cbde4405566d7a4fd9fd9b47b4529"
+    },
+    {
+      "path": "data/glm/overnight-rag-evaluation-20260906/eval-candidates/batch-008-follow-up.jsonl",
+      "sha256": "7c0bfb9c57036f91bad96d37c8d2952584d2cca97903cca9acf063c0dd6a80b9"
+    }
+  ],
+  "task_count": 28,
+  "tasks": [
+    {
+      "input": "inputs/task-001.jsonl",
+      "input_count": 50,
+      "input_sha256": "e37dd04936538f63d154f7f25a8047a934c004ef289e1ab9a73261e8b82776d2",
+      "output": "outputs/task-001.jsonl",
+      "task_id": "task-001",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-002.jsonl",
+      "input_count": 50,
+      "input_sha256": "c4041c5ca0035460c9cd99c232d799c9a184e22c1d34ccdc5c59f2fc2a7bc783",
+      "output": "outputs/task-002.jsonl",
+      "task_id": "task-002",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-003.jsonl",
+      "input_count": 50,
+      "input_sha256": "9ee48cf158b09a71cd0df2e9bb25fb85888ecab694a02a9b3d60a13c28a74978",
+      "output": "outputs/task-003.jsonl",
+      "task_id": "task-003",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-004.jsonl",
+      "input_count": 50,
+      "input_sha256": "5a6a3911a8a9c456a0533346682bb277762f79f434cb0642f284c4dd98d1b09f",
+      "output": "outputs/task-004.jsonl",
+      "task_id": "task-004",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-005.jsonl",
+      "input_count": 50,
+      "input_sha256": "c9bee81e131f7b41972caade1e7c5c51f844d3b964581162d070d8bf66b6438f",
+      "output": "outputs/task-005.jsonl",
+      "task_id": "task-005",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-006.jsonl",
+      "input_count": 50,
+      "input_sha256": "363cd47f1d79f5603c12c359e56d7603384384098777b1e86563ccc8a608956d",
+      "output": "outputs/task-006.jsonl",
+      "task_id": "task-006",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-007.jsonl",
+      "input_count": 50,
+      "input_sha256": "6b30c8cdf4f5d8fcdaeb88f6b06fda537017a191b36ef1975149591d82fcc04f",
+      "output": "outputs/task-007.jsonl",
+      "task_id": "task-007",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-008.jsonl",
+      "input_count": 50,
+      "input_sha256": "09cd397685702c9a4f6b59f792068906bc40008ca1ec0a36f099b531a3f1098f",
+      "output": "outputs/task-008.jsonl",
+      "task_id": "task-008",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-009.jsonl",
+      "input_count": 50,
+      "input_sha256": "560cc836d2e3eac0ebcb8dd5cc381f7ed40253648fbdb3ff8ec7add6e6a3e868",
+      "output": "outputs/task-009.jsonl",
+      "task_id": "task-009",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-010.jsonl",
+      "input_count": 50,
+      "input_sha256": "36a7e40713049e73ce5d3aea9f8e856eb0036f06e5db10cd06b086d608fbc11e",
+      "output": "outputs/task-010.jsonl",
+      "task_id": "task-010",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-011.jsonl",
+      "input_count": 50,
+      "input_sha256": "2c030252852e63da560d0bb1a175bae8dfe6f86950b8d70ab85a452dbab16a38",
+      "output": "outputs/task-011.jsonl",
+      "task_id": "task-011",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-012.jsonl",
+      "input_count": 50,
+      "input_sha256": "d91828ed72e6c0d5a28c3030b52dfc97901aebeb9657f49abfbfa14c5411dbc3",
+      "output": "outputs/task-012.jsonl",
+      "task_id": "task-012",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-013.jsonl",
+      "input_count": 50,
+      "input_sha256": "1e3ab307d677dfecb17406830e31f8db9db38a3a01f008aaa8af9eba245fd1dc",
+      "output": "outputs/task-013.jsonl",
+      "task_id": "task-013",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-014.jsonl",
+      "input_count": 50,
+      "input_sha256": "214241ecb266e2740bb9101965621aa09f11034efd47e503f96de581f7bb61ca",
+      "output": "outputs/task-014.jsonl",
+      "task_id": "task-014",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-015.jsonl",
+      "input_count": 50,
+      "input_sha256": "f9756b1532e37cd916fc7be1ee1049f469e34d78bd796c0a42f2920767f391e4",
+      "output": "outputs/task-015.jsonl",
+      "task_id": "task-015",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-016.jsonl",
+      "input_count": 50,
+      "input_sha256": "f506faae0f6a4efbb78866fbe8098f0529f1a30b196d06ee8557779b5df8a363",
+      "output": "outputs/task-016.jsonl",
+      "task_id": "task-016",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-017.jsonl",
+      "input_count": 50,
+      "input_sha256": "a135bfe9493486d0f4e28bdac1079fc498040489f45bb0ed7da42e6540325d51",
+      "output": "outputs/task-017.jsonl",
+      "task_id": "task-017",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-018.jsonl",
+      "input_count": 50,
+      "input_sha256": "8b057f3e8aa919f2db268c4dc4280a8f04457ed4fd7586f2f25a36bf2513bf3f",
+      "output": "outputs/task-018.jsonl",
+      "task_id": "task-018",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-019.jsonl",
+      "input_count": 50,
+      "input_sha256": "efa91e1849d3742b7fdc7ffea72ad18dd1dd8c9903c7954aa790c22098a873f2",
+      "output": "outputs/task-019.jsonl",
+      "task_id": "task-019",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-020.jsonl",
+      "input_count": 50,
+      "input_sha256": "cf1ef483a695a9242f3def8e79e366ac3dc5fe534674683eb46438a88741da92",
+      "output": "outputs/task-020.jsonl",
+      "task_id": "task-020",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-021.jsonl",
+      "input_count": 50,
+      "input_sha256": "e45bc1b0409d811f96e57a2a488e8cab3746a16adc80940abf31cdef4b5b08f0",
+      "output": "outputs/task-021.jsonl",
+      "task_id": "task-021",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-022.jsonl",
+      "input_count": 50,
+      "input_sha256": "5aa94981b885b71ec1c5f3c5eb395debf34b24cddfd6411f034500cdad6873bb",
+      "output": "outputs/task-022.jsonl",
+      "task_id": "task-022",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-023.jsonl",
+      "input_count": 50,
+      "input_sha256": "48578754bec8643d150555d0b92d57a35fdf7e9b25638911710249da232ec265",
+      "output": "outputs/task-023.jsonl",
+      "task_id": "task-023",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-024.jsonl",
+      "input_count": 50,
+      "input_sha256": "be51978586c380f606d87db620a17ef6f2da261c9d0d3d93d288d4fb4b201cce",
+      "output": "outputs/task-024.jsonl",
+      "task_id": "task-024",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-025.jsonl",
+      "input_count": 50,
+      "input_sha256": "2945046335364cd28899a003051172e464356608a586bfbd035fa981e421192b",
+      "output": "outputs/task-025.jsonl",
+      "task_id": "task-025",
+      "task_kind": "data_cleaning_and_dedupe"
+    },
+    {
+      "input": "inputs/task-026.jsonl",
+      "input_count": 50,
+      "input_sha256": "61cd6cf2fa0256b101f36cdd5b801b150e6cd57d1c84439d8d310341400dadd5",
+      "output": "outputs/task-026.jsonl",
+      "task_id": "task-026",
+      "task_kind": "query_variant_rewrite"
+    },
+    {
+      "input": "inputs/task-027.jsonl",
+      "input_count": 50,
+      "input_sha256": "4d6db7d2983961cc976e327cc59d8693511d9125ec381fa9b148a67370e57bc2",
+      "output": "outputs/task-027.jsonl",
+      "task_id": "task-027",
+      "task_kind": "evidence_boundary_triage"
+    },
+    {
+      "input": "inputs/task-028.jsonl",
+      "input_count": 10,
+      "input_sha256": "5472f6b0fe62431c3256305fe671e9be26bad1b5371405c0da6ece795d298a7e",
+      "output": "outputs/task-028.jsonl",
+      "task_id": "task-028",
+      "task_kind": "data_cleaning_and_dedupe"
+    }
+  ]
+}

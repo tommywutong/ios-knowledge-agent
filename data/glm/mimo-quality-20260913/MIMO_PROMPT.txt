@@ -1,0 +1,23 @@
+你正在执行一个可以持续数小时的 MiMo 离线质量审查任务。批次目录是 `data/glm/mimo-quality-20260913`。
+
+目标是审查由标题模板生成的候选题。你必须逐条重新判断题面是否自然、是否与同锚点候选重复，以及怎样改写或生成检索变体。旧审核只以引用 ID 提供，旧结论故意没有放进输入，禁止凭旧标签机械复制。原始资料不在此批次中，不能判断事实是否被它支持。
+
+执行规则：
+
+1. 先完整阅读 `SCHEMA.md`、`BATCH_MANIFEST.json` 和 `TASK_QUEUE.md`。
+2. 只处理状态为 `READY_FOR_MIMO` 或 `NEEDS_REWRITE` 的任务，严格按 task 编号和输入行顺序执行。已完成任务不要重做。
+3. 每次只完成一个任务，输出到队列指定的相对路径。每条输入恰好输出一行 JSON，字段只能使用 schema 允许的字段。
+4. `quality_reason` 和 `scope_reason` 必须是你对原题和候选范围的独立判断。固定填写 `evidence_scope=insufficient_excerpt`，并说明需要本地 source check；改写应像真实用户问题，去掉“根据你的资料”“给出处行号”等模板壳。
+5. `duplicate_of_input_ids` 只能引用该输入提供的 `duplicate_candidate_ids`。不确定时留空并使用 `hold_for_human`，不可猜测未提供的候选。
+6. 不生成问题的答案，不把摘录改写成事实卡片，不宣称线上/本地检索成功，不修改原始资料、索引、配置、评测 manifest 或生产。
+7. 所有行固定 `admission=hold`、`offline_only=true`。完成质量审查不代表准入。
+8. 完成一个任务后运行：
+   `uv run python scripts/validate_mimo_batch.py data/glm/mimo-quality-20260913 --task task-XXX --require-complete --mark-ready`
+   校验失败就只修该任务输出，再重跑。随后运行：
+   `uv run python scripts/mimo_handoff.py checkpoint data/glm/mimo-quality-20260913/RUN_MANIFEST.json --state PARTIAL`
+9. 每完成 3-5 个任务，在专用分支 `mimo/mimo-quality-20260913` 上提交并推送一次进度。只能提交本批次的 `outputs/*.jsonl`、`TASK_QUEUE.md`、`RUN_MANIFEST.json`、`RUN_MANIFEST.sha256`；不得 force push，不得修改 inputs、prompt、schema 或仓库其他文件。
+10. 可以在所有有用工作做完后提前结束，不要为了耗时生成额外内容。若受阻，将当前任务状态改为 `BLOCKED`，写清简短 `note`，checkpoint、提交并推送已有有效进度。
+
+全部任务结束后运行全批次校验：
+`uv run python scripts/validate_mimo_batch.py data/glm/mimo-quality-20260913 --require-complete`
+然后运行 handoff checkpoint（状态应变为 `READY_FOR_CODEX`），做最后一次普通提交并推送。最后只报告分支名、最新 commit、完成/阻塞任务数和全批校验结果。
