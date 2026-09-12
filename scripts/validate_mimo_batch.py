@@ -52,6 +52,12 @@ GENERIC_REWRITE = re.compile(
     r"根据你的资料|结合资料|资料里的内容|在你的资料里|给出出处|出处行号|"
     r"解释一下这个概念|我在面试里被问到"
 )
+FORBIDDEN_OUTPUT = re.compile(
+    r"(?:/Users/|/var/|/tmp/|[A-Za-z]:\\|"
+    r"(?:api[_-]?key|authorization|bearer|cookie|token|secret)\s*[:=]|"
+    r"第\s*\d+\s*[-~至]\s*\d+\s*行)",
+    re.I,
+)
 SHA256 = re.compile(r"[0-9a-f]{64}")
 TASK_ID = re.compile(r"task-[0-9]{3}")
 
@@ -400,6 +406,8 @@ def _bounded_string(value: object, *, field: str, low: int, high: int) -> str:
         raise BatchValidationError(f"{field} must contain {low}-{high} characters")
     if "```" in text or re.search(r"\[[0-9]+\]", text):
         raise BatchValidationError(f"{field} must not contain an answer or citation block")
+    if FORBIDDEN_OUTPUT.search(text):
+        raise BatchValidationError(f"{field} must not contain paths, credentials, or invented line ranges")
     return text
 
 
@@ -408,6 +416,10 @@ def _validate_output_row(
 ) -> None:
     context = f"{task['task_id']} output line {line}"
     _exact_fields(row, OUTPUT_FIELDS, context)
+    if FORBIDDEN_OUTPUT.search(json.dumps(row, ensure_ascii=False)):
+        raise BatchValidationError(
+            f"{context}: output must not contain paths, credentials, or invented line ranges"
+        )
     copied = {
         "schema_version": OUTPUT_SCHEMA,
         "task_id": task["task_id"],

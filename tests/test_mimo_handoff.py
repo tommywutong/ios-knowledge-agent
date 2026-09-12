@@ -157,6 +157,28 @@ class MimoHandoffTests(unittest.TestCase):
             with self.assertRaisesRegex(mimo_handoff.HandoffError, "differs"):
                 mimo_handoff._verify_bootstrap_blobs(root, head, {"scripts/mimo_handoff.py"})
 
+    def test_static_first_commit_assets_must_match_local_trust(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _git(root, "init", "-b", "main")
+            _git(root, "config", "user.name", "Test")
+            _git(root, "config", "user.email", "test@example.invalid")
+            asset = root / "data/glm/batch-1/inputs/task-001.jsonl"
+            asset.parent.mkdir(parents=True)
+            asset.write_text('{"id":"trusted"}\n', encoding="utf-8")
+            _git(root, "add", ".")
+            _git(root, "commit", "-m", "batch assets")
+            head = _git(root, "rev-parse", "HEAD")
+            trusted = {
+                "pilot_dir": "data/glm/batch-1",
+                "tasks": [{"inputs": [{"path": "data/glm/batch-1/inputs/task-001.jsonl"}]}],
+            }
+            paths = mimo_handoff._trusted_static_paths(trusted, root=root)
+            mimo_handoff._verify_bootstrap_blobs(root, head, paths)
+            asset.write_text('{"id":"changed"}\n', encoding="utf-8")
+            with self.assertRaisesRegex(mimo_handoff.HandoffError, "differs"):
+                mimo_handoff._verify_bootstrap_blobs(root, head, paths)
+
     def _git_handoff(self) -> tuple[Path, Path, Path, Path, str]:
         temporary = tempfile.TemporaryDirectory()
         sandbox = Path(temporary.name)
@@ -310,6 +332,90 @@ class MimoHandoffTests(unittest.TestCase):
             )
         self.assertFalse(checkout.exists())
         self.assertFalse(marker.exists())
+
+    def test_real_git_fetch_accepts_only_matching_first_commit_inputs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            sandbox = Path(directory)
+            remote, seed, receiver, worker = (
+                sandbox / "remote.git",
+                sandbox / "seed",
+                sandbox / "receiver",
+                sandbox / "worker",
+            )
+            remote.mkdir()
+            seed.mkdir()
+            _git(remote, "init", "--bare")
+            _git(seed, "init", "-b", "main")
+            _git(seed, "config", "user.name", "Test")
+            _git(seed, "config", "user.email", "test@example.invalid")
+            (seed / "config.yaml").write_text("{}\n", encoding="utf-8")
+            _git(seed, "add", ".")
+            _git(seed, "commit", "-m", "base")
+            base = _git(seed, "rev-parse", "HEAD")
+            _git(seed, "remote", "add", "origin", str(remote))
+            _git(seed, "push", "origin", "main")
+            _git(remote, "symbolic-ref", "HEAD", "refs/heads/main")
+            _git(sandbox, "clone", str(remote), str(receiver))
+            _git(sandbox, "clone", str(remote), str(worker))
+            for repo in (receiver, worker):
+                _git(repo, "config", "user.name", "Test")
+                _git(repo, "config", "user.email", "test@example.invalid")
+
+            pilot_relative = "data/glm/batch-1"
+            queue_text = "## task-001\n- status: `READY_FOR_MIMO`\n- input: `data/glm/batch-1/inputs/task-001.jsonl`\n- output: `outputs/task-001.jsonl`\n"
+            input_payload = '{"id":"frozen"}\n'
+            for repo in (receiver, worker):
+                pilot = repo / pilot_relative
+                (pilot / "inputs").mkdir(parents=True)
+                (pilot / "inputs/task-001.jsonl").write_text(input_payload, encoding="utf-8")
+                (pilot / "TASK_QUEUE.md").write_text(queue_text, encoding="utf-8")
+                for name in mimo_handoff.STATIC_BATCH_FILENAMES:
+                    if name != "TASK_QUEUE.md":
+                        (pilot / name).write_text("trusted\n", encoding="utf-8")
+
+            trusted = {
+                "schema_version": mimo_handoff.SCHEMA_VERSION,
+                "batch_id": "batch-1",
+                "branch": "mimo/batch-1",
+                "base_ref": base,
+                "base_ref_name": "origin/main",
+                "pilot_dir": pilot_relative,
+                "queue_file": "TASK_QUEUE.md",
+                "state": "RUNNING",
+                "attempt": 1,
+                "prompt_version": "test",
+                "input_manifest_required": True,
+                "started_at": "2026-09-12T00:00:00Z",
+                "updated_at": "2026-09-12T00:00:00Z",
+                "queue_sha256": _sha(receiver / pilot_relative / "TASK_QUEUE.md"),
+                "allowed_mutations": [],
+                "tasks": [{"task_id": "task-001", "status": "READY_FOR_MIMO", "output": "outputs/task-001.jsonl", "output_sha256": None, "inputs": [{"path": f"{pilot_relative}/inputs/task-001.jsonl", "sha256": _sha(receiver / pilot_relative / "inputs/task-001.jsonl")}]}],
+            }
+            trusted_path = receiver / ".trusted/RUN_MANIFEST.json"
+            trusted_path.parent.mkdir()
+            mimo_handoff._write_manifest(trusted_path, trusted)
+
+            _git(worker, "switch", "-c", "mimo/batch-1")
+            output = worker / pilot_relative / "outputs/task-001.jsonl"
+            output.parent.mkdir()
+            output.write_text('{"id":"candidate"}\n', encoding="utf-8")
+            ready_queue = queue_text.replace("READY_FOR_MIMO", "READY_FOR_CODEX")
+            (worker / pilot_relative / "TASK_QUEUE.md").write_text(ready_queue, encoding="utf-8")
+            candidate = json.loads(json.dumps(trusted))
+            candidate["state"] = "READY_FOR_CODEX"
+            candidate["updated_at"] = "2026-09-12T01:00:00Z"
+            candidate["queue_sha256"] = _sha(worker / pilot_relative / "TASK_QUEUE.md")
+            candidate["tasks"][0]["status"] = "READY_FOR_CODEX"
+            candidate["tasks"][0]["output_sha256"] = _sha(output)
+            mimo_handoff._write_manifest(worker / pilot_relative / "RUN_MANIFEST.json", candidate)
+            _git(worker, "add", pilot_relative)
+            _git(worker, "commit", "-m", "first MiMo batch checkpoint")
+            _git(worker, "push", "-u", "origin", "mimo/batch-1")
+
+            checkout = sandbox / "accepted"
+            summary = mimo_handoff.fetch_branch("mimo/batch-1", trusted_manifest_path=trusted_path, checkout_dir=checkout, root=receiver)
+            self.assertEqual("READY_FOR_CODEX", summary["state"])
+            self.assertTrue((checkout / pilot_relative / "outputs/task-001.jsonl").is_file())
 
 
 if __name__ == "__main__":

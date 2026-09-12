@@ -44,6 +44,18 @@ BOOTSTRAP_PATHS = frozenset(
         "tests/test_validate_mimo_batch.py",
     }
 )
+# A batch can be prepared and pushed before the receiving checkout has merged
+# its first commit. These files are immutable input assets, not MiMo output.
+# They may cross that initial Git boundary only if the receiver already has an
+# identical trusted local copy.
+STATIC_BATCH_FILENAMES = frozenset(
+    {
+        "BATCH_MANIFEST.json",
+        "EXCLUDED_INPUTS.jsonl",
+        "MIMO_PROMPT.txt",
+        "SCHEMA.md",
+    }
+)
 MANIFEST_FIELDS = {
     "schema_version",
     "batch_id",
@@ -592,6 +604,22 @@ def _verify_bootstrap_blobs(root: Path, head: str, paths: set[str]) -> None:
             raise HandoffError(f"remote bootstrap file differs from trusted local copy: {relative}")
 
 
+def _trusted_static_paths(trusted: dict[str, Any], *, root: Path) -> set[str]:
+    """Return fixed first-commit assets already available to the receiver."""
+    pilot = trusted["pilot_dir"].rstrip("/")
+    paths = {
+        item["path"] for task in trusted["tasks"] for item in task.get("inputs", [])
+    }
+    for name in STATIC_BATCH_FILENAMES:
+        candidate = f"{pilot}/{name}"
+        if (root / candidate).is_file():
+            paths.add(candidate)
+    for relative in paths:
+        if not (root / relative).is_file():
+            raise HandoffError(f"trusted static batch file is missing locally: {relative}")
+    return paths
+
+
 def _verify_manifest_digest_payload(manifest_payload: bytes, digest_payload: bytes) -> str:
     try:
         line = digest_payload.decode("utf-8").strip()
@@ -662,17 +690,20 @@ def _remote_preflight(
     frozen_inputs = {
         item["path"] for task in trusted["tasks"] for item in task.get("inputs", [])
     }
+    trusted_static = _trusted_static_paths(trusted, root=root)
     changed_paths = set(
         _run_git("diff", "--name-only", f"{trusted_base}...{head}", cwd=root).splitlines()
     )
     changed_bootstrap = changed_paths & set(BOOTSTRAP_PATHS)
     _verify_bootstrap_blobs(root, head, changed_bootstrap)
+    changed_static = changed_paths & trusted_static
+    _verify_bootstrap_blobs(root, head, changed_static)
     _verify_git_scope(
         trusted_base,
         head,
         pilot,
-        allowed_paths=allowed_paths | changed_bootstrap,
-        forbidden_paths=frozen_inputs,
+        allowed_paths=allowed_paths | changed_bootstrap | changed_static,
+        forbidden_paths=frozen_inputs - trusted_static,
         bootstrap_paths=changed_bootstrap,
         root=root,
     )

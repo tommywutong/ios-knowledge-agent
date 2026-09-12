@@ -19,6 +19,11 @@ class MimoQualityBatchTests(unittest.TestCase):
         self.assertEqual(28, summary["selected_task_count"])
         self.assertEqual(28, summary["missing_output_count"])
 
+    def test_output_text_rejects_paths_credentials_and_line_ranges(self):
+        for text in ("/Users/example/private.md", "token=not-allowed", "第 3-8 行"):
+            with self.assertRaises(validate_mimo_batch.BatchValidationError):
+                validate_mimo_batch._bounded_string(text, field="test", low=1, high=240)
+
 
 if __name__ == "__main__":
     unittest.main()
