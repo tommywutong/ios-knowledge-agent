@@ -11,8 +11,8 @@
   "prompt_version": "mimo-quality-v1",
   "input_manifest_required": true,
   "started_at": "2026-09-12T16:20:39Z",
-  "updated_at": "2026-09-13T03:49:49Z",
-  "queue_sha256": "4f31b9f18fa13f97d1ac4b24e87e49780ad5dc213d66aedf0c2d346cb177357b",
+  "updated_at": "2026-09-13T03:50:03Z",
+  "queue_sha256": "f5f1a947628f3b9d10bfb18e514df8d0f68f9548ea63903538c78ad8ba683104",
   "tasks": [
     {
       "task_id": "task-001",
@@ -208,9 +208,9 @@
     },
     {
       "task_id": "task-017",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-017.jsonl",
-      "output_sha256": null,
+      "output_sha256": "9c8b8dba74674b6a4664376f1e8aa785cb4c13c0510174ca4dbd0e24c4fee8c7",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-017.jsonl",
@@ -220,9 +220,9 @@
     },
     {
       "task_id": "task-018",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-018.jsonl",
-      "output_sha256": null,
+      "output_sha256": "52901f3d7f70434063c01864d2a72419ccd8d374faa0bb5c57a81129e7a6b8a3",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-018.jsonl",
@@ -232,9 +232,9 @@
     },
     {
       "task_id": "task-019",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-019.jsonl",
-      "output_sha256": null,
+      "output_sha256": "b53d20c62b9abfc6d2555eded0b972c2487340b597c479bcf617aea0190e7cc5",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-019.jsonl",
@@ -244,9 +244,9 @@
     },
     {
       "task_id": "task-020",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-020.jsonl",
-      "output_sha256": null,
+      "output_sha256": "20f94e9a109d9dab55a5cc4e1bdc964825c42977a28d4d0ab0f58ab1bf3044b3",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-020.jsonl",

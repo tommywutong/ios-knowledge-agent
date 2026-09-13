@@ -147,39 +147,39 @@ All tasks are offline candidate review. Every output remains `admission=hold`.
 - note:
 
 ## task-017
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - kind: `query_variant_rewrite`
 - input: `data/glm/mimo-quality-20260913/inputs/task-017.jsonl`
 - input_count: 50
 - output: `outputs/task-017.jsonl`
-- output_sha256:
+- output_sha256: 9c8b8dba74674b6a4664376f1e8aa785cb4c13c0510174ca4dbd0e24c4fee8c7
 - note:
 
 ## task-018
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - kind: `evidence_boundary_triage`
 - input: `data/glm/mimo-quality-20260913/inputs/task-018.jsonl`
 - input_count: 50
 - output: `outputs/task-018.jsonl`
-- output_sha256:
+- output_sha256: 52901f3d7f70434063c01864d2a72419ccd8d374faa0bb5c57a81129e7a6b8a3
 - note:
 
 ## task-019
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - kind: `data_cleaning_and_dedupe`
 - input: `data/glm/mimo-quality-20260913/inputs/task-019.jsonl`
 - input_count: 50
 - output: `outputs/task-019.jsonl`
-- output_sha256:
+- output_sha256: b53d20c62b9abfc6d2555eded0b972c2487340b597c479bcf617aea0190e7cc5
 - note:
 
 ## task-020
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - kind: `query_variant_rewrite`
 - input: `data/glm/mimo-quality-20260913/inputs/task-020.jsonl`
 - input_count: 50
 - output: `outputs/task-020.jsonl`
-- output_sha256:
+- output_sha256: 20f94e9a109d9dab55a5cc4e1bdc964825c42977a28d4d0ab0f58ab1bf3044b3
 - note:
 
 ## task-021
