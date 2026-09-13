@@ -6,13 +6,13 @@
   "base_ref_name": "HEAD",
   "pilot_dir": "data/glm/mimo-candidate-consolidation-20260913",
   "queue_file": "TASK_QUEUE.md",
-  "state": "PARTIAL",
+  "state": "READY_FOR_CODEX",
   "attempt": 1,
   "prompt_version": "mimo-candidate-consolidation-v1",
   "input_manifest_required": true,
   "started_at": "2026-09-13T05:21:15Z",
-  "updated_at": "2026-09-13T05:59:47Z",
-  "queue_sha256": "ff55e8348f789cdf19da4f08e8e109aa4ebed49d01273078c84bccec2256f5d1",
+  "updated_at": "2026-09-13T06:00:00Z",
+  "queue_sha256": "b43deedc821b3d1c526fc5d1414dcfe473ab9d48ea2e7e67baf686a2b5a6fa22",
   "tasks": [
     {
       "task_id": "task-001",
@@ -376,9 +376,9 @@
     },
     {
       "task_id": "task-031",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-031.jsonl",
-      "output_sha256": null,
+      "output_sha256": "3bdb46f3979a264c6b192cb234253ac752d6018ff36817eb319b3d27bb7ce885",
       "inputs": [
         {
           "path": "data/glm/mimo-candidate-consolidation-20260913/inputs/task-031.jsonl",
@@ -388,9 +388,9 @@
     },
     {
       "task_id": "task-032",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-032.jsonl",
-      "output_sha256": null,
+      "output_sha256": "c2c83d1f17863a2203c5d53a807cca768cd2978812d0641ec29a8dd2910f2933",
       "inputs": [
         {
           "path": "data/glm/mimo-candidate-consolidation-20260913/inputs/task-032.jsonl",
