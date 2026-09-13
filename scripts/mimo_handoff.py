@@ -40,6 +40,8 @@ BOOTSTRAP_PATHS = frozenset(
         "scripts/mimo_handoff.py",
         "scripts/prepare_mimo_batch.py",
         "scripts/validate_mimo_batch.py",
+        "scripts/prepare_mimo_consolidation.py",
+        "scripts/validate_mimo_consolidation.py",
         "tests/test_mimo_handoff.py",
         "tests/test_validate_mimo_batch.py",
     }

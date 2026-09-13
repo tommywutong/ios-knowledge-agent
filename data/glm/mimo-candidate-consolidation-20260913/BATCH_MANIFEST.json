@@ -1,0 +1,238 @@
+{
+  "admission": "hold",
+  "batch_id": "mimo-candidate-consolidation-20260913",
+  "cluster_count": 632,
+  "offline_only": true,
+  "schema_version": "mimo-candidate-consolidation/v1",
+  "single_candidate_count": 26,
+  "source_batch": "data/glm/mimo-quality-20260913",
+  "source_commit": "f58a5410d3fb55ce395f82321d0a9788840111e3",
+  "source_manifest_sha256": "5aa49738d7f33e001bb37fcfe7332f73e28b3e06bc532b23b9f5b4107b0796b2",
+  "task_count": 32,
+  "tasks": [
+    {
+      "input": "inputs/task-001.jsonl",
+      "input_count": 20,
+      "input_sha256": "57a6bcd4124bfff39d9d7e89d4d251c4e563e23077b70aad5528f8b8b1ad89ac",
+      "output": "outputs/task-001.jsonl",
+      "task_id": "task-001"
+    },
+    {
+      "input": "inputs/task-002.jsonl",
+      "input_count": 20,
+      "input_sha256": "728e872d697c39842cb63bd8e47e383d27f45992cf1a8546672463e5dd22ab43",
+      "output": "outputs/task-002.jsonl",
+      "task_id": "task-002"
+    },
+    {
+      "input": "inputs/task-003.jsonl",
+      "input_count": 20,
+      "input_sha256": "dcc6c53760a26a4e6c49994d9933c6254e84ead4edc37e4b090b8965ad39889f",
+      "output": "outputs/task-003.jsonl",
+      "task_id": "task-003"
+    },
+    {
+      "input": "inputs/task-004.jsonl",
+      "input_count": 20,
+      "input_sha256": "93201e62c99b66a81efae5795e1c53379eda7d229d5fe980f75b3940567f784d",
+      "output": "outputs/task-004.jsonl",
+      "task_id": "task-004"
+    },
+    {
+      "input": "inputs/task-005.jsonl",
+      "input_count": 20,
+      "input_sha256": "d9c7cb0e18a70d96c5bc23f396918f8510be320eb54f60cbff9be47ba7b6c510",
+      "output": "outputs/task-005.jsonl",
+      "task_id": "task-005"
+    },
+    {
+      "input": "inputs/task-006.jsonl",
+      "input_count": 20,
+      "input_sha256": "d9259d402642334de2ffb1dcdea9830f1ae28be1652b28099e98d8fa5cd4e035",
+      "output": "outputs/task-006.jsonl",
+      "task_id": "task-006"
+    },
+    {
+      "input": "inputs/task-007.jsonl",
+      "input_count": 20,
+      "input_sha256": "782839ca0d8c4d5732b448252bec4336fd994e74978707012c11e1dd06e8e57a",
+      "output": "outputs/task-007.jsonl",
+      "task_id": "task-007"
+    },
+    {
+      "input": "inputs/task-008.jsonl",
+      "input_count": 20,
+      "input_sha256": "13ea60173e852eab3947f6dc12e079d878063d628c7c0ee2bafc0a9edcc062d6",
+      "output": "outputs/task-008.jsonl",
+      "task_id": "task-008"
+    },
+    {
+      "input": "inputs/task-009.jsonl",
+      "input_count": 20,
+      "input_sha256": "6e013955119ff60c94fb7552dd54aa6a430bf9227969947e1d3ef87ebaf20762",
+      "output": "outputs/task-009.jsonl",
+      "task_id": "task-009"
+    },
+    {
+      "input": "inputs/task-010.jsonl",
+      "input_count": 20,
+      "input_sha256": "01c1d5c4635a9fa286d7fe7c19a8298e50ee8e7bcd78b2c44695a69daa4d0eb7",
+      "output": "outputs/task-010.jsonl",
+      "task_id": "task-010"
+    },
+    {
+      "input": "inputs/task-011.jsonl",
+      "input_count": 20,
+      "input_sha256": "44d165b8857ad602851abe4c8a3128833560f170a8b0c88853fb2b35b724b8bc",
+      "output": "outputs/task-011.jsonl",
+      "task_id": "task-011"
+    },
+    {
+      "input": "inputs/task-012.jsonl",
+      "input_count": 20,
+      "input_sha256": "56e37d735df9fa1480e5ed8e44b8671dc4e745ded64c49a13548d6d0f014c002",
+      "output": "outputs/task-012.jsonl",
+      "task_id": "task-012"
+    },
+    {
+      "input": "inputs/task-013.jsonl",
+      "input_count": 20,
+      "input_sha256": "218512abbdb6711932906dc3844cfa820d8c3fac8079631a106c544ef9b1e376",
+      "output": "outputs/task-013.jsonl",
+      "task_id": "task-013"
+    },
+    {
+      "input": "inputs/task-014.jsonl",
+      "input_count": 20,
+      "input_sha256": "3328dac66d6d10d095656f2ec9d57022bd3fc7229f81f4f5a5f5a39078f30734",
+      "output": "outputs/task-014.jsonl",
+      "task_id": "task-014"
+    },
+    {
+      "input": "inputs/task-015.jsonl",
+      "input_count": 20,
+      "input_sha256": "09e750d03fb54fded40866c5d8e22daa3f2f4ad185511e669875170e8801343b",
+      "output": "outputs/task-015.jsonl",
+      "task_id": "task-015"
+    },
+    {
+      "input": "inputs/task-016.jsonl",
+      "input_count": 20,
+      "input_sha256": "47458755494b8cd5b9b1c570c416c337f2148016eab1c6d0a379f3e094dccd13",
+      "output": "outputs/task-016.jsonl",
+      "task_id": "task-016"
+    },
+    {
+      "input": "inputs/task-017.jsonl",
+      "input_count": 20,
+      "input_sha256": "359442ed75dfd4913ab7d5b4f9287b8934936a0c006cec533e3b1f81b21e7200",
+      "output": "outputs/task-017.jsonl",
+      "task_id": "task-017"
+    },
+    {
+      "input": "inputs/task-018.jsonl",
+      "input_count": 20,
+      "input_sha256": "9c58a08e85e7a04323d8fefc634442a52c28c3bcfb3041bc33ee6a3da9ff0302",
+      "output": "outputs/task-018.jsonl",
+      "task_id": "task-018"
+    },
+    {
+      "input": "inputs/task-019.jsonl",
+      "input_count": 20,
+      "input_sha256": "c49b07a39b0c5b0183c609d8923feb3f4449f520b42f8f8ae1b416ba69d6ea8f",
+      "output": "outputs/task-019.jsonl",
+      "task_id": "task-019"
+    },
+    {
+      "input": "inputs/task-020.jsonl",
+      "input_count": 20,
+      "input_sha256": "5cd1bcc2799e2f295bf54be5bcc57d338b207cdeb67820610baac04b227ac732",
+      "output": "outputs/task-020.jsonl",
+      "task_id": "task-020"
+    },
+    {
+      "input": "inputs/task-021.jsonl",
+      "input_count": 20,
+      "input_sha256": "04705d4f9b80a8195fd54223221b93755eb8b3d59cf62982b22eebca243ecc93",
+      "output": "outputs/task-021.jsonl",
+      "task_id": "task-021"
+    },
+    {
+      "input": "inputs/task-022.jsonl",
+      "input_count": 20,
+      "input_sha256": "325aa05898ba9474dd35f5d4046e7bb4eb3b4aa11a5eb7caaf8b5ed62d4d635c",
+      "output": "outputs/task-022.jsonl",
+      "task_id": "task-022"
+    },
+    {
+      "input": "inputs/task-023.jsonl",
+      "input_count": 20,
+      "input_sha256": "c1c95e02fe9855bcc6faabae62d8dee495129cf62fb2c7075f714bce3b3f8814",
+      "output": "outputs/task-023.jsonl",
+      "task_id": "task-023"
+    },
+    {
+      "input": "inputs/task-024.jsonl",
+      "input_count": 20,
+      "input_sha256": "d19dfc52e950dff6d50707f30cc3e81b014c3f415e5b354de8ad1e0f5c669a22",
+      "output": "outputs/task-024.jsonl",
+      "task_id": "task-024"
+    },
+    {
+      "input": "inputs/task-025.jsonl",
+      "input_count": 20,
+      "input_sha256": "fefcbc8921fc8b80012db49f1ce72ad100d7e5926c7007acec216046bdcbf38d",
+      "output": "outputs/task-025.jsonl",
+      "task_id": "task-025"
+    },
+    {
+      "input": "inputs/task-026.jsonl",
+      "input_count": 20,
+      "input_sha256": "fd5b15f86b5f2df74eb2ed26a5404b81e3b800b5eb839cb374ce0ec5aa831cac",
+      "output": "outputs/task-026.jsonl",
+      "task_id": "task-026"
+    },
+    {
+      "input": "inputs/task-027.jsonl",
+      "input_count": 20,
+      "input_sha256": "4f28f1edc7e8b40a157316fbcac0c7ff582b58bcdc2178d77da62a0e0d83b7db",
+      "output": "outputs/task-027.jsonl",
+      "task_id": "task-027"
+    },
+    {
+      "input": "inputs/task-028.jsonl",
+      "input_count": 20,
+      "input_sha256": "5a29c015cface9139fa66ff9295904547bc6794c1d46b1dd38c458851ddde684",
+      "output": "outputs/task-028.jsonl",
+      "task_id": "task-028"
+    },
+    {
+      "input": "inputs/task-029.jsonl",
+      "input_count": 20,
+      "input_sha256": "02ab3610aabb0a3d2cbfe0815e277229c52ed4747b963a57d889b55e1df64d0c",
+      "output": "outputs/task-029.jsonl",
+      "task_id": "task-029"
+    },
+    {
+      "input": "inputs/task-030.jsonl",
+      "input_count": 20,
+      "input_sha256": "49cc9f26ca907e68a7da64cf0769e2755a441e5a0227af071d6353cacd5f70ed",
+      "output": "outputs/task-030.jsonl",
+      "task_id": "task-030"
+    },
+    {
+      "input": "inputs/task-031.jsonl",
+      "input_count": 20,
+      "input_sha256": "7d21fd403a4e37d24c6e87c15fa7342a27ca7357b57750d186ae5cc05a485496",
+      "output": "outputs/task-031.jsonl",
+      "task_id": "task-031"
+    },
+    {
+      "input": "inputs/task-032.jsonl",
+      "input_count": 12,
+      "input_sha256": "ac1c82deada9c2b663a0e8584878e6c5738d3a281c6f9b5026dc343b560bdf2f",
+      "output": "outputs/task-032.jsonl",
+      "task_id": "task-032"
+    }
+  ]
+}

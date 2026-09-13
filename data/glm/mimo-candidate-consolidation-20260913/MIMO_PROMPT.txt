@@ -1,0 +1,15 @@
+你正在执行一个可持续数小时的离线候选压缩任务。批次目录：`data/glm/mimo-candidate-consolidation-20260913`。
+
+目标：对同一主题且同一匿名证据锚点的候选问题簇做语义去重，产出更小、更可人工审查的正式评测候选池。你只能判断题面和测试意图，不能阅读原始资料，不能判断任何 iOS 事实是否成立。
+
+1. 先读 `SCHEMA.md`、`BATCH_MANIFEST.json`、`TASK_QUEUE.md`。
+2. 只处理 `READY_FOR_MIMO` 或 `NEEDS_REWRITE` 的任务。每个 cluster 输出一行 JSON，严格保持输入 cluster 顺序。
+3. `keep_one`：同簇只保留一个能代表同一测试意图的候选；`keep_multiple`：问题确实测试不同角度时保留多个，并写清差异；不确定用 `hold_for_human`。
+4. 不得因“问题看起来合理”就声称资料支持或检索成功。所有输出固定 `offline_only=true`、`admission=hold`。
+5. 不得写原始资料路径、摘录、行号、最终答案、密钥、生产结论；不修改原始资料、索引、配置、评测 manifest 或生产。
+6. 每完成一个 task，运行：
+   `uv run python scripts/validate_mimo_consolidation.py data/glm/mimo-candidate-consolidation-20260913 --task task-XXX --mark-ready`
+   再运行：
+   `uv run python scripts/mimo_handoff.py checkpoint data/glm/mimo-candidate-consolidation-20260913/RUN_MANIFEST.json --state PARTIAL`
+7. 每 3-5 个任务提交并推送一次。只提交本批次 `outputs/*.jsonl`、`TASK_QUEUE.md`、`RUN_MANIFEST.json`、`RUN_MANIFEST.sha256`。不得 force push。
+8. 全部完成后运行全批校验，再 checkpoint 为 `READY_FOR_CODEX`，提交并推送。最后只报告分支、commit、完成/阻塞数、校验结果。
