@@ -6,19 +6,19 @@
   "base_ref_name": "HEAD",
   "pilot_dir": "data/glm/mimo-quality-20260913",
   "queue_file": "TASK_QUEUE.md",
-  "state": "RUNNING",
+  "state": "PARTIAL",
   "attempt": 1,
   "prompt_version": "mimo-quality-v1",
   "input_manifest_required": true,
   "started_at": "2026-09-12T16:20:39Z",
-  "updated_at": "2026-09-12T16:20:39Z",
-  "queue_sha256": "b2262e00c7bd711ca99b17a348b6d44db2a7cf580f03c8d1926120ef78bcd38b",
+  "updated_at": "2026-09-13T03:49:06Z",
+  "queue_sha256": "ac5dca725625e39767c3bbf3949208d2ac1338e291eea7d09c0378c377b06b21",
   "tasks": [
     {
       "task_id": "task-001",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-001.jsonl",
-      "output_sha256": null,
+      "output_sha256": "f4c0a83f074ef72d59e45ee70f3495137e634a4f6d3f2b5ab71c971a60794ed4",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-001.jsonl",
@@ -28,9 +28,9 @@
     },
     {
       "task_id": "task-002",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-002.jsonl",
-      "output_sha256": null,
+      "output_sha256": "e5d600cad2091aa763ffb026017e42a5a50bc8f2d36a8c520e11f9bc9ecc3ea8",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-002.jsonl",
@@ -40,9 +40,9 @@
     },
     {
       "task_id": "task-003",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-003.jsonl",
-      "output_sha256": null,
+      "output_sha256": "67a029ba650e9cb08b0325493799627bc7f65a0207f335d066bad0b12e3f7d21",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-003.jsonl",
@@ -52,9 +52,9 @@
     },
     {
       "task_id": "task-004",
-      "status": "READY_FOR_MIMO",
+      "status": "READY_FOR_CODEX",
       "output": "outputs/task-004.jsonl",
-      "output_sha256": null,
+      "output_sha256": "d4464179a79498a1cc74097ea30d5b9c3e03c906fe6bd9da3002f32e2b16df6d",
       "inputs": [
         {
           "path": "data/glm/mimo-quality-20260913/inputs/task-004.jsonl",
