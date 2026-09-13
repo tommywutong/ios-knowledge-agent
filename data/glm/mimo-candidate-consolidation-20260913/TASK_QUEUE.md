@@ -3,7 +3,7 @@
 All outputs remain offline candidates with admission=hold.
 
 ## task-001
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - input: `data/glm/mimo-candidate-consolidation-20260913/inputs/task-001.jsonl`
 - input_count: 20
 - output: `outputs/task-001.jsonl`
@@ -11,7 +11,7 @@ All outputs remain offline candidates with admission=hold.
 - note:
 
 ## task-002
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - input: `data/glm/mimo-candidate-consolidation-20260913/inputs/task-002.jsonl`
 - input_count: 20
 - output: `outputs/task-002.jsonl`
@@ -19,7 +19,7 @@ All outputs remain offline candidates with admission=hold.
 - note:
 
 ## task-003
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - input: `data/glm/mimo-candidate-consolidation-20260913/inputs/task-003.jsonl`
 - input_count: 20
 - output: `outputs/task-003.jsonl`
@@ -27,7 +27,7 @@ All outputs remain offline candidates with admission=hold.
 - note:
 
 ## task-004
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - input: `data/glm/mimo-candidate-consolidation-20260913/inputs/task-004.jsonl`
 - input_count: 20
 - output: `outputs/task-004.jsonl`
@@ -35,7 +35,7 @@ All outputs remain offline candidates with admission=hold.
 - note:
 
 ## task-005
-- status: `READY_FOR_MIMO`
+- status: `READY_FOR_CODEX`
 - input: `data/glm/mimo-candidate-consolidation-20260913/inputs/task-005.jsonl`
 - input_count: 20
 - output: `outputs/task-005.jsonl`
